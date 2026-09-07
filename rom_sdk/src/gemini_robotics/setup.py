@@ -16,7 +16,7 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='mr_robot',
+    maintainer='buc_robot',
     maintainer_email='server01.psa1981@gmail.com',
     description='Gemini AI powered voice command and navigation for ROM Robotics',
     license='Apache-2.0',

@@ -24,7 +24,7 @@
 class SettingsManager
 {
 public:
-    explicit SettingsManager(const QString &basePath = "/home/mr_robot/data/app/app_settings");
+    explicit SettingsManager(const QString &basePath = "/home/buc_robot/data/app/app_settings");
     
     // ===== Read Operations =====
     

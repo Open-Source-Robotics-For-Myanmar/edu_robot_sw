@@ -154,8 +154,8 @@ Edit `src/ssl_server.cpp`:
 
 ```cpp
 // Change upload directories
-QString video_directory = "/home/mr_robot/data/upload/videos/";
-QString audio_directory = "/home/mr_robot/data/upload/audio/";
+QString video_directory = "/home/buc_robot/data/upload/videos/";
+QString audio_directory = "/home/buc_robot/data/upload/audio/";
 ```
 
 Edit `src/main.cpp`:
@@ -287,9 +287,9 @@ openssl req -new -x509 -key server.key -out server.crt -days 365
 
 ```bash
 # Check upload directory permissions
-sudo mkdir -p /home/mr_robot/data/upload/videos
-sudo mkdir -p /home/mr_robot/data/upload/audio
-sudo chown -R $USER:$USER /home/mr_robot/data/upload
+sudo mkdir -p /home/buc_robot/data/upload/videos
+sudo mkdir -p /home/buc_robot/data/upload/audio
+sudo chown -R $USER:$USER /home/buc_robot/data/upload
 ```
 
 ### Port Already in Use

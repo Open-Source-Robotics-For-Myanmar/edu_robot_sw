@@ -26,7 +26,7 @@ graph TB
         WTS["WiFiTcpServer<br/>Port 7358<br/>Qt6 C++"]
         SM["SettingsManager"]
         ENV[".rom_environment.sh"]
-        YAML["YAML Settings Files<br/>/home/mr_robot/data/app/app_settings/"]
+        YAML["YAML Settings Files<br/>/home/buc_robot/data/app/app_settings/"]
         SS --> SM --> YAML
         SS --> ENV
         WTS --> |nmcli| WIFI["WiFi Config"]
@@ -608,8 +608,8 @@ graph TB
 | **Protocol** | QDataStream Qt_6_0: `[4B size] + [QString type] + [QByteArray payload]` |
 | **TLS** | TLS 1.2, self-signed RSA 2048 cert (CN=GhostMan) |
 | **Cert Trust** | `TrustAllCerts` (accept self-signed) |
-| **Settings File** | `basic_settings.yaml` at `/home/mr_robot/data/app/app_settings/` |
-| **Environment** | `.rom_environment.sh` at `/home/mr_robot/data/systemd/` |
+| **Settings File** | `basic_settings.yaml` at `/home/buc_robot/data/app/app_settings/` |
+| **Environment** | `.rom_environment.sh` at `/home/buc_robot/data/systemd/` |
 | **Server IP** | Saved in SharedPreferences `robot_prefs` → key `robot_server_ip` (default `10.0.0.1`) |
 | **Boot Command** | `system_ready` → `"OK"` |
 | **Name Command** | `get_robot_name` → `"ROBOT_NAME:<namespace>"` |

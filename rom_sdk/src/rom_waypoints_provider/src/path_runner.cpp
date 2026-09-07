@@ -20,7 +20,7 @@ public:
   PathRunner()
   : Node("path_runner_node")
   {
-    this->declare_parameter<std::string>("yaml_path", "/home/mr_robot/data/waypoints/path_mode.yaml");
+    this->declare_parameter<std::string>("yaml_path", "/home/buc_robot/data/waypoints/path_mode.yaml");
     
     // Create action client
     client_ = rclcpp_action::create_client<NavigateThroughPoses>(

@@ -4,7 +4,7 @@
   <name>edu_robot_nav2</name>
   <version>1.0.0</version>
   <description>ROM ROBOTICS edu_robot_nav2.</description>
-  <maintainer email="romrobotics@gmail.com">mr_robot</maintainer>
+  <maintainer email="romrobotics@gmail.com">buc_robot</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>

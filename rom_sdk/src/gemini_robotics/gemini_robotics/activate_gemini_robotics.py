@@ -51,7 +51,7 @@ class GeminiRobotManager(Node):
         )
 
         # ROS 2 parameter ကိုအသုံးပြု၍ Hardcode ပြဿနာဖြေရှင်းခြင်း
-        self.declare_parameter('waypoint_path', '/home/mr_robot/data/waypoints/')
+        self.declare_parameter('waypoint_path', '/home/buc_robot/data/waypoints/')
         self.waypoint_path = self.get_parameter('waypoint_path').get_parameter_value().string_value
         self.get_logger().info("Gemini Robot Manager is Ready...")
 

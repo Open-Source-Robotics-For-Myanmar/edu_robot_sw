@@ -7,7 +7,7 @@
 /**
  * @brief Updates BehaviorTree XML files when YAML settings change
  *
- * Maps YAML setting keys to XML attributes in BT files under /home/mr_robot/data/trees/.
+ * Maps YAML setting keys to XML attributes in BT files under /home/buc_robot/data/trees/.
  * Thread-safe: file read/write is mutex-protected.
  *
  * Mapping:
@@ -18,7 +18,7 @@
 class BehaviorTreeUpdater
 {
 public:
-    explicit BehaviorTreeUpdater(const QString &treesDir = "/home/mr_robot/data/trees");
+    explicit BehaviorTreeUpdater(const QString &treesDir = "/home/buc_robot/data/trees");
 
     /**
      * @brief Update the corresponding BT XML when a YAML setting changes

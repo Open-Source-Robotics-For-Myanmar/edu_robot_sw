@@ -205,8 +205,8 @@ sequenceDiagram
 
 | Upload Type | Max Files | Storage Path |
 |-------------|-----------|-------------|
-| `UPLOAD_VIDEO` | 5 | `/home/mr_robot/data/upload/videos/` |
-| `UPLOAD_AUDIO` | 10 | `/home/mr_robot/data/upload/audio/` |
+| `UPLOAD_VIDEO` | 5 | `/home/buc_robot/data/upload/videos/` |
+| `UPLOAD_AUDIO` | 10 | `/home/buc_robot/data/upload/audio/` |
 
 ---
 

@@ -75,7 +75,7 @@ public:
       } catch (const std::exception &) {
         // Workspace for this package may not be sourced; use known install path
         carto_config_dir_ =
-          "/home/mr_robot/rom_nav2_ws/install/" + robot_model_ +
+          "/home/buc_robot/rom_nav2_ws/install/" + robot_model_ +
           "_carto/share/" + robot_model_ + "_carto/config/";
         RCLCPP_WARN(get_logger(),
           "[RelocateServer] ament_index lookup failed for '%s_carto'. "

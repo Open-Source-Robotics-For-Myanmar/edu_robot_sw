@@ -1,8 +1,8 @@
 #include "ssl_server.h"
 
-QString video_directory = "/home/mr_robot/data/upload/videos/";
-QString audio_directory = "/home/mr_robot/data/upload/audio/";
-QString waypoints_directory = "/home/mr_robot/data/waypoints/";
+QString video_directory = "/home/buc_robot/data/upload/videos/";
+QString audio_directory = "/home/buc_robot/data/upload/audio/";
+QString waypoints_directory = "/home/buc_robot/data/waypoints/";
 
 // Upload limit constants
 static const int MAX_VIDEO_FILES = 5;
@@ -308,7 +308,7 @@ QString SslServer::llmResponse(const QString &query)
 
 /**
  * Read waypoint names from a mode YAML file.
- * File path: /home/mr_robot/data/waypoints/<modeFile>.yaml
+ * File path: /home/buc_robot/data/waypoints/<modeFile>.yaml
  *
  * YAML format:
  *   waypoints:
@@ -846,7 +846,7 @@ int SslServer::getVideoVolume()
 // .rom_environment.sh ထဲက export variable value ကို ဖတ်ခြင်း
 QString SslServer::readRomEnvironment(const QString &key)
 {
-    const QString envPath = "/home/mr_robot/data/systemd/.rom_environment.sh";
+    const QString envPath = "/home/buc_robot/data/systemd/.rom_environment.sh";
     QFile file(envPath);
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -881,7 +881,7 @@ QString SslServer::readRomEnvironment(const QString &key)
 //      → "export ROM_ROBOT_NAMESPACE=my_robot"
 bool SslServer::updateRomEnvironment(const QString &key, const QString &value)
 {
-    const QString envPath = "/home/mr_robot/data/systemd/.rom_environment.sh";
+    const QString envPath = "/home/buc_robot/data/systemd/.rom_environment.sh";
     QFile file(envPath);
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {

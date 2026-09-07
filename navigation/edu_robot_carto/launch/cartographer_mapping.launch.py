@@ -51,7 +51,7 @@ def generate_launch_description():
             #output='screen',
             parameters=[{'use_sim_time': use_sim_time}],
             # remappings=[('/odom', '/diff_controller/odom')],
-            arguments=['-configuration_directory', '/home/mr_robot/rom_nav2_ws/install/edu_robot_carto/share/edu_robot_carto/config/',
+            arguments=['-configuration_directory', '/home/buc_robot/rom_nav2_ws/install/edu_robot_carto/share/edu_robot_carto/config/',
                        '-configuration_basename', configuration_basename],
             ),
 

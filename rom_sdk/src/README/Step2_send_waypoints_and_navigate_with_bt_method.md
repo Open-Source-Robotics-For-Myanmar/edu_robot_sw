@@ -17,7 +17,7 @@ rom_interfaces::srv::ConstructYaml
 # ၁။ သူက 
 /construct_yaml_server_bt node 
 # ဖြစ်ပြီး
-/home/mr_robot/Desktop/Git/rom_dynamics_robots/developer_packages/rom2109/rom2109_bt/trees/rom_trees/default.xml
+/home/buc_robot/Desktop/Git/rom_dynamics_robots/developer_packages/rom2109/rom2109_bt/trees/rom_trees/default.xml
 # ဖိုင်ကို write လုပ်ပေးသလို
 /waypoints_list 
 # topic ကို transient local နဲ့ publish လုပ်ပေးပါတယ်။ အခြား host ပေါ်က qt app များက WaypointListSubscriber object ဖြင့်  subscribe ပြုလုပ်ပြီး waypoint list ကို ui မှာ ပြန်လည် ပြနိုင်ဖို့ဖြစ်ပါတယ်။

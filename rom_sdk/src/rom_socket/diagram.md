@@ -22,8 +22,8 @@ graph TB
     end
 
     subgraph "File System"
-        VID["/home/mr_robot/data/upload/videos/<br/>(max 5 files)"]
-        AUD["/home/mr_robot/data/upload/audio/<br/>(max 10 files)"]
+        VID["/home/buc_robot/data/upload/videos/<br/>(max 5 files)"]
+        AUD["/home/buc_robot/data/upload/audio/<br/>(max 10 files)"]
     end
 
     GUI -->|"SSL/TLS :8765"| SSL

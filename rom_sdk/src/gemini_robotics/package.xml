@@ -4,7 +4,7 @@
   <name>gemini_robotics</name>
   <version>1.0.0</version>
   <description>Gemini AI powered voice command and navigation for ROM Robotics</description>
-  <maintainer email="server01.psa1981@gmail.com">mr_robot</maintainer>
+  <maintainer email="server01.psa1981@gmail.com">buc_robot</maintainer>
   <license>Apache-2.0</license>
 
   <depend>rclpy</depend>

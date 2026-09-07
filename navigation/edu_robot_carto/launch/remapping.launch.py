@@ -22,7 +22,7 @@ def generate_launch_description():
                                                   edu_robot_carto_pkg, 'config'))
     configuration_basename = LaunchConfiguration('configuration_basename',
                                                  default='edu_robot_map_2d.lua')
-    load_state_filename = LaunchConfiguration('load_state_filename', default='/home/mr_robot/data/maps/a2.pbstream')
+    load_state_filename = LaunchConfiguration('load_state_filename', default='/home/buc_robot/data/maps/a2.pbstream')
     
     resolution = LaunchConfiguration('resolution', default='0.05')
     publish_period_sec = LaunchConfiguration('publish_period_sec', default='1.0')
@@ -52,7 +52,7 @@ def generate_launch_description():
             output='screen',
             parameters=[{'use_sim_time': use_sim_time}],
             # remappings=[('/odom', '/diff_controller/odom')],
-            arguments=['-configuration_directory', '/home/mr_robot/rom_nav2_ws/install/edu_robot_carto/share/edu_robot_carto/config/',
+            arguments=['-configuration_directory', '/home/buc_robot/rom_nav2_ws/install/edu_robot_carto/share/edu_robot_carto/config/',
                        '-configuration_basename', configuration_basename,
                        '-load_state_filename', load_state_filename],
             ),
