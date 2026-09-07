@@ -14,9 +14,10 @@
 std::string current_mode = "navi";
 pid_t launch_pid = -1;
 
-// Package and launch file names
-const std::string robot_name = std::getenv("ROM_ROBOT_MODEL");
-const std::string rom_robot_namespace = std::getenv("ROM_ROBOT_NAMESPACE");
+const char *model_env = std::getenv("ROM_ROBOT_MODEL");
+const std::string robot_name = (model_env != nullptr) ? model_env : "";
+const char *ns_env = std::getenv("ROM_ROBOT_NAMESPACE");
+const std::string rom_robot_namespace = (ns_env != nullptr) ? ns_env : "";
 
 const std::string nav2_pkg = robot_name +"_nav2"; 
 // const std::string bringup_pkg = "rom_nav2_bringup"; 

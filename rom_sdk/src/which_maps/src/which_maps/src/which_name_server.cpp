@@ -23,9 +23,10 @@ float ROBOT_DIAMETER = 0.63;
 
 std::shared_ptr<rclcpp::Publisher<std_msgs::msg::String>> global_publisher;
 
-// Package and launch file names
-const std::string rom_robot_namespace = std::getenv("ROM_ROBOT_NAMESPACE");
-const std::string robot_name = std::getenv("ROM_ROBOT_MODEL");
+const char *ns_env = std::getenv("ROM_ROBOT_NAMESPACE");
+const std::string rom_robot_namespace = (ns_env != nullptr) ? ns_env : "";
+const char *model_env = std::getenv("ROM_ROBOT_MODEL");
+const std::string robot_name = (model_env != nullptr) ? model_env : "";
 
 
 bool debug_mode_ = false; // Global variable to control debug logging
