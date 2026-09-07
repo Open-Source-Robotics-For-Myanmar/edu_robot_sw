@@ -1,0 +1,10 @@
+/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/rom_interfaces/rosidl_adapter/rom_interfaces:msg/ConstructYaml.idl
+/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/rom_interfaces/rosidl_adapter/rom_interfaces:msg/Battery.idl
+/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/rom_interfaces/rosidl_adapter/rom_interfaces:msg/Sphere.idl
+/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/rom_interfaces/rosidl_adapter/rom_interfaces:srv/ConstructYaml.idl
+/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/rom_interfaces/rosidl_adapter/rom_interfaces:srv/WhichMaps.idl
+/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/rom_interfaces/rosidl_adapter/rom_interfaces:srv/WhichVel.idl
+/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/rom_interfaces/rosidl_adapter/rom_interfaces:srv/EmotionCommand.idl
+/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/rom_interfaces/rosidl_adapter/rom_interfaces:srv/WhichTasks.idl
+/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/rom_interfaces/rosidl_adapter/rom_interfaces:srv/AddObstacles.idl
+/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/rom_interfaces/rosidl_adapter/rom_interfaces:srv/WhichVoiceCommand.idl

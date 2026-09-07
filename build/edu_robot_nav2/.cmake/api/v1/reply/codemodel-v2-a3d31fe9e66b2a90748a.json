@@ -1,0 +1,97 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-16cc5a3ca9d573efc8c7.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4
+					]
+				}
+			],
+			"name" : "",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "edu_robot_nav2",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "circle_walk::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-circle_walk-25b6f387ed727bf81c80.json",
+					"name" : "circle_walk",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "edu_robot_nav2_uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-edu_robot_nav2_uninstall-75d863d3411a4b41b509.json",
+					"name" : "edu_robot_nav2_uninstall",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "init_robot_pose::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-init_robot_pose-1c08eb459e586327e2fe.json",
+					"name" : "init_robot_pose",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "random_walk::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-random_walk-d20bc283eb919d255aa0.json",
+					"name" : "random_walk",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-uninstall-26a7c58f4807653591d8.json",
+					"name" : "uninstall",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/edu_robot_nav2",
+		"source" : "/home/hmue_gyi/dev_ws/src/edu_robot_sw/navigation/edu_robot_nav2"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 3
+	}
+}

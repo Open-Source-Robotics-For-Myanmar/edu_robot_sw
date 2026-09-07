@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "rom_interfaces__py",
+		"source" : "/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/rom_interfaces/rom_interfaces__py"
+	}
+}

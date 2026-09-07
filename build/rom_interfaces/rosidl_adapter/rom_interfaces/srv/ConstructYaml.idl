@@ -1,0 +1,53 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from rom_interfaces/srv/ConstructYaml.srv
+// generated code does not contain a copyright notice
+
+#include "geometry_msgs/msg/Pose.idl"
+#include "geometry_msgs/msg/PoseStamped.idl"
+
+module rom_interfaces {
+  module srv {
+    @verbatim (language="comment", text=
+      "ConstructYaml.msg")
+    struct ConstructYaml_Request {
+      @verbatim (language="comment", text=
+        "List of names for the poses")
+      sequence<string> pose_names;
+
+      @verbatim (language="comment", text=
+        "Corresponding list of PoseStamped messages")
+      sequence<geometry_msgs::msg::PoseStamped> poses;
+
+      sequence<geometry_msgs::msg::Pose> scene_poses;
+
+      @verbatim (language="comment", text=
+        "waypoints_mode, service_mode, patrol_mode, path_mode" "\n"
+        "goal_mode ( use with ros2 run commands in command), eraser_mode" "\n"
+        "get_wp_list, get_srv_list, get_patrol_list, get_path_list")
+      string mode;
+
+      boolean loop;
+
+      @verbatim (language="comment", text=
+        "Three ros2 run commands , use with goal_mode" "\n"
+        "ros2 run rom_robot_autonomy autonomy_waypoints_mode_w_cancel" "\n"
+        "ros2 run rom_robot_autonomy autonomy_patrol_mode_w_cancel" "\n"
+        "ros2 run rom_robot_autonomy autonomy_service_mode_w_cancel" "\n"
+        "ros2 run rom_waypoints_provider path_runner")
+      string command;
+    };
+    struct ConstructYaml_Response {
+      sequence<string> pose_names;
+
+      @verbatim (language="comment", text=
+        "Corresponding list of PoseStamped messages")
+      sequence<geometry_msgs::msg::PoseStamped> poses;
+
+      sequence<geometry_msgs::msg::Pose> scene_poses;
+
+      @verbatim (language="comment", text=
+        "1 [ok] | -1 [not ok]")
+      int16 status;
+    };
+  };
+};

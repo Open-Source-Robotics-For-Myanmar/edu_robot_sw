@@ -1,0 +1,50 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from rom_interfaces/srv/WhichVoiceCommand.srv
+// generated code does not contain a copyright notice
+
+
+module rom_interfaces {
+  module srv {
+    @verbatim (language="comment", text=
+      "Request (စက်ရုပ်ဘက်က ပို့မည့်အချက်အလက်)")
+    struct WhichVoiceCommand_Request {
+      @verbatim (language="comment", text=
+        "WAV သို့မဟုတ် Raw PCM audio bytes")
+      sequence<uint8> audio_data;
+
+      @verbatim (language="comment", text=
+        "wav, pcm, သို့မဟုတ် mp3")
+      string format;
+
+      @verbatim (language="comment", text=
+        "True ဆိုလျှင် Gemini ကို Action (ဥပမာ- Nav2 command) ထုတ်ခိုင်းမည်")
+      boolean request_action;
+    };
+    struct WhichVoiceCommand_Response {
+      @verbatim (language="comment", text=
+        "Response (Gemini/Service ဘက်က ပြန်ပေးမည့်အချက်အလက်)" "\n"
+        "Service အောင်မြင်သလား")
+      boolean success;
+
+      @verbatim (language="comment", text=
+        "User ပြောလိုက်တဲ့ စကားလုံး (Speech-to-Text)")
+      string transcription;
+
+      @verbatim (language="comment", text=
+        "Gemini ပြန်ပြောတဲ့ စကား (Speaker ကနေ ထွက်လာမယ့်အသံအတွက်)")
+      string response_text;
+
+      @verbatim (language="comment", text=
+        "ဘာလုပ်ရမလဲ? (ဥပမာ: \"navigate\", \"find_object\", \"chat\", \"stop\")")
+      string action_type;
+
+      @verbatim (language="comment", text=
+        "Action အတွက် လိုအပ်သော Parameter များ (JSON format ဖြင့်)")
+      string action_params;
+
+      @verbatim (language="comment", text=
+        "အမှားအယွင်းရှိလျှင် ပြပေးရန်")
+      string error_msg;
+    };
+  };
+};
