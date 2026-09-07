@@ -1,0 +1,424 @@
+[0.703s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build']
+[0.703s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=False, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=12, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=None, packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, allow_overriding=[], cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, mixin_files=None, mixin=None, verb_parser=<colcon_mixin.mixin.mixin_argument.MixinArgumentDecorator object at 0x7247733b2410>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x7247733b1d80>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x7247733b1d80>>, mixin_verb=('build',))
+[0.870s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.871s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.871s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.871s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.871s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[0.871s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.871s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/hmue_gyi/dev_ws/src/edu_robot_sw'
+[0.871s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.872s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.872s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.872s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[0.872s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[0.872s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[0.872s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[0.872s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.872s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.914s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[0.914s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[0.914s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[0.914s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[0.914s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[0.915s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[0.915s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[0.915s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[0.915s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[0.915s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[0.916s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[0.916s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[0.916s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[0.916s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[0.917s] Level 1:colcon.colcon_core.package_identification:_identify(navigation) by extensions ['ignore', 'ignore_ament_install']
+[0.918s] Level 1:colcon.colcon_core.package_identification:_identify(navigation) by extension 'ignore'
+[0.918s] Level 1:colcon.colcon_core.package_identification:_identify(navigation) by extension 'ignore_ament_install'
+[0.918s] Level 1:colcon.colcon_core.package_identification:_identify(navigation) by extensions ['colcon_pkg']
+[0.918s] Level 1:colcon.colcon_core.package_identification:_identify(navigation) by extension 'colcon_pkg'
+[0.918s] Level 1:colcon.colcon_core.package_identification:_identify(navigation) by extensions ['colcon_meta']
+[0.918s] Level 1:colcon.colcon_core.package_identification:_identify(navigation) by extension 'colcon_meta'
+[0.918s] Level 1:colcon.colcon_core.package_identification:_identify(navigation) by extensions ['ros']
+[0.918s] Level 1:colcon.colcon_core.package_identification:_identify(navigation) by extension 'ros'
+[0.919s] Level 1:colcon.colcon_core.package_identification:_identify(navigation) by extensions ['cmake', 'python']
+[0.919s] Level 1:colcon.colcon_core.package_identification:_identify(navigation) by extension 'cmake'
+[0.919s] Level 1:colcon.colcon_core.package_identification:_identify(navigation) by extension 'python'
+[0.919s] Level 1:colcon.colcon_core.package_identification:_identify(navigation) by extensions ['python_setup_py']
+[0.919s] Level 1:colcon.colcon_core.package_identification:_identify(navigation) by extension 'python_setup_py'
+[0.919s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_bringup) by extensions ['ignore', 'ignore_ament_install']
+[0.919s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_bringup) by extension 'ignore'
+[0.919s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_bringup) by extension 'ignore_ament_install'
+[0.920s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_bringup) by extensions ['colcon_pkg']
+[0.920s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_bringup) by extension 'colcon_pkg'
+[0.920s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_bringup) by extensions ['colcon_meta']
+[0.920s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_bringup) by extension 'colcon_meta'
+[0.920s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_bringup) by extensions ['ros']
+[0.920s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_bringup) by extension 'ros'
+[0.929s] DEBUG:colcon.colcon_core.package_identification:Package 'navigation/edu_robot_bringup' with type 'ros.ament_cmake' and name 'edu_robot_bringup'
+[0.930s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_bt) by extensions ['ignore', 'ignore_ament_install']
+[0.930s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_bt) by extension 'ignore'
+[0.930s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_bt) by extension 'ignore_ament_install'
+[0.930s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_bt) by extensions ['colcon_pkg']
+[0.930s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_bt) by extension 'colcon_pkg'
+[0.930s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_bt) by extensions ['colcon_meta']
+[0.930s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_bt) by extension 'colcon_meta'
+[0.931s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_bt) by extensions ['ros']
+[0.931s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_bt) by extension 'ros'
+[0.934s] DEBUG:colcon.colcon_core.package_identification:Package 'navigation/edu_robot_bt' with type 'ros.ament_cmake' and name 'edu_robot_bt'
+[0.934s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_carto) by extensions ['ignore', 'ignore_ament_install']
+[0.934s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_carto) by extension 'ignore'
+[0.934s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_carto) by extension 'ignore_ament_install'
+[0.935s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_carto) by extensions ['colcon_pkg']
+[0.935s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_carto) by extension 'colcon_pkg'
+[0.935s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_carto) by extensions ['colcon_meta']
+[0.935s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_carto) by extension 'colcon_meta'
+[0.935s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_carto) by extensions ['ros']
+[0.935s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_carto) by extension 'ros'
+[0.937s] DEBUG:colcon.colcon_core.package_identification:Package 'navigation/edu_robot_carto' with type 'ros.ament_cmake' and name 'edu_robot_carto'
+[0.937s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_ekf) by extensions ['ignore', 'ignore_ament_install']
+[0.937s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_ekf) by extension 'ignore'
+[0.937s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_ekf) by extension 'ignore_ament_install'
+[0.937s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_ekf) by extensions ['colcon_pkg']
+[0.937s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_ekf) by extension 'colcon_pkg'
+[0.938s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_ekf) by extensions ['colcon_meta']
+[0.938s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_ekf) by extension 'colcon_meta'
+[0.938s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_ekf) by extensions ['ros']
+[0.938s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_ekf) by extension 'ros'
+[0.942s] DEBUG:colcon.colcon_core.package_identification:Package 'navigation/edu_robot_ekf' with type 'ros.ament_cmake' and name 'edu_robot_ekf'
+[0.943s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_nav2) by extensions ['ignore', 'ignore_ament_install']
+[0.943s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_nav2) by extension 'ignore'
+[0.943s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_nav2) by extension 'ignore_ament_install'
+[0.943s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_nav2) by extensions ['colcon_pkg']
+[0.943s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_nav2) by extension 'colcon_pkg'
+[0.943s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_nav2) by extensions ['colcon_meta']
+[0.943s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_nav2) by extension 'colcon_meta'
+[0.944s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_nav2) by extensions ['ros']
+[0.944s] Level 1:colcon.colcon_core.package_identification:_identify(navigation/edu_robot_nav2) by extension 'ros'
+[0.946s] DEBUG:colcon.colcon_core.package_identification:Package 'navigation/edu_robot_nav2' with type 'ros.ament_cmake' and name 'edu_robot_nav2'
+[0.946s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk) by extensions ['ignore', 'ignore_ament_install']
+[0.947s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk) by extension 'ignore'
+[0.947s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk) by extension 'ignore_ament_install'
+[0.947s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk) by extensions ['colcon_pkg']
+[0.947s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk) by extension 'colcon_pkg'
+[0.948s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk) by extensions ['colcon_meta']
+[0.948s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk) by extension 'colcon_meta'
+[0.948s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk) by extensions ['ros']
+[0.948s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk) by extension 'ros'
+[0.948s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk) by extensions ['cmake', 'python']
+[0.948s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk) by extension 'cmake'
+[0.949s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk) by extension 'python'
+[0.949s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk) by extensions ['python_setup_py']
+[0.949s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk) by extension 'python_setup_py'
+[0.949s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src) by extensions ['ignore', 'ignore_ament_install']
+[0.949s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src) by extension 'ignore'
+[0.949s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src) by extension 'ignore_ament_install'
+[0.949s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src) by extensions ['colcon_pkg']
+[0.950s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src) by extension 'colcon_pkg'
+[0.950s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src) by extensions ['colcon_meta']
+[0.950s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src) by extension 'colcon_meta'
+[0.950s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src) by extensions ['ros']
+[0.950s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src) by extension 'ros'
+[0.950s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src) by extensions ['cmake', 'python']
+[0.950s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src) by extension 'cmake'
+[0.950s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src) by extension 'python'
+[0.950s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src) by extensions ['python_setup_py']
+[0.950s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src) by extension 'python_setup_py'
+[0.951s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/README) by extensions ['ignore', 'ignore_ament_install']
+[0.951s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/README) by extension 'ignore'
+[0.951s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/README) by extension 'ignore_ament_install'
+[0.951s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/README) by extensions ['colcon_pkg']
+[0.951s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/README) by extension 'colcon_pkg'
+[0.951s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/README) by extensions ['colcon_meta']
+[0.951s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/README) by extension 'colcon_meta'
+[0.951s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/README) by extensions ['ros']
+[0.951s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/README) by extension 'ros'
+[0.952s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/README) by extensions ['cmake', 'python']
+[0.952s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/README) by extension 'cmake'
+[0.952s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/README) by extension 'python'
+[0.952s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/README) by extensions ['python_setup_py']
+[0.952s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/README) by extension 'python_setup_py'
+[0.952s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/ROS-TCP-Endpoint-ROS2v0.7.0) by extensions ['ignore', 'ignore_ament_install']
+[0.952s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/ROS-TCP-Endpoint-ROS2v0.7.0) by extension 'ignore'
+[0.952s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/ROS-TCP-Endpoint-ROS2v0.7.0) ignored
+[0.953s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/ar_robot_launch) by extensions ['ignore', 'ignore_ament_install']
+[0.953s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/ar_robot_launch) by extension 'ignore'
+[0.953s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/ar_robot_launch) by extension 'ignore_ament_install'
+[0.953s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/ar_robot_launch) by extensions ['colcon_pkg']
+[0.953s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/ar_robot_launch) by extension 'colcon_pkg'
+[0.953s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/ar_robot_launch) by extensions ['colcon_meta']
+[0.953s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/ar_robot_launch) by extension 'colcon_meta'
+[0.953s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/ar_robot_launch) by extensions ['ros']
+[0.954s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/ar_robot_launch) by extension 'ros'
+[0.955s] DEBUG:colcon.colcon_core.package_identification:Package 'rom_sdk/src/ar_robot_launch' with type 'ros.ament_cmake' and name 'ar_robot_launch'
+[0.955s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/gemini_robotics) by extensions ['ignore', 'ignore_ament_install']
+[0.955s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/gemini_robotics) by extension 'ignore'
+[0.955s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/gemini_robotics) by extension 'ignore_ament_install'
+[0.955s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/gemini_robotics) by extensions ['colcon_pkg']
+[0.956s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/gemini_robotics) by extension 'colcon_pkg'
+[0.956s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/gemini_robotics) by extensions ['colcon_meta']
+[0.956s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/gemini_robotics) by extension 'colcon_meta'
+[0.956s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/gemini_robotics) by extensions ['ros']
+[0.956s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/gemini_robotics) by extension 'ros'
+[0.959s] DEBUG:colcon.colcon_core.package_identification:Package 'rom_sdk/src/gemini_robotics' with type 'ros.ament_python' and name 'gemini_robotics'
+[0.960s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_interfaces) by extensions ['ignore', 'ignore_ament_install']
+[0.960s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_interfaces) by extension 'ignore'
+[0.960s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_interfaces) by extension 'ignore_ament_install'
+[0.960s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_interfaces) by extensions ['colcon_pkg']
+[0.960s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_interfaces) by extension 'colcon_pkg'
+[0.960s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_interfaces) by extensions ['colcon_meta']
+[0.961s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_interfaces) by extension 'colcon_meta'
+[0.961s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_interfaces) by extensions ['ros']
+[0.961s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_interfaces) by extension 'ros'
+[0.962s] DEBUG:colcon.colcon_core.package_identification:Package 'rom_sdk/src/rom_interfaces' with type 'ros.ament_cmake' and name 'rom_interfaces'
+[0.963s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_obstacles_provider) by extensions ['ignore', 'ignore_ament_install']
+[0.963s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_obstacles_provider) by extension 'ignore'
+[0.963s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_obstacles_provider) by extension 'ignore_ament_install'
+[0.963s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_obstacles_provider) by extensions ['colcon_pkg']
+[0.963s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_obstacles_provider) by extension 'colcon_pkg'
+[0.963s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_obstacles_provider) by extensions ['colcon_meta']
+[0.964s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_obstacles_provider) by extension 'colcon_meta'
+[0.964s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_obstacles_provider) by extensions ['ros']
+[0.964s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_obstacles_provider) by extension 'ros'
+[0.967s] DEBUG:colcon.colcon_core.package_identification:Package 'rom_sdk/src/rom_obstacles_provider' with type 'ros.ament_cmake' and name 'rom_obstacles_provider'
+[0.967s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_socket) by extensions ['ignore', 'ignore_ament_install']
+[0.967s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_socket) by extension 'ignore'
+[0.968s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_socket) by extension 'ignore_ament_install'
+[0.968s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_socket) by extensions ['colcon_pkg']
+[0.968s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_socket) by extension 'colcon_pkg'
+[0.968s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_socket) by extensions ['colcon_meta']
+[0.968s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_socket) by extension 'colcon_meta'
+[0.968s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_socket) by extensions ['ros']
+[0.968s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_socket) by extension 'ros'
+[0.968s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_socket) by extensions ['cmake', 'python']
+[0.968s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_socket) by extension 'cmake'
+[0.972s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_socket) by extension 'python'
+[0.972s] DEBUG:colcon.colcon_core.package_identification:Package 'rom_sdk/src/rom_socket' with type 'cmake' and name 'rom_socket'
+[0.972s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_waypoints_provider) by extensions ['ignore', 'ignore_ament_install']
+[0.972s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_waypoints_provider) by extension 'ignore'
+[0.973s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_waypoints_provider) by extension 'ignore_ament_install'
+[0.973s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_waypoints_provider) by extensions ['colcon_pkg']
+[0.973s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_waypoints_provider) by extension 'colcon_pkg'
+[0.973s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_waypoints_provider) by extensions ['colcon_meta']
+[0.973s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_waypoints_provider) by extension 'colcon_meta'
+[0.973s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_waypoints_provider) by extensions ['ros']
+[0.973s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/rom_waypoints_provider) by extension 'ros'
+[0.976s] DEBUG:colcon.colcon_core.package_identification:Package 'rom_sdk/src/rom_waypoints_provider' with type 'ros.ament_cmake' and name 'rom_waypoints_provider'
+[0.976s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/which_maps) by extensions ['ignore', 'ignore_ament_install']
+[0.977s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/which_maps) by extension 'ignore'
+[0.977s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/which_maps) by extension 'ignore_ament_install'
+[0.977s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/which_maps) by extensions ['colcon_pkg']
+[0.977s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/which_maps) by extension 'colcon_pkg'
+[0.977s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/which_maps) by extensions ['colcon_meta']
+[0.977s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/which_maps) by extension 'colcon_meta'
+[0.977s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/which_maps) by extensions ['ros']
+[0.977s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/which_maps) by extension 'ros'
+[0.980s] DEBUG:colcon.colcon_core.package_identification:Package 'rom_sdk/src/which_maps' with type 'ros.ament_cmake' and name 'which_maps'
+[0.980s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/which_tasks) by extensions ['ignore', 'ignore_ament_install']
+[0.980s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/which_tasks) by extension 'ignore'
+[0.981s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/which_tasks) by extension 'ignore_ament_install'
+[0.981s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/which_tasks) by extensions ['colcon_pkg']
+[0.981s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/which_tasks) by extension 'colcon_pkg'
+[0.981s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/which_tasks) by extensions ['colcon_meta']
+[0.981s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/which_tasks) by extension 'colcon_meta'
+[0.981s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/which_tasks) by extensions ['ros']
+[0.981s] Level 1:colcon.colcon_core.package_identification:_identify(rom_sdk/src/which_tasks) by extension 'ros'
+[0.983s] DEBUG:colcon.colcon_core.package_identification:Package 'rom_sdk/src/which_tasks' with type 'ros.ament_cmake' and name 'which_tasks'
+[0.983s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.983s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[0.983s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[0.983s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.983s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[1.057s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) check parameters
+[1.058s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) discover
+[1.071s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 394 installed packages in /opt/ros/humble
+[1.077s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) using defaults
+[1.220s] Level 5:colcon.colcon_core.verb:set package 'ar_robot_launch' build argument 'cmake_args' from command line to 'None'
+[1.220s] Level 5:colcon.colcon_core.verb:set package 'ar_robot_launch' build argument 'cmake_target' from command line to 'None'
+[1.220s] Level 5:colcon.colcon_core.verb:set package 'ar_robot_launch' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[1.221s] Level 5:colcon.colcon_core.verb:set package 'ar_robot_launch' build argument 'cmake_clean_cache' from command line to 'False'
+[1.221s] Level 5:colcon.colcon_core.verb:set package 'ar_robot_launch' build argument 'cmake_clean_first' from command line to 'False'
+[1.221s] Level 5:colcon.colcon_core.verb:set package 'ar_robot_launch' build argument 'cmake_force_configure' from command line to 'False'
+[1.221s] Level 5:colcon.colcon_core.verb:set package 'ar_robot_launch' build argument 'ament_cmake_args' from command line to 'None'
+[1.221s] Level 5:colcon.colcon_core.verb:set package 'ar_robot_launch' build argument 'catkin_cmake_args' from command line to 'None'
+[1.221s] Level 5:colcon.colcon_core.verb:set package 'ar_robot_launch' build argument 'catkin_skip_building_tests' from command line to 'False'
+[1.221s] DEBUG:colcon.colcon_core.verb:Building package 'ar_robot_launch' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/ar_robot_launch', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/ar_robot_launch', 'merge_install': False, 'path': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/ar_robot_launch', 'symlink_install': False, 'test_result_base': None}
+[1.222s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_bringup' build argument 'cmake_args' from command line to 'None'
+[1.222s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_bringup' build argument 'cmake_target' from command line to 'None'
+[1.222s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_bringup' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[1.222s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_bringup' build argument 'cmake_clean_cache' from command line to 'False'
+[1.222s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_bringup' build argument 'cmake_clean_first' from command line to 'False'
+[1.222s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_bringup' build argument 'cmake_force_configure' from command line to 'False'
+[1.222s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_bringup' build argument 'ament_cmake_args' from command line to 'None'
+[1.222s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_bringup' build argument 'catkin_cmake_args' from command line to 'None'
+[1.222s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_bringup' build argument 'catkin_skip_building_tests' from command line to 'False'
+[1.222s] DEBUG:colcon.colcon_core.verb:Building package 'edu_robot_bringup' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/edu_robot_bringup', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/edu_robot_bringup', 'merge_install': False, 'path': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/navigation/edu_robot_bringup', 'symlink_install': False, 'test_result_base': None}
+[1.223s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_bt' build argument 'cmake_args' from command line to 'None'
+[1.223s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_bt' build argument 'cmake_target' from command line to 'None'
+[1.223s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_bt' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[1.223s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_bt' build argument 'cmake_clean_cache' from command line to 'False'
+[1.223s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_bt' build argument 'cmake_clean_first' from command line to 'False'
+[1.223s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_bt' build argument 'cmake_force_configure' from command line to 'False'
+[1.223s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_bt' build argument 'ament_cmake_args' from command line to 'None'
+[1.223s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_bt' build argument 'catkin_cmake_args' from command line to 'None'
+[1.223s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_bt' build argument 'catkin_skip_building_tests' from command line to 'False'
+[1.223s] DEBUG:colcon.colcon_core.verb:Building package 'edu_robot_bt' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/edu_robot_bt', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/edu_robot_bt', 'merge_install': False, 'path': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/navigation/edu_robot_bt', 'symlink_install': False, 'test_result_base': None}
+[1.224s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_carto' build argument 'cmake_args' from command line to 'None'
+[1.224s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_carto' build argument 'cmake_target' from command line to 'None'
+[1.224s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_carto' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[1.224s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_carto' build argument 'cmake_clean_cache' from command line to 'False'
+[1.224s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_carto' build argument 'cmake_clean_first' from command line to 'False'
+[1.224s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_carto' build argument 'cmake_force_configure' from command line to 'False'
+[1.224s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_carto' build argument 'ament_cmake_args' from command line to 'None'
+[1.224s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_carto' build argument 'catkin_cmake_args' from command line to 'None'
+[1.224s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_carto' build argument 'catkin_skip_building_tests' from command line to 'False'
+[1.224s] DEBUG:colcon.colcon_core.verb:Building package 'edu_robot_carto' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/edu_robot_carto', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/edu_robot_carto', 'merge_install': False, 'path': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/navigation/edu_robot_carto', 'symlink_install': False, 'test_result_base': None}
+[1.225s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_ekf' build argument 'cmake_args' from command line to 'None'
+[1.225s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_ekf' build argument 'cmake_target' from command line to 'None'
+[1.225s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_ekf' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[1.225s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_ekf' build argument 'cmake_clean_cache' from command line to 'False'
+[1.225s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_ekf' build argument 'cmake_clean_first' from command line to 'False'
+[1.225s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_ekf' build argument 'cmake_force_configure' from command line to 'False'
+[1.225s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_ekf' build argument 'ament_cmake_args' from command line to 'None'
+[1.225s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_ekf' build argument 'catkin_cmake_args' from command line to 'None'
+[1.226s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_ekf' build argument 'catkin_skip_building_tests' from command line to 'False'
+[1.226s] DEBUG:colcon.colcon_core.verb:Building package 'edu_robot_ekf' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/edu_robot_ekf', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/edu_robot_ekf', 'merge_install': False, 'path': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/navigation/edu_robot_ekf', 'symlink_install': False, 'test_result_base': None}
+[1.226s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_nav2' build argument 'cmake_args' from command line to 'None'
+[1.226s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_nav2' build argument 'cmake_target' from command line to 'None'
+[1.226s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_nav2' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[1.226s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_nav2' build argument 'cmake_clean_cache' from command line to 'False'
+[1.226s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_nav2' build argument 'cmake_clean_first' from command line to 'False'
+[1.227s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_nav2' build argument 'cmake_force_configure' from command line to 'False'
+[1.227s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_nav2' build argument 'ament_cmake_args' from command line to 'None'
+[1.227s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_nav2' build argument 'catkin_cmake_args' from command line to 'None'
+[1.227s] Level 5:colcon.colcon_core.verb:set package 'edu_robot_nav2' build argument 'catkin_skip_building_tests' from command line to 'False'
+[1.227s] DEBUG:colcon.colcon_core.verb:Building package 'edu_robot_nav2' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/edu_robot_nav2', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/edu_robot_nav2', 'merge_install': False, 'path': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/navigation/edu_robot_nav2', 'symlink_install': False, 'test_result_base': None}
+[1.227s] Level 5:colcon.colcon_core.verb:set package 'rom_interfaces' build argument 'cmake_args' from command line to 'None'
+[1.227s] Level 5:colcon.colcon_core.verb:set package 'rom_interfaces' build argument 'cmake_target' from command line to 'None'
+[1.227s] Level 5:colcon.colcon_core.verb:set package 'rom_interfaces' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[1.228s] Level 5:colcon.colcon_core.verb:set package 'rom_interfaces' build argument 'cmake_clean_cache' from command line to 'False'
+[1.228s] Level 5:colcon.colcon_core.verb:set package 'rom_interfaces' build argument 'cmake_clean_first' from command line to 'False'
+[1.228s] Level 5:colcon.colcon_core.verb:set package 'rom_interfaces' build argument 'cmake_force_configure' from command line to 'False'
+[1.228s] Level 5:colcon.colcon_core.verb:set package 'rom_interfaces' build argument 'ament_cmake_args' from command line to 'None'
+[1.228s] Level 5:colcon.colcon_core.verb:set package 'rom_interfaces' build argument 'catkin_cmake_args' from command line to 'None'
+[1.228s] Level 5:colcon.colcon_core.verb:set package 'rom_interfaces' build argument 'catkin_skip_building_tests' from command line to 'False'
+[1.228s] DEBUG:colcon.colcon_core.verb:Building package 'rom_interfaces' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/rom_interfaces', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/rom_interfaces', 'merge_install': False, 'path': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/rom_interfaces', 'symlink_install': False, 'test_result_base': None}
+[1.228s] Level 5:colcon.colcon_core.verb:set package 'rom_socket' build argument 'cmake_args' from command line to 'None'
+[1.229s] Level 5:colcon.colcon_core.verb:set package 'rom_socket' build argument 'cmake_target' from command line to 'None'
+[1.229s] Level 5:colcon.colcon_core.verb:set package 'rom_socket' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[1.229s] Level 5:colcon.colcon_core.verb:set package 'rom_socket' build argument 'cmake_clean_cache' from command line to 'False'
+[1.229s] Level 5:colcon.colcon_core.verb:set package 'rom_socket' build argument 'cmake_clean_first' from command line to 'False'
+[1.229s] Level 5:colcon.colcon_core.verb:set package 'rom_socket' build argument 'cmake_force_configure' from command line to 'False'
+[1.229s] Level 5:colcon.colcon_core.verb:set package 'rom_socket' build argument 'ament_cmake_args' from command line to 'None'
+[1.229s] Level 5:colcon.colcon_core.verb:set package 'rom_socket' build argument 'catkin_cmake_args' from command line to 'None'
+[1.229s] Level 5:colcon.colcon_core.verb:set package 'rom_socket' build argument 'catkin_skip_building_tests' from command line to 'False'
+[1.229s] DEBUG:colcon.colcon_core.verb:Building package 'rom_socket' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/rom_socket', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/rom_socket', 'merge_install': False, 'path': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/rom_socket', 'symlink_install': False, 'test_result_base': None}
+[1.230s] Level 5:colcon.colcon_core.verb:set package 'gemini_robotics' build argument 'cmake_args' from command line to 'None'
+[1.230s] Level 5:colcon.colcon_core.verb:set package 'gemini_robotics' build argument 'cmake_target' from command line to 'None'
+[1.230s] Level 5:colcon.colcon_core.verb:set package 'gemini_robotics' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[1.230s] Level 5:colcon.colcon_core.verb:set package 'gemini_robotics' build argument 'cmake_clean_cache' from command line to 'False'
+[1.230s] Level 5:colcon.colcon_core.verb:set package 'gemini_robotics' build argument 'cmake_clean_first' from command line to 'False'
+[1.230s] Level 5:colcon.colcon_core.verb:set package 'gemini_robotics' build argument 'cmake_force_configure' from command line to 'False'
+[1.230s] Level 5:colcon.colcon_core.verb:set package 'gemini_robotics' build argument 'ament_cmake_args' from command line to 'None'
+[1.230s] Level 5:colcon.colcon_core.verb:set package 'gemini_robotics' build argument 'catkin_cmake_args' from command line to 'None'
+[1.230s] Level 5:colcon.colcon_core.verb:set package 'gemini_robotics' build argument 'catkin_skip_building_tests' from command line to 'False'
+[1.230s] DEBUG:colcon.colcon_core.verb:Building package 'gemini_robotics' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/gemini_robotics', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/gemini_robotics', 'merge_install': False, 'path': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/gemini_robotics', 'symlink_install': False, 'test_result_base': None}
+[1.231s] Level 5:colcon.colcon_core.verb:set package 'rom_obstacles_provider' build argument 'cmake_args' from command line to 'None'
+[1.231s] Level 5:colcon.colcon_core.verb:set package 'rom_obstacles_provider' build argument 'cmake_target' from command line to 'None'
+[1.231s] Level 5:colcon.colcon_core.verb:set package 'rom_obstacles_provider' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[1.231s] Level 5:colcon.colcon_core.verb:set package 'rom_obstacles_provider' build argument 'cmake_clean_cache' from command line to 'False'
+[1.231s] Level 5:colcon.colcon_core.verb:set package 'rom_obstacles_provider' build argument 'cmake_clean_first' from command line to 'False'
+[1.231s] Level 5:colcon.colcon_core.verb:set package 'rom_obstacles_provider' build argument 'cmake_force_configure' from command line to 'False'
+[1.231s] Level 5:colcon.colcon_core.verb:set package 'rom_obstacles_provider' build argument 'ament_cmake_args' from command line to 'None'
+[1.231s] Level 5:colcon.colcon_core.verb:set package 'rom_obstacles_provider' build argument 'catkin_cmake_args' from command line to 'None'
+[1.231s] Level 5:colcon.colcon_core.verb:set package 'rom_obstacles_provider' build argument 'catkin_skip_building_tests' from command line to 'False'
+[1.231s] DEBUG:colcon.colcon_core.verb:Building package 'rom_obstacles_provider' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/rom_obstacles_provider', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/rom_obstacles_provider', 'merge_install': False, 'path': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/rom_obstacles_provider', 'symlink_install': False, 'test_result_base': None}
+[1.232s] Level 5:colcon.colcon_core.verb:set package 'rom_waypoints_provider' build argument 'cmake_args' from command line to 'None'
+[1.232s] Level 5:colcon.colcon_core.verb:set package 'rom_waypoints_provider' build argument 'cmake_target' from command line to 'None'
+[1.232s] Level 5:colcon.colcon_core.verb:set package 'rom_waypoints_provider' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[1.232s] Level 5:colcon.colcon_core.verb:set package 'rom_waypoints_provider' build argument 'cmake_clean_cache' from command line to 'False'
+[1.232s] Level 5:colcon.colcon_core.verb:set package 'rom_waypoints_provider' build argument 'cmake_clean_first' from command line to 'False'
+[1.232s] Level 5:colcon.colcon_core.verb:set package 'rom_waypoints_provider' build argument 'cmake_force_configure' from command line to 'False'
+[1.232s] Level 5:colcon.colcon_core.verb:set package 'rom_waypoints_provider' build argument 'ament_cmake_args' from command line to 'None'
+[1.232s] Level 5:colcon.colcon_core.verb:set package 'rom_waypoints_provider' build argument 'catkin_cmake_args' from command line to 'None'
+[1.232s] Level 5:colcon.colcon_core.verb:set package 'rom_waypoints_provider' build argument 'catkin_skip_building_tests' from command line to 'False'
+[1.232s] DEBUG:colcon.colcon_core.verb:Building package 'rom_waypoints_provider' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/rom_waypoints_provider', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/rom_waypoints_provider', 'merge_install': False, 'path': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/rom_waypoints_provider', 'symlink_install': False, 'test_result_base': None}
+[1.233s] Level 5:colcon.colcon_core.verb:set package 'which_maps' build argument 'cmake_args' from command line to 'None'
+[1.233s] Level 5:colcon.colcon_core.verb:set package 'which_maps' build argument 'cmake_target' from command line to 'None'
+[1.233s] Level 5:colcon.colcon_core.verb:set package 'which_maps' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[1.233s] Level 5:colcon.colcon_core.verb:set package 'which_maps' build argument 'cmake_clean_cache' from command line to 'False'
+[1.233s] Level 5:colcon.colcon_core.verb:set package 'which_maps' build argument 'cmake_clean_first' from command line to 'False'
+[1.233s] Level 5:colcon.colcon_core.verb:set package 'which_maps' build argument 'cmake_force_configure' from command line to 'False'
+[1.233s] Level 5:colcon.colcon_core.verb:set package 'which_maps' build argument 'ament_cmake_args' from command line to 'None'
+[1.233s] Level 5:colcon.colcon_core.verb:set package 'which_maps' build argument 'catkin_cmake_args' from command line to 'None'
+[1.233s] Level 5:colcon.colcon_core.verb:set package 'which_maps' build argument 'catkin_skip_building_tests' from command line to 'False'
+[1.233s] DEBUG:colcon.colcon_core.verb:Building package 'which_maps' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/which_maps', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/which_maps', 'merge_install': False, 'path': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/which_maps', 'symlink_install': False, 'test_result_base': None}
+[1.234s] Level 5:colcon.colcon_core.verb:set package 'which_tasks' build argument 'cmake_args' from command line to 'None'
+[1.234s] Level 5:colcon.colcon_core.verb:set package 'which_tasks' build argument 'cmake_target' from command line to 'None'
+[1.234s] Level 5:colcon.colcon_core.verb:set package 'which_tasks' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[1.234s] Level 5:colcon.colcon_core.verb:set package 'which_tasks' build argument 'cmake_clean_cache' from command line to 'False'
+[1.234s] Level 5:colcon.colcon_core.verb:set package 'which_tasks' build argument 'cmake_clean_first' from command line to 'False'
+[1.234s] Level 5:colcon.colcon_core.verb:set package 'which_tasks' build argument 'cmake_force_configure' from command line to 'False'
+[1.234s] Level 5:colcon.colcon_core.verb:set package 'which_tasks' build argument 'ament_cmake_args' from command line to 'None'
+[1.234s] Level 5:colcon.colcon_core.verb:set package 'which_tasks' build argument 'catkin_cmake_args' from command line to 'None'
+[1.234s] Level 5:colcon.colcon_core.verb:set package 'which_tasks' build argument 'catkin_skip_building_tests' from command line to 'False'
+[1.235s] DEBUG:colcon.colcon_core.verb:Building package 'which_tasks' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/which_tasks', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/which_tasks', 'merge_install': False, 'path': '/home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/which_tasks', 'symlink_install': False, 'test_result_base': None}
+[1.235s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[1.237s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[1.238s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/rom_interfaces' with build type 'ament_cmake'
+[1.238s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/rom_interfaces'
+[1.248s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[1.248s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.248s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.257s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/ar_robot_launch' with build type 'ament_cmake'
+[1.257s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/ar_robot_launch'
+[1.258s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.258s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.266s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/navigation/edu_robot_bringup' with build type 'ament_cmake'
+[1.266s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/navigation/edu_robot_bringup'
+[1.267s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.267s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.276s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/navigation/edu_robot_bt' with build type 'ament_cmake'
+[1.276s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/navigation/edu_robot_bt'
+[1.277s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.277s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.287s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/navigation/edu_robot_carto' with build type 'ament_cmake'
+[1.287s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/navigation/edu_robot_carto'
+[1.288s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.288s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.296s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/navigation/edu_robot_ekf' with build type 'ament_cmake'
+[1.296s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/navigation/edu_robot_ekf'
+[1.297s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.297s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.308s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/navigation/edu_robot_nav2' with build type 'ament_cmake'
+[1.309s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/navigation/edu_robot_nav2'
+[1.310s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.310s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.319s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/rom_socket'
+[1.320s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.320s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.339s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/rom_interfaces': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/rom_interfaces -DCMAKE_INSTALL_PREFIX=/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/rom_interfaces
+[1.351s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/ar_robot_launch': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/ar_robot_launch -DCMAKE_INSTALL_PREFIX=/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/ar_robot_launch
+[1.356s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/edu_robot_bringup': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/hmue_gyi/dev_ws/src/edu_robot_sw/navigation/edu_robot_bringup -DCMAKE_INSTALL_PREFIX=/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/edu_robot_bringup
+[1.362s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/edu_robot_bt': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/hmue_gyi/dev_ws/src/edu_robot_sw/navigation/edu_robot_bt -DCMAKE_INSTALL_PREFIX=/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/edu_robot_bt
+[1.368s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/edu_robot_carto': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/hmue_gyi/dev_ws/src/edu_robot_sw/navigation/edu_robot_carto -DCMAKE_INSTALL_PREFIX=/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/edu_robot_carto
+[1.376s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/edu_robot_ekf': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/hmue_gyi/dev_ws/src/edu_robot_sw/navigation/edu_robot_ekf -DCMAKE_INSTALL_PREFIX=/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/edu_robot_ekf
+[1.386s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/edu_robot_nav2': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/hmue_gyi/dev_ws/src/edu_robot_sw/navigation/edu_robot_nav2 -DCMAKE_INSTALL_PREFIX=/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/edu_robot_nav2
+[1.400s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/rom_socket': /usr/bin/cmake /home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/rom_socket -DCMAKE_INSTALL_PREFIX=/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/rom_socket
+[3.429s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/rom_socket' returned '1': /usr/bin/cmake /home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/rom_socket -DCMAKE_INSTALL_PREFIX=/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/rom_socket
+[7.418s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[7.418s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[7.419s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '1'
+[7.419s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[7.438s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[7.438s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[7.438s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[7.474s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[7.474s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/local_setup.ps1'
+[7.477s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/_local_setup_util_ps1.py'
+[7.481s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/setup.ps1'
+[7.484s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/local_setup.sh'
+[7.486s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/_local_setup_util_sh.py'
+[7.487s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/setup.sh'
+[7.490s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/local_setup.bash'
+[7.491s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/setup.bash'
+[7.493s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/local_setup.zsh'
+[7.495s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/setup.zsh'

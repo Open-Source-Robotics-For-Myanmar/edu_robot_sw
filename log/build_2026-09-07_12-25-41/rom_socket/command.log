@@ -1,0 +1,2 @@
+Invoking command in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/rom_socket': /usr/bin/cmake /home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/rom_socket -DCMAKE_INSTALL_PREFIX=/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/rom_socket
+Invoked command in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/rom_socket' returned '1': /usr/bin/cmake /home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/rom_socket -DCMAKE_INSTALL_PREFIX=/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/rom_socket

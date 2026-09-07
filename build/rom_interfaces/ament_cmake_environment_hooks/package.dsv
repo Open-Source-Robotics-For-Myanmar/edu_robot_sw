@@ -1,0 +1,4 @@
+source;share/rom_interfaces/local_setup.bash
+source;share/rom_interfaces/local_setup.dsv
+source;share/rom_interfaces/local_setup.sh
+source;share/rom_interfaces/local_setup.zsh

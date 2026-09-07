@@ -1,0 +1,15 @@
+{
+  "package_name": "rom_interfaces",
+  "non_idl_tuples": [
+    "/home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/rom_interfaces:msg/ConstructYaml.msg",
+    "/home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/rom_interfaces:msg/Battery.msg",
+    "/home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/rom_interfaces:msg/Sphere.msg",
+    "/home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/rom_interfaces:srv/ConstructYaml.srv",
+    "/home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/rom_interfaces:srv/WhichMaps.srv",
+    "/home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/rom_interfaces:srv/WhichVel.srv",
+    "/home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/rom_interfaces:srv/EmotionCommand.srv",
+    "/home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/rom_interfaces:srv/WhichTasks.srv",
+    "/home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/rom_interfaces:srv/AddObstacles.srv",
+    "/home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/rom_interfaces:srv/WhichVoiceCommand.srv"
+  ]
+}

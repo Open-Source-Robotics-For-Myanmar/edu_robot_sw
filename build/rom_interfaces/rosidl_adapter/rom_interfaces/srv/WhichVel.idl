@@ -1,0 +1,21 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from rom_interfaces/srv/WhichVel.srv
+// generated code does not contain a copyright notice
+
+
+module rom_interfaces {
+  module srv {
+    struct WhichVel_Request {
+      string command;
+
+      double linear_x;
+
+      double angular_z;
+    };
+    struct WhichVel_Response {
+      @verbatim (language="comment", text=
+        "1 [ok] | -1 [not ok]")
+      int16 status;
+    };
+  };
+};
