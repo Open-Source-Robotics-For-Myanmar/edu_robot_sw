@@ -1,0 +1,17 @@
+build/
+build*
+*/build
+*build*
+**/build/
+!.github/
+!.github/**
+.vscode/
+.vscode*
+*vscode*
+**/vscode/
+install/
+install*
+*/install
+log/
+log*
+*/log
