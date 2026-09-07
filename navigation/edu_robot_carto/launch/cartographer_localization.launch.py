@@ -22,7 +22,7 @@ def generate_launch_description():
                                                   edu_robot_carto_pkg, 'config'))
     configuration_basename = LaunchConfiguration('configuration_basename',
                                                  default='edu_robot_nav_2d.lua')
-    load_state_filename = LaunchConfiguration('load_state_filename', default='/home/buc_robot/data/maps/a2.pbstream')
+    load_state_filename = LaunchConfiguration('load_state_filename', default='/home/buc_robot/data/maps/active_map.pbstream')
     
     resolution = LaunchConfiguration('resolution', default='0.05')
     publish_period_sec = LaunchConfiguration('publish_period_sec', default='1.0')
