@@ -188,8 +188,8 @@ void which_map_answer(const std::shared_ptr<rom_interfaces::srv::WhichMaps::Requ
                             "-pbstream_filename /home/buc_robot/data/maps/" + map_name + ".pbstream " +
                             "-map_filename /home/buc_robot/data/maps/" + map_name + ".pgm " +
                             "-yaml_filename /home/buc_robot/data/maps/" + map_name + ".yaml && "  
-                            "mv /home/buc_robot/rom_nav2_ws/map.pgm /home/buc_robot/data/maps/"  + map_name + ".pgm && "
-                            "mv /home/buc_robot/rom_nav2_ws/map.yaml /home/buc_robot/data/maps/"  + map_name + ".yaml";
+                            "mv /home/buc_robot/software_ws/map.pgm /home/buc_robot/data/maps/"  + map_name + ".pgm && "
+                            "mv /home/buc_robot/software_ws/map.yaml /home/buc_robot/data/maps/"  + map_name + ".yaml";
        
         
         int ret_code2 = std::system(cmd2.c_str());
@@ -203,8 +203,8 @@ void which_map_answer(const std::shared_ptr<rom_interfaces::srv::WhichMaps::Requ
 
           // ၃။ cartographer မှာ မြေပုံ name ပြင်ရန်
           
-          //std::string cmd3 = "sed -i \"s|maps/.*\\.pbstream|maps/" + map_name + ".pbstream|g\" /home/buc_robot/rom_nav2_ws/install/rom2109_carto/share/rom2109_carto/launch/cartographer_localization.launch.py";          
-            std::string cmd3 = "sed -i \"s|maps/.*\\.pbstream|maps/" + map_name + ".pbstream|g\" /home/buc_robot/rom_nav2_ws/install/" + robot_name + "_carto/share/" + robot_name + "_carto/launch/cartographer_localization.launch.py";
+          //std::string cmd3 = "sed -i \"s|maps/.*\\.pbstream|maps/" + map_name + ".pbstream|g\" /home/buc_robot/software_ws/install/rom2109_carto/share/rom2109_carto/launch/cartographer_localization.launch.py";          
+            std::string cmd3 = "sed -i \"s|maps/.*\\.pbstream|maps/" + map_name + ".pbstream|g\" /home/buc_robot/software_ws/install/" + robot_name + "_carto/share/" + robot_name + "_carto/launch/cartographer_localization.launch.py";
           
           int ret_code3 = std::system(cmd3.c_str());
           if(ret_code3==0)
@@ -215,8 +215,8 @@ void which_map_answer(const std::shared_ptr<rom_interfaces::srv::WhichMaps::Requ
             }
 
             // ၄။ nav2 မှာ မြေပုံ name ပြင်ရန်
-            //std::string cmd4 = "sed -i \"s|maps/.*\\.yaml|maps/" + map_name + ".yaml|g\" /home/buc_robot/rom_nav2_ws/install/rom2109_nav2/share/rom2109_nav2/config/nav2_params.yaml";
-              std::string cmd4 = "sed -i \"s|maps/.*\\.yaml|maps/" + map_name + ".yaml|g\" /home/buc_robot/rom_nav2_ws/install/" + robot_name + "_nav2/share/" + robot_name + "_nav2/config/nav2_params.yaml";
+            //std::string cmd4 = "sed -i \"s|maps/.*\\.yaml|maps/" + map_name + ".yaml|g\" /home/buc_robot/software_ws/install/rom2109_nav2/share/rom2109_nav2/config/nav2_params.yaml";
+              std::string cmd4 = "sed -i \"s|maps/.*\\.yaml|maps/" + map_name + ".yaml|g\" /home/buc_robot/software_ws/install/" + robot_name + "_nav2/share/" + robot_name + "_nav2/config/nav2_params.yaml";
             
             
             int ret_code4 = std::system(cmd4.c_str());
@@ -243,8 +243,8 @@ void which_map_answer(const std::shared_ptr<rom_interfaces::srv::WhichMaps::Requ
                 // ၆။ navigation_localization_composable.launch.py မှာ map name ပြင်ရန်
                 // ----------------------------------------------------------------------
                 // /path/to/navigation_localization_composable.launch.py
-                // std::string cmd6 = "sed -i \"s|/home/buc_robot/data/maps/.*\\.yaml|/home/buc_robot/data/maps/" + map_name + ".yaml|\" /home/buc_robot/rom_nav2_ws/install/rom2109_nav2/share/rom2109_nav2/launch/navigation_localization_composable.launch.py";
-                   std::string cmd6 = "sed -i \"s|/home/buc_robot/data/maps/.*\\.yaml|/home/buc_robot/data/maps/" + map_name + ".yaml|\" /home/buc_robot/rom_nav2_ws/install/" + robot_name + "_nav2/share/" + robot_name + "_nav2/launch/navigation_localization_composable.launch.py";
+                // std::string cmd6 = "sed -i \"s|/home/buc_robot/data/maps/.*\\.yaml|/home/buc_robot/data/maps/" + map_name + ".yaml|\" /home/buc_robot/software_ws/install/rom2109_nav2/share/rom2109_nav2/launch/navigation_localization_composable.launch.py";
+                   std::string cmd6 = "sed -i \"s|/home/buc_robot/data/maps/.*\\.yaml|/home/buc_robot/data/maps/" + map_name + ".yaml|\" /home/buc_robot/software_ws/install/" + robot_name + "_nav2/share/" + robot_name + "_nav2/launch/navigation_localization_composable.launch.py";
                 
 
                 int ret_code6 = std::system(cmd6.c_str());
@@ -351,15 +351,15 @@ void which_map_answer(const std::shared_ptr<rom_interfaces::srv::WhichMaps::Requ
         }
         // Do Your Work
         // ၂ ၊ nav2_param.yaml နဲ့ carto localization launch မှာ သက်ဆိုင်ရာ yaml နဲ့ pbstream ပြင်ပါ။ မရရင် error(7) 
-        // std::string cmd1 = "sed -i \"s|maps/.*\\.pbstream|maps/" + map_name + ".pbstream|g\" /home/buc_robot/rom_nav2_ws/install/rom2109_carto/share/rom2109_carto/launch/cartographer_localization.launch.py";
-           std::string cmd1 = "sed -i \"s|maps/.*\\.pbstream|maps/" + map_name + ".pbstream|g\" /home/buc_robot/rom_nav2_ws/install/" + robot_name + "_carto/share/" + robot_name + "_carto/launch/cartographer_localization.launch.py";
+        // std::string cmd1 = "sed -i \"s|maps/.*\\.pbstream|maps/" + map_name + ".pbstream|g\" /home/buc_robot/software_ws/install/rom2109_carto/share/rom2109_carto/launch/cartographer_localization.launch.py";
+           std::string cmd1 = "sed -i \"s|maps/.*\\.pbstream|maps/" + map_name + ".pbstream|g\" /home/buc_robot/software_ws/install/" + robot_name + "_carto/share/" + robot_name + "_carto/launch/cartographer_localization.launch.py";
         
         int ret_code1 = std::system(cmd1.c_str());
         if(ret_code1==0)
         {
           // execute command 2 
-          // std::string cmd2 = "sed -i \"s|maps/.*\\.yaml|maps/" + map_name + ".yaml|g\" /home/buc_robot/rom_nav2_ws/install/rom2109_nav2/share/rom2109_nav2/config/nav2_params.yaml";
-             std::string cmd2 = "sed -i \"s|maps/.*\\.yaml|maps/" + map_name + ".yaml|g\" /home/buc_robot/rom_nav2_ws/install/" + robot_name + "_nav2/share/" + robot_name + "_nav2/config/nav2_params.yaml";
+          // std::string cmd2 = "sed -i \"s|maps/.*\\.yaml|maps/" + map_name + ".yaml|g\" /home/buc_robot/software_ws/install/rom2109_nav2/share/rom2109_nav2/config/nav2_params.yaml";
+             std::string cmd2 = "sed -i \"s|maps/.*\\.yaml|maps/" + map_name + ".yaml|g\" /home/buc_robot/software_ws/install/" + robot_name + "_nav2/share/" + robot_name + "_nav2/config/nav2_params.yaml";
           
           int ret_code2 = std::system(cmd2.c_str());
 
@@ -374,8 +374,8 @@ void which_map_answer(const std::shared_ptr<rom_interfaces::srv::WhichMaps::Requ
                 // ၆။ navigation_localization_composable.launch.py မှာ map name ပြင်ရန်
                 // ----------------------------------------------------------------------
                 // /path/to/navigation_localization_composable.launch.py
-                // std::string cmd3 = "sed -i \"s|/home/buc_robot/data/maps/.*\\.yaml|/home/buc_robot/data/maps/" + map_name + ".yaml|\" /home/buc_robot/rom_nav2_ws/install/rom2109_nav2/share/rom2109_nav2/launch/navigation_localization_composable.launch.py";
-                   std::string cmd3 = "sed -i \"s|/home/buc_robot/data/maps/.*\\.yaml|/home/buc_robot/data/maps/" + map_name + ".yaml|\" /home/buc_robot/rom_nav2_ws/install/" + robot_name + "_nav2/share/" + robot_name + "_nav2/launch/navigation_localization_composable.launch.py";
+                // std::string cmd3 = "sed -i \"s|/home/buc_robot/data/maps/.*\\.yaml|/home/buc_robot/data/maps/" + map_name + ".yaml|\" /home/buc_robot/software_ws/install/rom2109_nav2/share/rom2109_nav2/launch/navigation_localization_composable.launch.py";
+                   std::string cmd3 = "sed -i \"s|/home/buc_robot/data/maps/.*\\.yaml|/home/buc_robot/data/maps/" + map_name + ".yaml|\" /home/buc_robot/software_ws/install/" + robot_name + "_nav2/share/" + robot_name + "_nav2/launch/navigation_localization_composable.launch.py";
                 
                 int ret_code3 = std::system(cmd3.c_str());
                 if(ret_code3==0) 
