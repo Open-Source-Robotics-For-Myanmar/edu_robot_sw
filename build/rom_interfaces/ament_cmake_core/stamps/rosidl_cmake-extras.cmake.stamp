@@ -1,4 +1,0 @@
-# generated from rosidl_cmake/cmake/rosidl_cmake-extras.cmake.in
-
-set(rom_interfaces_IDL_FILES "msg/ConstructYaml.idl;msg/Battery.idl;msg/Sphere.idl;srv/ConstructYaml.idl;srv/WhichMaps.idl;srv/WhichVel.idl;srv/EmotionCommand.idl;srv/WhichTasks.idl;srv/AddObstacles.idl;srv/WhichVoiceCommand.idl")
-set(rom_interfaces_INTERFACE_FILES "msg/ConstructYaml.msg;msg/Battery.msg;msg/Sphere.msg;srv/ConstructYaml.srv;srv/ConstructYaml_Request.msg;srv/ConstructYaml_Response.msg;srv/WhichMaps.srv;srv/WhichMaps_Request.msg;srv/WhichMaps_Response.msg;srv/WhichVel.srv;srv/WhichVel_Request.msg;srv/WhichVel_Response.msg;srv/EmotionCommand.srv;srv/EmotionCommand_Request.msg;srv/EmotionCommand_Response.msg;srv/WhichTasks.srv;srv/WhichTasks_Request.msg;srv/WhichTasks_Response.msg;srv/AddObstacles.srv;srv/AddObstacles_Request.msg;srv/AddObstacles_Response.msg;srv/WhichVoiceCommand.srv;srv/WhichVoiceCommand_Request.msg;srv/WhichVoiceCommand_Response.msg")

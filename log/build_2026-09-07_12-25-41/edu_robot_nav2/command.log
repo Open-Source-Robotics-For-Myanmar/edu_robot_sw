@@ -1,1 +1,0 @@
-Invoking command in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/edu_robot_nav2': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/hmue_gyi/dev_ws/src/edu_robot_sw/navigation/edu_robot_nav2 -DCMAKE_INSTALL_PREFIX=/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/edu_robot_nav2

@@ -1,1 +1,0 @@
-Invoking command in '/home/hmue_gyi/dev_ws/src/edu_robot_sw/build/ar_robot_launch': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/hmue_gyi/dev_ws/src/edu_robot_sw/rom_sdk/src/ar_robot_launch -DCMAKE_INSTALL_PREFIX=/home/hmue_gyi/dev_ws/src/edu_robot_sw/install/ar_robot_launch
