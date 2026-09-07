@@ -1,0 +1,11 @@
+# map frame ( unit meters )
+string mode # add_obs_lines, get_obs_lines, clear_obs_lines
+string frame_id # basically the map frame, qt should responsible for scene frame to map frame.
+geometry_msgs/Point[] start_points
+geometry_msgs/Point[] end_points
+
+# scene frame ( unit pixels )
+geometry_msgs/Point[] scene_start_points
+geometry_msgs/Point[] scene_end_points
+---
+int16 status

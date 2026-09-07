@@ -27,7 +27,8 @@ static inline double yawDegreeFromQuaternion(const geometry_msgs::msg::Quaternio
 
 using namespace std::chrono_literals;
 
-const std::string rom_robot_namespace = std::getenv("ROM_ROBOT_NAMESPACE");
+const char *ns_env = std::getenv("ROM_ROBOT_NAMESPACE");
+const std::string rom_robot_namespace = (ns_env != nullptr) ? ns_env : "";
 
 class FrameListener : public rclcpp::Node
 {

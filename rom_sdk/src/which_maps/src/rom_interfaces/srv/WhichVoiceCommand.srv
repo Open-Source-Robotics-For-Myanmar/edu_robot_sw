@@ -1,0 +1,15 @@
+# Request (စက်ရုပ်ဘက်က ပို့မည့်အချက်အလက်)
+uint8[] audio_data          # WAV သို့မဟုတ် Raw PCM audio bytes
+string format               # wav, pcm, သို့မဟုတ် mp3
+bool request_action         # True ဆိုလျှင် Gemini ကို Action (ဥပမာ- Nav2 command) ထုတ်ခိုင်းမည်
+
+---
+
+# Response (Gemini/Service ဘက်က ပြန်ပေးမည့်အချက်အလက်)
+bool success                # Service အောင်မြင်သလား
+string transcription        # User ပြောလိုက်တဲ့ စကားလုံး (Speech-to-Text)
+string response_text        # Gemini ပြန်ပြောတဲ့ စကား (Speaker ကနေ ထွက်လာမယ့်အသံအတွက်)
+string action_type          # ဘာလုပ်ရမလဲ? (ဥပမာ: "navigate", "find_object", "chat", "stop")
+string action_params        # Action အတွက် လိုအပ်သော Parameter များ (JSON format ဖြင့်)
+string error_msg            # အမှားအယွင်းရှိလျှင် ပြပေးရန်
+
