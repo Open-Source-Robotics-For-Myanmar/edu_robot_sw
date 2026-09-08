@@ -1,0 +1,49 @@
+waypoints:
+  - name: wp1
+    frame_id: map
+    pose:
+      position:
+        x: 1.84
+        y: 0.73
+        z: 0
+      orientation:
+        x: 0
+        y: 0
+        z: 0
+        w: 1
+  - name: wp2
+    frame_id: map
+    pose:
+      position:
+        x: -0.99
+        y: 1.83
+        z: 0
+      orientation:
+        x: 0
+        y: 0
+        z: 0
+        w: 1
+  - name: wp3
+    frame_id: map
+    pose:
+      position:
+        x: -1.61
+        y: -1.29
+        z: 0
+      orientation:
+        x: 0
+        y: 0
+        z: 0
+        w: 1
+  - name: wp4
+    frame_id: map
+    pose:
+      position:
+        x: 1.39
+        y: -1.58
+        z: 0
+      orientation:
+        x: 0
+        y: 0
+        z: 0
+        w: 1
