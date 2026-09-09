@@ -19,8 +19,8 @@ from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
-    rom_robot_namespace = os.environ.get('ROM_ROBOT_NAMESPACE', 'default_robot1')
-    rom_robot_model = os.environ.get('ROM_ROBOT_MODEL', 'bobo')
+    rom_robot_namespace = os.environ.get('ROM_ROBOT_NAMESPACE', 'edu_robot')
+    rom_robot_model = os.environ.get('ROM_ROBOT_MODEL', 'edu_robot')
 
     pkg_share = get_package_share_directory('rom_dabai_3d_camera')
 

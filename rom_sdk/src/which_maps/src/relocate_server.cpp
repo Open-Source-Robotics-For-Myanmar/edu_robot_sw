@@ -16,7 +16,7 @@
  *
  * Environment variables (all optional):
  *   ROM_ROBOT_NAMESPACE     robot namespace (default: "")
- *   ROM_ROBOT_MODEL         robot model name (default: "bobo")
+ *   ROM_ROBOT_MODEL         robot model name (default: "edu_robot")
  *   CARTO_CONFIG_DIR        full path to the Cartographer .lua config dir
  *   CARTO_CONFIG_BASENAME   .lua filename  (default: <model>_nav_2d.lua)
  */
@@ -62,7 +62,7 @@ public:
     const char * cfg_base_env = std::getenv("CARTO_CONFIG_BASENAME");
 
     robot_namespace_ = ns_env    ? ns_env    : "";
-    robot_model_     = model_env ? model_env : "bobo";
+    robot_model_     = model_env ? model_env : "edu_robot";
 
     // Config directory: env var → ament_index lookup → hardcoded fallback
     if (cfg_dir_env) {

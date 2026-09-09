@@ -9,12 +9,12 @@
 | Variable | Default | Description |
 |---|---|---|
 | `ROM_ROBOT_NAMESPACE` | `default_robot1` | ROS 2 namespace — topics/services အားလုံး `/<namespace>/...` အောက်တွင် ရှိမည် |
-| `ROM_ROBOT_MODEL` | `bobo` | Robot model name (`rom_pcl_merge` param) |
+| `ROM_ROBOT_MODEL` | `edu_robot` | Robot model name (`rom_pcl_merge` param) |
 
 ```bash
 # Set before launch
-export ROM_ROBOT_NAMESPACE=bobo01
-export ROM_ROBOT_MODEL=bobo
+export ROM_ROBOT_NAMESPACE=edu_robot01
+export ROM_ROBOT_MODEL=edu_robot
 ros2 launch rom_dabai_3d_camera pointcloud_mini_dabai_dabai.launch.py use_rviz:=false
 ```
 
@@ -93,7 +93,7 @@ graph TB
 
 ## Topic Data Flow (with namespace)
 
-> `ROM_ROBOT_NAMESPACE=bobo01` ဆိုရင် topics အားလုံး `/bobo01/...` prefix ပါလာမည်
+> `ROM_ROBOT_NAMESPACE=edu_robot01` ဆိုရင် topics အားလုံး `/edu_robot01/...` prefix ပါလာမည်
 
 ```mermaid
 graph LR
