@@ -22,7 +22,7 @@ def generate_launch_description():
     use_rviz = LaunchConfiguration('use_rviz', default='false')
     use_3d_cam = LaunchConfiguration('use_3d_cam', default='false')
 
-    map_dir = LaunchConfiguration('map', default='/home/buc_robot/data/maps/a2.yaml')
+    map_dir = LaunchConfiguration('map', default='/home/buc_robot/data/maps/active_map.yaml')
 
     param_file_name = 'nav2_params.yaml'
     param_dir = LaunchConfiguration(
