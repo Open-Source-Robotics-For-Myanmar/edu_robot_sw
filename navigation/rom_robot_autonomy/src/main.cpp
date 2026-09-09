@@ -11,8 +11,8 @@
 // const std::string waypoints_yaml_file = ament_index_cpp::get_package_share_directory("rom_robot_autonomy") + "/config/waypoints.yaml"; 
 // const std::string waypoints_yaml_file = ament_index_cpp::get_package_share_directory("rom_waypoints_provider") + "/config/waypoints_patrol.yaml"; 
 
-const std::string bt_xml_file = "/home/edu-robot/data/trees/waypoints_mode.xml";
-const std::string waypoints_yaml_file = "/home/edu-robot/data/waypoints/waypoints_mode.yaml"; 
+const std::string bt_xml_file = "/home/buc_robot/data/trees/waypoints_mode.xml";
+const std::string waypoints_yaml_file = "/home/buc_robot/data/waypoints/waypoints_mode.yaml"; 
 
 void load_yaml_file(const std::string& file_path, std::shared_ptr<BT::Blackboard> blackboard)
 {

@@ -8,8 +8,8 @@
 #include <fstream>
 #include <std_srvs/srv/set_bool.hpp>
 
-const std::string bt_xml_file = "/home/edu-robot/data/trees/patrol_mode.xml";
-const std::string waypoints_yaml_file = "/home/edu-robot/data/waypoints/patrol_mode.yaml";
+const std::string bt_xml_file = "/home/buc_robot/data/trees/patrol_mode.xml";
+const std::string waypoints_yaml_file = "/home/buc_robot/data/waypoints/patrol_mode.yaml";
 const std::string rom_robot_namespace = std::getenv("ROM_ROBOT_NAMESPACE"); 
 
 /* std::atomic<bool> ensures that updates are immediately visible to all threads. */
