@@ -34,7 +34,7 @@ amcl:
 map_server:
   ros__parameters:
     use_sim_time: false
-    yaml_filename: "/home/mr_robot/data/maps/active_map.yaml"
+    yaml_filename: "/home/edu_robot/data/maps/active_map.yaml"
 
 planner_server:
   ros__parameters:

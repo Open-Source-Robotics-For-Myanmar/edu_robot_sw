@@ -4,7 +4,7 @@
   <name>rom_robot_autonomy</name>
   <version>1.0.0</version>
   <description>ROM ROBOTICS rom_robot_autonomy.</description>
-  <maintainer email="server01.psa1981@gmail.com">mr_robot</maintainer>
+  <maintainer email="server01.psa1981@gmail.com">edu-robot</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
