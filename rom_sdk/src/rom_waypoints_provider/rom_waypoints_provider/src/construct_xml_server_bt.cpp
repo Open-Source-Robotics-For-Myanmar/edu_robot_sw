@@ -24,7 +24,7 @@ std::string package_path;
 const std::string rom_robot_namespace = std::getenv("ROM_ROBOT_NAMESPACE");
 
 // autonomy_wp_mode, autonomy_patrol_mode, autonomy_service_mode
-const std::string sourceFile = "/home/buc_robot/data/trees/tree_nodes_models.xml";
+const std::string sourceFile = "/home/mr_robot/data/trees/tree_nodes_models.xml";
 
 // အခြား qt app များအတွက် waypoints list ကို transcient local နဲ့ ပို့ထားဖို့ပါ။
 rclcpp::Publisher<rom_interfaces::msg::ConstructYaml>::SharedPtr publisher_;
@@ -81,8 +81,8 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
       RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"),  "Mode: "<< request->mode);
     }
     // end service request
-    const std::string xml_path = "/home/buc_robot/data/trees/waypoints_mode.xml";
-    const std::string yaml_path = "/home/buc_robot/data/waypoints/waypoints_mode.yaml"; 
+    const std::string xml_path = "/home/mr_robot/data/trees/waypoints_mode.xml";
+    const std::string yaml_path = "/home/mr_robot/data/waypoints/waypoints_mode.yaml"; 
     rom_interfaces::msg::ConstructYaml message;
 
     // ၁။ default.xml ဖိုင် မရှိရင် ရပ်မယ်။ ( /path/to/default.xml ဖိုင် ကြိုတင်ဆောက်ပေးထားရန် )
@@ -318,8 +318,8 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
     }
     // end service request
 
-    const std::string xml_path = "/home/buc_robot/data/trees/service_mode.xml";
-    const std::string yaml_path = "/home/buc_robot/data/waypoints/service_mode.yaml";
+    const std::string xml_path = "/home/mr_robot/data/trees/service_mode.xml";
+    const std::string yaml_path = "/home/mr_robot/data/waypoints/service_mode.yaml";
     rom_interfaces::msg::ConstructYaml message;
 
     // ၁။ default.xml ဖိုင် မရှိရင် ရပ်မယ်။ ( /path/to/default.xml ဖိုင် ကြိုတင်ဆောက်ပေးထားရန် )
@@ -538,8 +538,8 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
     }
     // end service request
     
-    const std::string xml_path = "/home/buc_robot/data/trees/patrol_mode.xml";
-    const std::string yaml_path = "/home/buc_robot/data/waypoints/patrol_mode.yaml"; 
+    const std::string xml_path = "/home/mr_robot/data/trees/patrol_mode.xml";
+    const std::string yaml_path = "/home/mr_robot/data/waypoints/patrol_mode.yaml"; 
     rom_interfaces::msg::ConstructYaml message;
 
     // ၁။ default.xml ဖိုင် မရှိရင် ရပ်မယ်။ ( /path/to/default.xml ဖိုင် ကြိုတင်ဆောက်ပေးထားရန် )
@@ -770,12 +770,12 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
       RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"),  "Mode: "<< request->mode);
     }
     // end service request
-    const std::string wp_xml_path = "/home/buc_robot/data/trees/waypoints_mode.xml";
-    const std::string wp_yaml_path = "/home/buc_robot/data/waypoints/waypoints_mode.yaml"; 
-    const std::string service_xml_path = "/home/buc_robot/data/trees/service_mode.xml";
-    const std::string service_yaml_path = "/home/buc_robot/data/waypoints/service_mode.yaml";
-    const std::string patrol_xml_path = "/home/buc_robot/data/trees/patrol_mode.xml";
-    const std::string patrol_yaml_path = "/home/buc_robot/data/waypoints/patrol_mode.yaml"; 
+    const std::string wp_xml_path = "/home/mr_robot/data/trees/waypoints_mode.xml";
+    const std::string wp_yaml_path = "/home/mr_robot/data/waypoints/waypoints_mode.yaml"; 
+    const std::string service_xml_path = "/home/mr_robot/data/trees/service_mode.xml";
+    const std::string service_yaml_path = "/home/mr_robot/data/waypoints/service_mode.yaml";
+    const std::string patrol_xml_path = "/home/mr_robot/data/trees/patrol_mode.xml";
+    const std::string patrol_yaml_path = "/home/mr_robot/data/waypoints/patrol_mode.yaml"; 
     rom_interfaces::msg::ConstructYaml message;
     
     std::ofstream wp_xml_file(wp_xml_path, std::ios::trunc);
@@ -907,7 +907,7 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
       RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"),  "Mode: "<< request->mode);
     }
     
-    const std::string yaml_path = "/home/buc_robot/data/waypoints/path_mode.yaml";
+    const std::string yaml_path = "/home/mr_robot/data/waypoints/path_mode.yaml";
     
     // ၁။ yaml ဖိုင် မရှိရင် ရပ်မယ်။
     if (!(std::filesystem::exists(yaml_path))) 
@@ -970,7 +970,7 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
 
   else if(request_mode == "get_wp_list")
   {
-    const std::string yaml_path = "/home/buc_robot/data/waypoints/waypoints_mode.yaml";
+    const std::string yaml_path = "/home/mr_robot/data/waypoints/waypoints_mode.yaml";
 
     // Prepare default failure response
     response->status = -1;
@@ -1091,7 +1091,7 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
 
   else if(request_mode == "get_srv_list")
   {
-    const std::string yaml_path = "/home/buc_robot/data/waypoints/service_mode.yaml";
+    const std::string yaml_path = "/home/mr_robot/data/waypoints/service_mode.yaml";
 
     // Prepare default failure response
     response->status = -1;
@@ -1212,7 +1212,7 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
 
   else if(request_mode == "get_patrol_list")
   {
-    const std::string yaml_path = "/home/buc_robot/data/waypoints/patrol_mode.yaml";
+    const std::string yaml_path = "/home/mr_robot/data/waypoints/patrol_mode.yaml";
 
     // Prepare default failure response
     response->status = -1;
@@ -1333,7 +1333,7 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
   
   else if(request_mode == "get_path_list")
   {
-    const std::string yaml_path = "/home/buc_robot/data/waypoints/path_mode.yaml";
+    const std::string yaml_path = "/home/mr_robot/data/waypoints/path_mode.yaml";
 
     // Prepare default failure response
     response->status = -1;
