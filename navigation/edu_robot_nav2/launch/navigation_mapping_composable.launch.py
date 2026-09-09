@@ -29,7 +29,8 @@ def generate_launch_description():
 
     remapping = [('/tf', 'tf'),
                   ('/tf_static', 'tf_static'),
-                  ('/diffbot_base_controller/odom', 'odom'),]
+                  ('/diffbot_base_controller/odom', 'odom'),
+                  ('/goal_pose', '/edu_robot/goal_pose'),]
 
     # Create our own temporary YAML files that include substitutions
     param_substitutions = {
