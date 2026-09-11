@@ -29,7 +29,7 @@ std::string package_name = "which_tasks";
 const std::string rom_robot_namespace = std::getenv("ROM_ROBOT_NAMESPACE");
 const std::string robot_name = std::getenv("ROM_ROBOT_MODEL");
 
-std::string package_directory = "/home/buc_robot/data/maps/";
+std::string package_directory = "/home/mr_robot/data/maps/";
 
 std::atomic<bool> cmd_publish(false);
 std::atomic<double> linear_speed(0.0);
@@ -123,7 +123,7 @@ void which_task_answer(const std::shared_ptr<rom_interfaces::srv::WhichTasks::Re
   else if(request->request_string == "setting")
   {
     // read setting file and send back
-    std::string setting_path = "/home/buc_robot/data/setting/setting.yaml";
+    std::string setting_path = "/home/mr_robot/data/setting/setting.yaml";
 
     std::ifstream setting_file(setting_path);
     if (setting_file.is_open())
@@ -147,7 +147,7 @@ void which_task_answer(const std::shared_ptr<rom_interfaces::srv::WhichTasks::Re
   else if(request->request_string == "save_setting")
   {
     // save setting file from request
-    std::string setting_path = "/home/buc_robot/data/setting/setting.yaml";
+    std::string setting_path = "/home/mr_robot/data/setting/setting.yaml";
 
     std::ofstream setting_file(setting_path);
     if (setting_file.is_open())
@@ -205,9 +205,9 @@ void which_task_answer(const std::shared_ptr<rom_interfaces::srv::WhichTasks::Re
     if (provider == "Gemini")
     {
       // Check if GEMINI_API_KEY exists, if yes replace it, else append it
-      std::string cmd = "grep -q '^export GEMINI_API_KEY=' /home/buc_robot/data/systemd/.rom_environment.sh "
-                        "&& sed -i 's/^export GEMINI_API_KEY=.*/export GEMINI_API_KEY=\\\"" + api_key + "\\\"/' /home/buc_robot/data/systemd/.rom_environment.sh "
-                        "|| echo 'export GEMINI_API_KEY=\\\"" + api_key + "\\\"' >> /home/buc_robot/data/systemd/.rom_environment.sh";
+      std::string cmd = "grep -q '^export GEMINI_API_KEY=' /home/mr_robot/data/systemd/.rom_environment.sh "
+                        "&& sed -i 's/^export GEMINI_API_KEY=.*/export GEMINI_API_KEY=\\\"" + api_key + "\\\"/' /home/mr_robot/data/systemd/.rom_environment.sh "
+                        "|| echo 'export GEMINI_API_KEY=\\\"" + api_key + "\\\"' >> /home/mr_robot/data/systemd/.rom_environment.sh";
       
       int ret = system(cmd.c_str());
       

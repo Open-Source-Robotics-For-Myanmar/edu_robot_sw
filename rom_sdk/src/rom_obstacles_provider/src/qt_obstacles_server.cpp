@@ -13,7 +13,7 @@
 
 using namespace std::chrono_literals;
 
-const std::string yaml_path = "/home/buc_robot/data/obstacles/line_obstacles.yaml";
+const std::string yaml_path = "/home/mr_robot/data/obstacles/line_obstacles.yaml";
 const std::string rom_robot_namespace = std::getenv("ROM_ROBOT_NAMESPACE");
 
 class LineObstaclePublisher : public rclcpp::Node

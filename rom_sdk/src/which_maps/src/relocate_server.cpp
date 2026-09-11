@@ -16,7 +16,7 @@
  *
  * Environment variables (all optional):
  *   ROM_ROBOT_NAMESPACE     robot namespace (default: "")
- *   ROM_ROBOT_MODEL         robot model name (default: "edu_robot")
+ *   ROM_ROBOT_MODEL         robot model name (default: "bobo")
  *   CARTO_CONFIG_DIR        full path to the Cartographer .lua config dir
  *   CARTO_CONFIG_BASENAME   .lua filename  (default: <model>_nav_2d.lua)
  */
@@ -62,7 +62,7 @@ public:
     const char * cfg_base_env = std::getenv("CARTO_CONFIG_BASENAME");
 
     robot_namespace_ = ns_env    ? ns_env    : "";
-    robot_model_     = model_env ? model_env : "edu_robot";
+    robot_model_     = model_env ? model_env : "bobo";
 
     // Config directory: env var → ament_index lookup → hardcoded fallback
     if (cfg_dir_env) {
@@ -75,7 +75,7 @@ public:
       } catch (const std::exception &) {
         // Workspace for this package may not be sourced; use known install path
         carto_config_dir_ =
-          "/home/buc_robot/software_ws/install/" + robot_model_ +
+          "/home/mr_robot/rom_nav2_ws/install/" + robot_model_ +
           "_carto/share/" + robot_model_ + "_carto/config/";
         RCLCPP_WARN(get_logger(),
           "[RelocateServer] ament_index lookup failed for '%s_carto'. "
