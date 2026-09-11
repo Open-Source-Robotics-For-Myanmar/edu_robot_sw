@@ -1,1512 +1,957 @@
 #define IS_PRODUCTION 1
 
+#include "geometry_msgs/msg/pose.hpp"
+#include "geometry_msgs/msg/pose_stamped.hpp"
 #include "rclcpp/rclcpp.hpp"
-#include <ament_index_cpp/get_package_share_directory.hpp>
-#include "rom_interfaces/srv/construct_yaml.hpp"
 #include "rom_interfaces/msg/construct_yaml.hpp"
-#include <iostream>
-#include <filesystem>
-#include <fstream>
-#include <string>
-#include <algorithm>
+#include "rom_interfaces/srv/construct_yaml.hpp"
 #include "std_msgs/msg/bool.hpp"
 #include "std_srvs/srv/set_bool.hpp"
-#include "geometry_msgs/msg/pose_stamped.hpp"
-#include "geometry_msgs/msg/pose.hpp"
+
+#include <algorithm>
+#include <ament_index_cpp/get_package_share_directory.hpp>
+#include <cctype>
+#include <chrono>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <memory>
+#include <string>
 #include <thread>
+#include <vector>
 
 #ifndef ROM_DYNAMICS_UNUSED
 #define ROM_DYNAMICS_UNUSED(x) (void)(x)
 #endif
 
-std::string package_path;
+// ============================================================================
+// File Path Definitions
+// ============================================================================
+namespace paths {
+const std::string TREE_MODELS_SOURCE =
+    "/home/buc_robot/data/trees/tree_nodes_models.xml";
 
-const std::string rom_robot_namespace = std::getenv("ROM_ROBOT_NAMESPACE");
+const std::string WAYPOINTS_XML =
+    "/home/buc_robot/data/trees/waypoints_mode.xml";
+const std::string WAYPOINTS_YAML =
+    "/home/buc_robot/data/waypoints/waypoints_mode.yaml";
 
-// autonomy_wp_mode, autonomy_patrol_mode, autonomy_service_mode
-const std::string sourceFile = "/home/buc_robot/data/trees/tree_nodes_models.xml";
+const std::string SERVICE_XML = "/home/buc_robot/data/trees/service_mode.xml";
+const std::string SERVICE_YAML =
+    "/home/buc_robot/data/waypoints/service_mode.yaml";
 
-// အခြား qt app များအတွက် waypoints list ကို transcient local နဲ့ ပို့ထားဖို့ပါ။
+const std::string PATROL_XML = "/home/buc_robot/data/trees/patrol_mode.xml";
+const std::string PATROL_YAML =
+    "/home/buc_robot/data/waypoints/patrol_mode.yaml";
+
+const std::string PATH_YAML = "/home/buc_robot/data/waypoints/path_mode.yaml";
+} // namespace paths
+
+// Global variables
+const std::string rom_robot_namespace = std::getenv("ROM_ROBOT_NAMESPACE")
+                                            ? std::getenv("ROM_ROBOT_NAMESPACE")
+                                            : "";
 rclcpp::Publisher<rom_interfaces::msg::ConstructYaml>::SharedPtr publisher_;
-
 rclcpp::Client<std_srvs::srv::SetBool>::SharedPtr bt_client;
-
 std::shared_ptr<rclcpp::Node> bt_stop_node;
-
-
-bool debug_mode_ = false; // Global variable to control debug logging
-
-void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml::Request> request,
-          std::shared_ptr<rom_interfaces::srv::ConstructYaml::Response>      response)
-{
-  ROM_DYNAMICS_UNUSED(response);
-  std::string request_mode = request->mode;
-
-  if(request_mode == "waypoints_mode")
-  {
-    // prepare default 
-    response->status = -1;
-
-    // ယခင် run နေတဲ့ bt_tree ရှိခဲ့ရင် အရင်ဆုံးရပ်တန့်ဖို့အတွက် service request လုပ်မယ်။
-    // --------------------------------------------- for ros2 behavior tree to stop
-    RCLCPP_INFO(rclcpp::get_logger("bt stop node "),"Waiting for bt_stop service to be available...");
-
-    if (bt_client->wait_for_service(std::chrono::seconds(3))) 
-    {
-      RCLCPP_INFO(rclcpp::get_logger("bt stop node "), "Service /bt_stop is available!");
-
-      // stop bt tree 
-      std_srvs::srv::SetBool::Request::SharedPtr bt_stop_request = std::make_shared<std_srvs::srv::SetBool::Request>();
-      bt_stop_request->data = true; // stop bt tree    
-
-      auto future = bt_client->async_send_request(bt_stop_request);
-
-      // Wait for the response
-      if (rclcpp::spin_until_future_complete(bt_stop_node, future) == rclcpp::FutureReturnCode::SUCCESS) 
-      {
-        RCLCPP_INFO(rclcpp::get_logger("bt stop node "), "Received response: success");
-      } else 
-      {
-        RCLCPP_ERROR(rclcpp::get_logger("bt stop node "), "Failed to receive response.");
-      }
-    } 
-    else 
-    {
-        RCLCPP_WARN(rclcpp::get_logger("bt stop node "), "Service /bt_stop is not available after waiting for 3 seconds.");
-    }
-    // --------------------------------------------- for ros2 behavior tree to stop
-    
-    if(debug_mode_)
-    {
-      RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"),  "Mode: "<< request->mode);
-    }
-    // end service request
-    const std::string xml_path = "/home/buc_robot/data/trees/waypoints_mode.xml";
-    const std::string yaml_path = "/home/buc_robot/data/waypoints/waypoints_mode.yaml"; 
-    rom_interfaces::msg::ConstructYaml message;
-
-    // ၁။ default.xml ဖိုင် မရှိရင် ရပ်မယ်။ ( /path/to/default.xml ဖိုင် ကြိုတင်ဆောက်ပေးထားရန် )
-    if (!(std::filesystem::exists(xml_path))) 
-    {
-      if(debug_mode_)
-      {
-        RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"), "waypoints_mode.xml doesn't exists: cancelling ...");
-        return;
-      }
-    }
-
-    // ၂။ default.xml ရှိရင် ဖွင့်ပါ။ overwrite လုပ်ပါ။
-    else 
-    {
-      // std::ofstream file(xml_path);
-      std::ofstream xml_file(xml_path, std::ios::trunc);
-
-      // ဖွင့်မရရင် error ပြ။
-      if (!xml_file.is_open()) 
-      {
-        if(debug_mode_)
-        {
-          RCLCPP_ERROR(rclcpp::get_logger("xml constructor"), "waypoints_mode.xml file open error!! cancelling ...");
-        }
-        return;
-      }
-
-      // ဖွင့်လို့ရရင် tree ဆောက်မယ်။
-      else 
-      {
-        xml_file << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-        xml_file << "<root BTCPP_format=\"3\">\n";
-        xml_file << "  <BehaviorTree ID=\"MainTree\">\n";
-        xml_file << "    <Sequence name=\"NavigationSequence\">\n";
-        xml_file << "      \n";
-
-        // loop ပါတ်ရန်
-        //for (size_t i = 0; i < request->scene_poses.size(); ++i) 
-        for (int i = request->scene_poses.size() - 1; i >= 0; --i) 
-        {
-          auto pose = request->poses[i]; // actual poses
-
-            // message for publisher မလိုရင် ဖျက်လို့ရတယ်။
-            message.pose_names.push_back(request->pose_names[i]);
-            message.poses.push_back(request->scene_poses[i]);
-
-          xml_file << "      <RecoveryNode name=\"NavigateRecovery\"\n";
-          xml_file << "                    number_of_retries=\"-1\">\n";
-          xml_file << "        <PipelineSequence name=\"NavigateWithReplanning\">\n";
-          xml_file << "          <RateController hz=\"1.0\">\n";
-          xml_file << "            <RecoveryNode name=\"ComputePathToPose\"\n";
-          xml_file << "                          number_of_retries=\"1\">\n";
-          xml_file << "              <ComputePathToPose goal=\"{";
-          xml_file << request->pose_names[i] << "}\"\n";
-          xml_file << "                                 start=\"\"\n";
-          xml_file << "                                 planner_id=\"GridBased\"\n";
-          xml_file << "                                 server_name=\"compute_path_to_pose\"\n";
-          xml_file << "                                 server_timeout=\"10.0\"\n";
-          xml_file << "                                 path=\"{path}\"/>\n";
-          xml_file << "              <ClearEntireCostmap name=\"ClearGlobalCostmap-Context\"\n";
-          xml_file << "                                  service_name=\"global_costmap/clear_entirely_global_costmap\"\n";
-          xml_file << "                                  server_timeout=\"10.0\"/>\n";
-          xml_file << "            </RecoveryNode>\n";
-          xml_file << "          </RateController>\n";
-          xml_file << "          <RecoveryNode name=\"FollowPath\"\n";
-          xml_file << "                        number_of_retries=\"1\">\n";
-          xml_file << "            <FollowPath controller_id=\"FollowPath\"\n";
-          xml_file << "                        path=\"{path}\"\n";
-          xml_file << "                        goal_checker_id=\"\"\n";
-          xml_file << "                        server_name=\"follow_path\"\n";
-          xml_file << "                        server_timeout=\"10.0\"/>\n";
-          xml_file << "            <ClearEntireCostmap name=\"ClearLocalCostmap-Context\"\n";
-          xml_file << "                                service_name=\"local_costmap/clear_entirely_local_costmap\"\n";
-          xml_file << "                                server_timeout=\"10.0\"/>\n";
-          xml_file << "          </RecoveryNode>\n";
-          xml_file << "        </PipelineSequence>\n";
-          xml_file << "        <ReactiveFallback name=\"RecoveryFallback\">\n";
-          xml_file << "          <GoalUpdated/>\n";
-          xml_file << "          <RoundRobin name=\"RecoveryActions\">\n";
-          xml_file << "            <Sequence name=\"ClearingActions\">\n";
-          xml_file << "              <ClearEntireCostmap name=\"ClearLocalCostmap-Subtree\"\n";
-          xml_file << "                                  service_name=\"local_costmap/clear_entirely_local_costmap\"\n";
-          xml_file << "                                  server_timeout=\"10.0\"/>\n";
-          xml_file << "              <ClearEntireCostmap name=\"ClearGlobalCostmap-Subtree\"\n";
-          xml_file << "                                  service_name=\"global_costmap/clear_entirely_global_costmap\"\n";
-          xml_file << "                                  server_timeout=\"10.0\"/>\n";
-          xml_file << "            </Sequence>\n";
-          xml_file << "            <Spin spin_dist=\"1.57\"\n";
-          xml_file << "                  time_allowance=\"-1.0\"\n";
-          xml_file << "                  server_name=\"spin\"\n";
-          xml_file << "                  server_timeout=\"10.0\"/>\n";
-          xml_file << "            <Wait wait_duration=\"5\"\n";
-          xml_file << "                  server_name=\"wait\"\n";
-          xml_file << "                  server_timeout=\"10.0\"/>\n";
-          xml_file << "            <BackUp backup_dist=\"0.30\"\n";
-          xml_file << "                    backup_speed=\"0.05\"\n";
-          xml_file << "                    time_allowance=\"-1.0\"\n";
-          xml_file << "                    server_name=\"backup\"\n";
-          xml_file << "                    server_timeout=\"10.0\"/>\n";
-          xml_file << "          </RoundRobin>\n";
-          xml_file << "        </ReactiveFallback>\n";
-          xml_file << "      </RecoveryNode>\n";
-        }
-
-
-
-        xml_file << "    </Sequence>\n";
-        xml_file << "  </BehaviorTree>\n";
-
-        /******************* ADD TREE MODEL HERE START ********************/
-        std::ifstream src(sourceFile, std::ios::in);
-        if (!src.is_open()) 
-        {
-          if(debug_mode_)
-          {
-            RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"), "tree_nodes_models.xml source file error!!");
-          }
-          return;
-        }
-        xml_file << src.rdbuf(); // Copy content from source to destination
-          src.close();
-
-        /* ADD TREE MODEL HERE END   */
-        xml_file << "</root>\n";
-
-        // close xml file
-        xml_file.flush();
-        xml_file.close();
-      }
-
-      if(debug_mode_)
-      {
-        RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"), "waypoints_mode.xml created successfully!");
-      }     
-
-      // publish for other qt apps
-      publisher_->publish(message);
-
-      /** CREATE YAML FOR GENERAL PURPOSE START **/
-      if (!(std::filesystem::exists(yaml_path))) 
-      {
-        if(debug_mode_)
-        {
-          RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor ( yaml construct )"), "waypoints_mode.yaml file doesn't exists: ");
-        }
-        return;
-      }
-
-      std::ofstream yaml_file(yaml_path, std::ios::trunc);
-      if (!yaml_file.is_open()) 
-      {
-        if(debug_mode_)
-        {
-          RCLCPP_ERROR(rclcpp::get_logger("xml constructor ( yaml construct )"), "waypoints_mode.yaml file open error!!");
-        }
-        return;
-      }
-
-      yaml_file << "waypoints:\n";
-      //for (size_t i = 0; i < request->pose_names.size(); ++i) 
-      for (int i = request->pose_names.size() - 1; i >= 0; --i) 
-      {
-        yaml_file << "  - name: " << request->pose_names[i] << "\n";
-        yaml_file << "    frame_id: " << "map" << "\n";
-        yaml_file << "    pose:\n";
-        yaml_file << "      position:\n";
-        yaml_file << "        x: " << request->poses[i].pose.position.x << "\n";
-        yaml_file << "        y: " << request->poses[i].pose.position.y << "\n";
-        yaml_file << "        z: " << request->poses[i].pose.position.z << "\n";
-        yaml_file << "      orientation:\n";
-        yaml_file << "        x: " << request->poses[i].pose.orientation.x << "\n";
-        yaml_file << "        y: " << request->poses[i].pose.orientation.y << "\n";
-        yaml_file << "        z: " << request->poses[i].pose.orientation.z << "\n";
-        yaml_file << "        w: " << request->poses[i].pose.orientation.w << "\n";
-        yaml_file << "    scene_poses:\n";
-        yaml_file << "      x: "   << request->scene_poses[i].position.x << "\n";
-        yaml_file << "      y: "   << request->scene_poses[i].position.y << "\n";
-        yaml_file << "      phi: " << request->scene_poses[i].orientation.w << "\n";
-
-        if(debug_mode_)
-        {
-          RCLCPP_INFO(rclcpp::get_logger("xml constructor ( yaml construct )"), "%s", request->pose_names[i].c_str());
-        }
-      }
-
-      yaml_file.flush();
-      yaml_file.close();
-
-      if(debug_mode_)
-      {
-        RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor ( yaml construct )"), "waypoints_mode.yaml created successfully!");
-      } 
-      /**  CREATE YAML FOR GENERAL PURPOSE END   **/
-      response->status = 1;
-    }
-  }
-  
-  else if(request_mode == "service_mode")
-  {
-    // ယခင် run နေတဲ့ bt_tree ရှိခဲ့ရင် အရင်ဆုံးရပ်တန့်ဖို့အတွက် service request လုပ်မယ်။
-    // --------------------------------------------- for ros2 behavior tree to stop
-    RCLCPP_INFO(rclcpp::get_logger("bt stop node "),"Waiting for bt_stop service to be available...");
-
-    if (bt_client->wait_for_service(std::chrono::seconds(3))) 
-    {
-      RCLCPP_INFO(rclcpp::get_logger("bt stop node "), "Service /bt_stop is available!");
-
-      // stop bt tree 
-      std_srvs::srv::SetBool::Request::SharedPtr bt_stop_request = std::make_shared<std_srvs::srv::SetBool::Request>();
-      bt_stop_request->data = true; // stop bt tree    
-
-      auto future = bt_client->async_send_request(bt_stop_request);
-
-      // Wait for the response
-      if (rclcpp::spin_until_future_complete(bt_stop_node, future) == rclcpp::FutureReturnCode::SUCCESS) 
-      {
-        RCLCPP_INFO(rclcpp::get_logger("bt stop node "), "Received response: success");
-      } else 
-      {
-        RCLCPP_ERROR(rclcpp::get_logger("bt stop node "), "Failed to receive response.");
-      }
-    } 
-    else 
-    {
-        RCLCPP_WARN(rclcpp::get_logger("bt stop node "), "Service /bt_stop is not available after waiting for 3 seconds.");
-    }
-    // --------------------------------------------- for ros2 behavior tree to stop
-
-    if(debug_mode_)
-    {
-      RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"),  "Mode: "<< request->mode);
-    }
-    // end service request
-
-    const std::string xml_path = "/home/buc_robot/data/trees/service_mode.xml";
-    const std::string yaml_path = "/home/buc_robot/data/waypoints/service_mode.yaml";
-    rom_interfaces::msg::ConstructYaml message;
-
-    // ၁။ default.xml ဖိုင် မရှိရင် ရပ်မယ်။ ( /path/to/default.xml ဖိုင် ကြိုတင်ဆောက်ပေးထားရန် )
-    if (!(std::filesystem::exists(xml_path))) 
-    {
-      if(debug_mode_)
-      {
-        RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"), "service_mode.xml doesn't exists: creating ...");
-        return;
-      }
-    }
-
-    // ၂။ default.xml ရှိရင် ဖွင့်ပါ။ overwrite လုပ်ပါ။
-    else 
-    {
-      // std::ofstream file(xml_path);
-      std::ofstream xml_file(xml_path, std::ios::trunc);
-
-      // ဖွင့်မရရင် error ပြ။
-      if (!xml_file.is_open()) 
-      {
-        if(debug_mode_)
-        {
-          RCLCPP_ERROR(rclcpp::get_logger("xml constructor"), "service_mode.xml file open error!!");
-        }
-        return;
-      }
-
-      // ဖွင့်လို့ရရင် tree ဆောက်မယ်။
-      else 
-      {
-        
-        xml_file << "<?xml version=\"1.0\"?>\n";
-        xml_file << "<root main_tree_to_execute=\"MainTree\">\n";
-        xml_file << "    <BehaviorTree ID=\"MainTree\">\n";
-        xml_file << "        <Sequence name=\"NavigationSequence\">\n";
-        
-        // loop ပါတ်ရန်
-        // first time မှာ Delay မလုပ်ဖို့။
-        bool first_time_loop = true;
-        //for (size_t i = 0; i < request->scene_poses.size(); ++i) 
-        for (int i = request->scene_poses.size() - 1; i >= 0; --i) 
-        {
-          auto pose = request->poses[i]; // actual poses
-
-            // message for publisher မလိုရင် ဖျက်လို့ရတယ်။
-            message.pose_names.push_back(request->pose_names[i]);
-            message.poses.push_back(request->scene_poses[i]);
-          
-          if( !first_time_loop )
-          {
-            xml_file << "            <Delay delay_msec=\"15000\">\n";
-          }
-          xml_file << "                <Control ID=\"RecoveryNode\" name=\"NavigateRecovery\" number_of_retries=\"-1\">\n";
-          xml_file << "                    <Control ID=\"PipelineSequence\" name=\"NavigateWithReplanning\">\n";
-          xml_file << "                        <Decorator ID=\"RateController\" hz=\"1.0\">\n";
-          xml_file << "                            <Control ID=\"RecoveryNode\" name=\"ComputePathToPose\" number_of_retries=\"1\">\n";
-          
-          xml_file << "                                <Action ID=\"ComputePathToPose\" goal=\"{";
-          xml_file << request->pose_names[i] << "}\" start=\"\" path=\"{path}\" planner_id=\"GridBased\" server_name=\"compute_path_to_pose\" server_timeout=\"10.0\"/>\n";
-
-          xml_file << "                                <Action ID=\"ClearEntireCostmap\" name=\"ClearGlobalCostmap-Context\" server_timeout=\"10.0\" service_name=\"global_costmap/clear_entirely_global_costmap\"/>\n";
-          xml_file << "                            </Control>\n";
-          xml_file << "                        </Decorator>\n";
-          xml_file << "                        <Control ID=\"RecoveryNode\" name=\"FollowPath\" number_of_retries=\"1\">\n";
-          xml_file << "                            <Action ID=\"FollowPath\" controller_id=\"FollowPath\" goal_checker_id=\"\" path=\"{path}\" server_name=\"follow_path\" server_timeout=\"10.0\"/>\n";
-          xml_file << "                            <Action ID=\"ClearEntireCostmap\" name=\"ClearLocalCostmap-Context\" server_timeout=\"10.0\" service_name=\"local_costmap/clear_entirely_local_costmap\"/>\n";
-          xml_file << "                        </Control>\n";
-          xml_file << "                    </Control>\n";
-          xml_file << "                    <ReactiveFallback name=\"RecoveryFallback\">\n";
-          xml_file << "                        <Condition ID=\"GoalUpdated\"/>\n";
-          xml_file << "                        <Control ID=\"RoundRobin\" name=\"RecoveryActions\">\n";
-          xml_file << "                            <Sequence name=\"ClearingActions\">\n";
-          xml_file << "                                <Action ID=\"ClearEntireCostmap\" name=\"ClearLocalCostmap-Subtree\" server_timeout=\"10.0\" service_name=\"local_costmap/clear_entirely_local_costmap\"/>\n";
-          xml_file << "                                <Action ID=\"ClearEntireCostmap\" name=\"ClearGlobalCostmap-Subtree\" server_timeout=\"10.0\" service_name=\"global_costmap/clear_entirely_global_costmap\"/>\n";
-          xml_file << "                            </Sequence>\n";
-          xml_file << "                            <Action ID=\"Spin\" server_name=\"spin\" server_timeout=\"10.0\" spin_dist=\"1.57\" time_allowance=\"-1.0\"/>\n";
-          xml_file << "                            <Action ID=\"Wait\" server_name=\"wait\" server_timeout=\"10.0\" wait_duration=\"3\"/>\n";
-          xml_file << "                        </Control>\n";
-          xml_file << "                    </ReactiveFallback>\n";
-          xml_file << "                </Control>\n";
-
-          if( !first_time_loop )
-          {
-            xml_file << "            </Delay>\n";
-          }
-          
-          first_time_loop = false;
-        }
-
-        xml_file << "            </Sequence>\n";
-        xml_file << "    </BehaviorTree>\n";
-
-        /******************* ADD TREE MODEL HERE START ********************/
-        std::ifstream src(sourceFile, std::ios::in);
-        if (!src.is_open()) 
-        {
-          if(debug_mode_)
-          {
-            RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"), "tree_nodes_models.xml source file error!!");
-          }
-          return;
-        }
-        xml_file << src.rdbuf(); // Copy content from source to destination
-          src.close();
-
-        /* ADD TREE MODEL HERE END   */
-        xml_file << "</root>\n";
-
-        // close xml file
-        xml_file.flush();
-        xml_file.close();
-      }
-
-      if(debug_mode_)
-      {
-        RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"), "service_mode.xml created successfully!");
-      }     
-
-      // publish for other qt apps
-      //publisher_->publish(message);
-
-      /** CREATE YAML FOR GENERAL PURPOSE START **/
-      if (!(std::filesystem::exists(yaml_path))) 
-      {
-        if(debug_mode_)
-        {
-          RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor ( yaml construct )"), "service_mode.yaml file doesn't exists: ");
-        }
-        return;
-      }
-
-      std::ofstream yaml_file(yaml_path, std::ios::trunc);
-      if (!yaml_file.is_open()) 
-      {
-        if(debug_mode_)
-        {
-          RCLCPP_ERROR(rclcpp::get_logger("xml constructor ( yaml construct )"), "service_mode.yaml file open error!!");
-        }
-        return;
-      }
-
-      yaml_file << "waypoints:\n";
-      //for (size_t i = 0; i < request->pose_names.size(); ++i) 
-      for (int i = request->pose_names.size() - 1; i >= 0; --i) 
-      {
-        yaml_file << "  - name: " << request->pose_names[i] << "\n";
-        yaml_file << "    frame_id: " << "map" << "\n";
-        yaml_file << "    pose:\n";
-        yaml_file << "      position:\n";
-        yaml_file << "        x: " << request->poses[i].pose.position.x << "\n";
-        yaml_file << "        y: " << request->poses[i].pose.position.y << "\n";
-        yaml_file << "        z: " << request->poses[i].pose.position.z << "\n";
-        yaml_file << "      orientation:\n";
-        yaml_file << "        x: " << request->poses[i].pose.orientation.x << "\n";
-        yaml_file << "        y: " << request->poses[i].pose.orientation.y << "\n";
-        yaml_file << "        z: " << request->poses[i].pose.orientation.z << "\n";
-        yaml_file << "        w: " << request->poses[i].pose.orientation.w << "\n";
-        yaml_file << "    scene_poses:\n";
-        yaml_file << "      x: "   << request->scene_poses[i].position.x << "\n";
-        yaml_file << "      y: "   << request->scene_poses[i].position.y << "\n";
-        yaml_file << "      phi: " << request->scene_poses[i].orientation.w << "\n";
-
-        if(debug_mode_)
-        {
-          RCLCPP_INFO(rclcpp::get_logger("xml constructor ( yaml construct )"), "%s", request->pose_names[i].c_str());
-        }
-      }
-
-      yaml_file.flush();
-      yaml_file.close();
-
-      if(debug_mode_)
-      {
-        RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor ( yaml construct )"), "service_mode.yaml created successfully!");
-      } 
-      /**  CREATE YAML FOR GENERAL PURPOSE END   **/
-    }
-  }
-  
-  else if(request_mode == "patrol_mode")
-  {
-    // ယခင် run နေတဲ့ bt_tree ရှိခဲ့ရင် အရင်ဆုံးရပ်တန့်ဖို့အတွက် service request လုပ်မယ်။
-    // --------------------------------------------- for ros2 behavior tree to stop
-    RCLCPP_INFO(rclcpp::get_logger("bt stop node "),"Waiting for bt_stop service to be available...");
-
-    if (bt_client->wait_for_service(std::chrono::seconds(3))) 
-    {
-      RCLCPP_INFO(rclcpp::get_logger("bt stop node "), "Service /bt_stop is available!");
-
-      // stop bt tree 
-      std_srvs::srv::SetBool::Request::SharedPtr bt_stop_request = std::make_shared<std_srvs::srv::SetBool::Request>();
-      bt_stop_request->data = true; // stop bt tree    
-
-      auto future = bt_client->async_send_request(bt_stop_request);
-
-      // Wait for the response
-      if (rclcpp::spin_until_future_complete(bt_stop_node, future) == rclcpp::FutureReturnCode::SUCCESS) 
-      {
-        RCLCPP_INFO(rclcpp::get_logger("bt stop node "), "Received response: success");
-      } else 
-      {
-        RCLCPP_ERROR(rclcpp::get_logger("bt stop node "), "Failed to receive response.");
-      }
-    } 
-    else 
-    {
-        RCLCPP_WARN(rclcpp::get_logger("bt stop node "), "Service /bt_stop is not available after waiting for 3 seconds.");
-    }
-    // --------------------------------------------- for ros2 behavior tree to stop
-
-    if(debug_mode_)
-    {
-            RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"),  "Mode: "<< request->mode);
-    }
-    // end service request
-    
-    const std::string xml_path = "/home/buc_robot/data/trees/patrol_mode.xml";
-    const std::string yaml_path = "/home/buc_robot/data/waypoints/patrol_mode.yaml"; 
-    rom_interfaces::msg::ConstructYaml message;
-
-    // ၁။ default.xml ဖိုင် မရှိရင် ရပ်မယ်။ ( /path/to/default.xml ဖိုင် ကြိုတင်ဆောက်ပေးထားရန် )
-    if (!(std::filesystem::exists(xml_path))) 
-    {
-      if(debug_mode_)
-      {
-        RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"), "patrol_mode.xml doesn't exists: creating ...");
-        return;
-      }
-    }
-
-    // ၂။ default.xml ရှိရင် ဖွင့်ပါ။ overwrite လုပ်ပါ။
-    else 
-    {
-      // std::ofstream file(xml_path);
-      std::ofstream xml_file(xml_path, std::ios::trunc);
-
-      // ဖွင့်မရရင် error ပြ။
-      if (!xml_file.is_open()) 
-      {
-        if(debug_mode_)
-        {
-          RCLCPP_ERROR(rclcpp::get_logger("xml constructor"), "patrol_mode.xml file open error!!");
-        }
-        return;
-      }
-
-      // ဖွင့်လို့ရရင် tree ဆောက်မယ်။
-      else 
-      {
-        
-        xml_file << "<?xml version=\"1.0\"?>\n";
-        xml_file << "<root main_tree_to_execute=\"MainTree\">\n";
-        xml_file << "    <BehaviorTree ID=\"MainTree\">\n";
-        xml_file << "        <Repeat num_cycles=\"100\">\n";
-        xml_file << "            <Sequence name=\"NavigationSequence\">\n";
-        
-        // loop ပါတ်ရန်
-        //for (size_t i = 0; i < request->scene_poses.size(); ++i) 
-        for (int i = request->scene_poses.size() - 1; i >= 0; --i) 
-        {
-          auto pose = request->poses[i]; // actual poses
-
-            // message for publisher မလိုရင် ဖျက်လို့ရတယ်။
-            message.pose_names.push_back(request->pose_names[i]);
-            message.poses.push_back(request->scene_poses[i]);
-            
-          xml_file << "                <Control ID=\"RecoveryNode\" name=\"NavigateRecovery\" number_of_retries=\"-1\">\n";
-          xml_file << "                    <Control ID=\"PipelineSequence\" name=\"NavigateWithReplanning\">\n";
-          xml_file << "                        <Decorator ID=\"RateController\" hz=\"1.0\">\n";
-          xml_file << "                            <Control ID=\"RecoveryNode\" name=\"ComputePathToPose\" number_of_retries=\"1\">\n";
-
-          xml_file << "                                <Action ID=\"ComputePathToPose\" goal=\"{";
-          xml_file << request->pose_names[i] << "}\" start=\"\" path=\"{path}\" planner_id=\"GridBased\" server_name=\"compute_path_to_pose\" server_timeout=\"10.0\"/>\n";
-
-          xml_file << "                                <Action ID=\"ClearEntireCostmap\" name=\"ClearGlobalCostmap-Context\" server_timeout=\"10.0\" service_name=\"global_costmap/clear_entirely_global_costmap\"/>\n";
-          xml_file << "                            </Control>\n";
-          xml_file << "                        </Decorator>\n";
-          xml_file << "                        <Control ID=\"RecoveryNode\" name=\"FollowPath\" number_of_retries=\"1\">\n";
-          xml_file << "                            <Action ID=\"FollowPath\" controller_id=\"FollowPath\" goal_checker_id=\"\" path=\"{path}\" server_name=\"follow_path\" server_timeout=\"10.0\"/>\n";
-          xml_file << "                            <Action ID=\"ClearEntireCostmap\" name=\"ClearLocalCostmap-Context\" server_timeout=\"10.0\" service_name=\"local_costmap/clear_entirely_local_costmap\"/>\n";
-          xml_file << "                        </Control>\n";
-       	  xml_file << "                    </Control>\n";
-       
-          xml_file << "                    <ReactiveFallback name=\"RecoveryFallback\">\n";
-          xml_file << "                        <Condition ID=\"GoalUpdated\"/>\n";
-          xml_file << "                        <Control ID=\"RoundRobin\" name=\"RecoveryActions\">\n";
-          // Round 1: costmap ရှင်းပြီး အနည်းငယ် စောင့် (dynamic obstacle ရွေ့ဖို့)
-          xml_file << "                            <Sequence name=\"ClearAndWait\">\n";
-          xml_file << "                                <Action ID=\"ClearEntireCostmap\" name=\"ClearLocalCostmap-Subtree\" server_timeout=\"10.0\" service_name=\"local_costmap/clear_entirely_local_costmap\"/>\n";
-          xml_file << "                                <Action ID=\"ClearEntireCostmap\" name=\"ClearGlobalCostmap-Subtree\" server_timeout=\"10.0\" service_name=\"global_costmap/clear_entirely_global_costmap\"/>\n";
-          xml_file << "                                <Action ID=\"Wait\" server_name=\"wait\" server_timeout=\"10.0\" wait_duration=\"2\"/>\n";
-          xml_file << "                            </Sequence>\n";
-          // Round 2: ညာဘက် 90° လှည့်၍ laser ဖြင့် rescan
-          xml_file << "                            <Action ID=\"Spin\" server_name=\"spin\" server_timeout=\"15.0\" spin_dist=\"1.57\" time_allowance=\"10.0\"/>\n";
-          // Round 3: ဘယ်ဘက် 90° လှည့်၍ laser ဖြင့် rescan
-          xml_file << "                            <Action ID=\"Spin\" server_name=\"spin\" server_timeout=\"15.0\" spin_dist=\"-1.57\" time_allowance=\"10.0\"/>\n";
-          // Round 4: 180° full scan + ကြာကြာ စောင့် (last resort)
-          xml_file << "                            <Sequence name=\"FullScanAndWait\">\n";
-          xml_file << "                                <Action ID=\"Spin\" server_name=\"spin\" server_timeout=\"20.0\" spin_dist=\"3.14\" time_allowance=\"15.0\"/>\n";
-          xml_file << "                                <Action ID=\"Wait\" server_name=\"wait\" server_timeout=\"10.0\" wait_duration=\"5\"/>\n";
-          xml_file << "                            </Sequence>\n";
-          xml_file << "                        </Control>\n";
-          xml_file << "                    </ReactiveFallback>\n";
-
-          xml_file << "                </Control>\n";
-
-        }
-
-        xml_file << "            </Sequence>\n";
-        xml_file << "        </Repeat>\n";
-        xml_file << "    </BehaviorTree>\n";
-
-        /******************* ADD TREE MODEL HERE START ********************/
-        std::ifstream src(sourceFile, std::ios::in);
-        if (!src.is_open()) 
-        {
-          if(debug_mode_)
-          {
-            RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"), "tree_nodes_models.xml source file error!!");
-          }
-          return;
-        }
-        xml_file << src.rdbuf(); // Copy content from source to destination
-          src.close();
-
-        /* ADD TREE MODEL HERE END   */
-        xml_file << "</root>\n";
-
-        // close xml file
-        xml_file.flush();
-        xml_file.close();
-      }
-
-      if(debug_mode_)
-      {
-        RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"), "patrol_mode.xml created successfully!");
-      }     
-
-      // publish for other qt apps
-      //publisher_->publish(message);
-
-      /** CREATE YAML FOR GENERAL PURPOSE START **/
-      if (!(std::filesystem::exists(yaml_path))) 
-      {
-        if(debug_mode_)
-        {
-          RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor ( yaml construct )"), "patrol_mode.yaml file doesn't exists: ");
-        }
-        return;
-      }
-
-      std::ofstream yaml_file(yaml_path, std::ios::trunc);
-      if (!yaml_file.is_open()) 
-      {
-        if(debug_mode_)
-        {
-          RCLCPP_ERROR(rclcpp::get_logger("xml constructor ( yaml construct )"), "patrol_mode.yaml file open error!!");
-        }
-        return;
-      }
-
-      yaml_file << "waypoints:\n";
-      //for (size_t i = 0; i < request->pose_names.size(); ++i) 
-      for (int i = request->pose_names.size() - 1; i >= 0; --i) 
-      {
-        yaml_file << "  - name: " << request->pose_names[i] << "\n";
-        yaml_file << "    frame_id: " << "map" << "\n";
-        yaml_file << "    pose:\n";
-        yaml_file << "      position:\n";
-        yaml_file << "        x: " << request->poses[i].pose.position.x << "\n";
-        yaml_file << "        y: " << request->poses[i].pose.position.y << "\n";
-        yaml_file << "        z: " << request->poses[i].pose.position.z << "\n";
-        yaml_file << "      orientation:\n";
-        yaml_file << "        x: " << request->poses[i].pose.orientation.x << "\n";
-        yaml_file << "        y: " << request->poses[i].pose.orientation.y << "\n";
-        yaml_file << "        z: " << request->poses[i].pose.orientation.z << "\n";
-        yaml_file << "        w: " << request->poses[i].pose.orientation.w << "\n";
-        yaml_file << "    scene_poses:\n";
-        yaml_file << "      x: "   << request->scene_poses[i].position.x << "\n";
-        yaml_file << "      y: "   << request->scene_poses[i].position.y << "\n";
-        yaml_file << "      phi: " << request->scene_poses[i].orientation.w << "\n";
-
-        if(debug_mode_)
-        {
-          RCLCPP_INFO(rclcpp::get_logger("xml constructor ( yaml construct )"), "%s", request->pose_names[i].c_str());
-        }
-      }
-
-      yaml_file.flush();
-      yaml_file.close();
-
-      if(debug_mode_)
-      {
-        RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor ( yaml construct )"), "patrol_mode.yaml created successfully!");
-      } 
-      /**  CREATE YAML FOR GENERAL PURPOSE END   **/
-    }
-  }
-  
-  else if(request_mode == "goal_mode")
-  {
-    // --------------------------------------------- for ros2 behavior tree to stop
-    RCLCPP_INFO(rclcpp::get_logger("bt stop node "),"Waiting for bt_stop service to be available...");
-
-    if (bt_client->wait_for_service(std::chrono::seconds(3))) 
-    {
-      RCLCPP_INFO(rclcpp::get_logger("bt stop node "), "Service /bt_stop is available!");
-
-      // stop bt tree 
-      std_srvs::srv::SetBool::Request::SharedPtr bt_stop_request = std::make_shared<std_srvs::srv::SetBool::Request>();
-      bt_stop_request->data = true; // stop bt tree    
-
-      auto future = bt_client->async_send_request(bt_stop_request);
-
-      // Wait for the response
-      if (rclcpp::spin_until_future_complete(bt_stop_node, future) == rclcpp::FutureReturnCode::SUCCESS) 
-      {
-        RCLCPP_INFO(rclcpp::get_logger("bt stop node "), "Received response: success");
-      } else 
-      {
-        RCLCPP_ERROR(rclcpp::get_logger("bt stop node "), "Failed to receive response.");
-      }
-    } 
-    else 
-    {
-        RCLCPP_WARN(rclcpp::get_logger("bt stop node "), "Service /bt_stop is not available after waiting for 3 seconds.");
-    }
-    // --------------------------------------------- for ros2 behavior tree to stop
-
-    std::string cmd2 = request->command;
-    //std::string cmd2 = "ros2 run rom_robot_autonomy autonomy_patrol_mode_w_cancel";
-    
-    std::thread([cmd2]() 
-    {
-      int ret = system(cmd2.c_str());
-        if (ret == -1) {
-          if(debug_mode_)
-          {
-            RCLCPP_ERROR(rclcpp::get_logger("construct_xml"), "Failed to bt tree: %s", cmd2.c_str());
-          }
-        } 
-        else 
-        {
-          if(debug_mode_)
-          {
-            RCLCPP_INFO(rclcpp::get_logger("construct_xml"), "Run BT tree successfully and Done %s", cmd2.c_str());
-          }
-        }
-    }).detach();  // Detach so it runs independently
-  } // end goal_mode
-  
-  else if(request_mode == "eraser_mode")
-  {
-    if(debug_mode_)
-    {
-      RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"),  "Mode: "<< request->mode);
-    }
-    // end service request
-    const std::string wp_xml_path = "/home/buc_robot/data/trees/waypoints_mode.xml";
-    const std::string wp_yaml_path = "/home/buc_robot/data/waypoints/waypoints_mode.yaml"; 
-    const std::string service_xml_path = "/home/buc_robot/data/trees/service_mode.xml";
-    const std::string service_yaml_path = "/home/buc_robot/data/waypoints/service_mode.yaml";
-    const std::string patrol_xml_path = "/home/buc_robot/data/trees/patrol_mode.xml";
-    const std::string patrol_yaml_path = "/home/buc_robot/data/waypoints/patrol_mode.yaml"; 
-    rom_interfaces::msg::ConstructYaml message;
-    
-    std::ofstream wp_xml_file(wp_xml_path, std::ios::trunc);
-    std::ofstream wp_yaml_file(wp_yaml_path, std::ios::trunc);
-    std::ofstream service_xml_file(service_xml_path, std::ios::trunc);
-    std::ofstream service_yaml_file(service_yaml_path, std::ios::trunc);
-    std::ofstream patrol_xml_file(patrol_xml_path, std::ios::trunc);  
-    std::ofstream patrol_yaml_file(patrol_yaml_path, std::ios::trunc);
-
-  // ဖွင့်မရရင် error ပြ။
-    if (!wp_xml_file.is_open()) 
-    {
-      if(debug_mode_)
-      {
-        RCLCPP_ERROR(rclcpp::get_logger("xml constructor"), "waypoints_mode.xml file delete error!!");
-      }
-      return;
-    }
-
-  // ဖွင့်လို့ရရင် tree ဆောက်မယ်။
-    else 
-    {
-      wp_xml_file << "hello";
-      wp_xml_file.flush();
-      wp_xml_file.close();
-    }
-
-  // ဖွင့်မရရင် error ပြ။
-    if (!wp_yaml_file.is_open()) 
-    {
-      if(debug_mode_)
-      {
-        RCLCPP_ERROR(rclcpp::get_logger("xml constructor"), "waypoints_mode.yaml file delete error!!");
-      }
-      return;
-    }
-
-  // ဖွင့်လို့ရရင် tree ဆောက်မယ်။
-    else 
-    {
-      wp_yaml_file << "hello";
-      wp_yaml_file.flush();
-      wp_yaml_file.close();
-    }
-
-  // ဖွင့်မရရင် error ပြ။
-    if (!service_xml_file.is_open()) 
-    {
-      if(debug_mode_)
-      {
-        RCLCPP_ERROR(rclcpp::get_logger("xml constructor"), "services_mode.xml file delete error!!");
-      }
-      return;
-    }
-
-  // ဖွင့်လို့ရရင် tree ဆောက်မယ်။
-    else 
-    {
-      service_xml_file << "hello";
-      service_xml_file.flush();
-      service_xml_file.close();
-    }
-
-  // ဖွင့်မရရင် error ပြ။
-    if (!service_yaml_file.is_open()) 
-    {
-      if(debug_mode_)
-      {
-        RCLCPP_ERROR(rclcpp::get_logger("xml constructor"), "services_mode.yaml file delete error!!");
-      }
-      return;
-    }
-
-  // ဖွင့်လို့ရရင် tree ဆောက်မယ်။
-    else 
-    {
-      service_yaml_file << "hello";
-      service_yaml_file.flush();
-      service_yaml_file.close();
-    }
-
-  // ဖွင့်မရရင် error ပြ။
-    if (!patrol_xml_file.is_open()) 
-    {
-      if(debug_mode_)
-      {
-        RCLCPP_ERROR(rclcpp::get_logger("xml constructor"), "patrols_mode.xml file delete error!!");
-      }
-      return;
-    }
-  
-  // ဖွင့်လို့ရရင် tree ဆောက်မယ်။
-    else 
-    {
-      patrol_xml_file << "hello";
-      patrol_xml_file.flush();
-      patrol_xml_file.close();
-    }
-
-  // ဖွင့်မရရင် error ပြ။
-    if (!patrol_yaml_file.is_open()) 
-    {
-      if(debug_mode_)
-      {
-        RCLCPP_ERROR(rclcpp::get_logger("xml constructor"), "patrols_mode.yaml file delete error!!");
-      }
-      return;
-    }
-  
-  // ဖွင့်လို့ရရင် tree ဆောက်မယ်။
-    else 
-    {
-      patrol_yaml_file << "hello";
-      patrol_yaml_file.flush();
-      patrol_yaml_file.close();
-    }
-
-    // အားမှ feedback ပြန်ပေးမယ်။
-
+bool debug_mode_ = false;
+
+// ============================================================================
+// Helper Functions: Behavior Tree Control
+// ============================================================================
+
+// ယခင် run နေတဲ့ bt_tree ရှိခဲ့ရင် အရင်ဆုံးရပ်တန့်ဖို့အတွက် service request လုပ်မယ်။
+bool stop_behavior_tree() {
+  RCLCPP_INFO(rclcpp::get_logger("bt stop node "),
+              "Waiting for bt_stop service to be available...");
+
+  if (!bt_client->wait_for_service(std::chrono::seconds(3))) {
+    RCLCPP_WARN(rclcpp::get_logger("bt stop node "),
+                "Service /edu_robot/bt_stop is not available after waiting for "
+                "3 seconds.");
+    return false;
   }
 
-  else if(request_mode == "path_mode")
-  {
-    // prepare default 
-    response->status = -1;
+  RCLCPP_INFO(rclcpp::get_logger("bt stop node "),
+              "Service /edu_robot/bt_stop is available!");
 
-    if(debug_mode_)
-    {
-      RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"),  "Mode: "<< request->mode);
-    }
-    
-    const std::string yaml_path = "/home/buc_robot/data/waypoints/path_mode.yaml";
-    
-    // ၁။ yaml ဖိုင် မရှိရင် ရပ်မယ်။
-    if (!(std::filesystem::exists(yaml_path))) 
-    {
-      if(debug_mode_)
-      {
-        RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"), "path_mode.yaml doesn't exists: cancelling ...");
-      }
-      return;
-    }
+  auto bt_stop_request = std::make_shared<std_srvs::srv::SetBool::Request>();
+  bt_stop_request->data = true;
 
-    // ၂။ yaml ရှိရင် ဖွင့်ပါ။ overwrite လုပ်ပါ။
-    std::ofstream yaml_file(yaml_path, std::ios::trunc);
-    if (!yaml_file.is_open()) 
-    {
-      if(debug_mode_)
-      {
-        RCLCPP_ERROR(rclcpp::get_logger("xml constructor ( yaml construct )"), "path_mode.yaml file open error!!");
-      }
-      return;
-    }
+  auto future = bt_client->async_send_request(bt_stop_request);
 
-    // ဖွင့်လို့ရရင် yaml ဆောက်မယ်။
-    yaml_file << "waypoints:\n";
-    for (int i = request->pose_names.size() - 1; i >= 0; --i) 
-    {
-      yaml_file << "  - name: " << request->pose_names[i] << "\n";
-      yaml_file << "    frame_id: " << "map" << "\n";
-      yaml_file << "    pose:\n";
-      yaml_file << "      position:\n";
-      yaml_file << "        x: " << request->poses[i].pose.position.x << "\n";
-      yaml_file << "        y: " << request->poses[i].pose.position.y << "\n";
-      yaml_file << "        z: " << request->poses[i].pose.position.z << "\n";
-      yaml_file << "      orientation:\n";
-      yaml_file << "        x: " << request->poses[i].pose.orientation.x << "\n";
-      yaml_file << "        y: " << request->poses[i].pose.orientation.y << "\n";
-      yaml_file << "        z: " << request->poses[i].pose.orientation.z << "\n";
-      yaml_file << "        w: " << request->poses[i].pose.orientation.w << "\n";
-      yaml_file << "    scene_poses:\n";
-      yaml_file << "      x: "   << request->scene_poses[i].position.x << "\n";
-      yaml_file << "      y: "   << request->scene_poses[i].position.y << "\n";
-      yaml_file << "      phi: " << request->scene_poses[i].orientation.w << "\n";
-
-      if(debug_mode_)
-      {
-        RCLCPP_INFO(rclcpp::get_logger("xml constructor ( yaml construct )"), "%s", request->pose_names[i].c_str());
-      }
-    }
-
-    yaml_file.flush();
-    yaml_file.close();
-
-    if(debug_mode_)
-    {
-      RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor ( yaml construct )"), "path_mode.yaml created successfully!");
-    }
-    
-    response->status = 1;
-  }
-
-  else if(request_mode == "get_wp_list")
-  {
-    const std::string yaml_path = "/home/buc_robot/data/waypoints/waypoints_mode.yaml";
-
-    // Prepare default failure response
-    response->status = -1;
-
-    if (!std::filesystem::exists(yaml_path)) {
-      RCLCPP_WARN(rclcpp::get_logger("xml constructor"), "get_wp_list: yaml file does not exist: %s", yaml_path.c_str());
-      return;
-    }
-
-    std::ifstream in(yaml_path);
-    if (!in.is_open()) {
-      RCLCPP_ERROR(rclcpp::get_logger("xml constructor"), "get_wp_list: failed to open yaml file: %s", yaml_path.c_str());
-      return;
-    }
-
-    auto ltrim = [](std::string &s) {
-      s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch){ return !std::isspace(ch); }));
-    };
-    auto rtrim = [](std::string &s) {
-      s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch){ return !std::isspace(ch); }).base(), s.end());
-    };
-    auto trim = [&](std::string &s){ ltrim(s); rtrim(s); };
-
-    std::string line;
-    std::string current_name;
-    geometry_msgs::msg::PoseStamped cur_pose_stamped;
-    geometry_msgs::msg::Pose cur_scene_pose;
-    bool in_pose = false;
-    bool in_position = false;
-    bool in_orientation = false;
-    bool in_scene = false;
-
-    // Read file line-by-line and perform a minimal parse for the expected format
-    while (std::getline(in, line)) {
-      std::string s = line;
-      trim(s);
-      if (s.rfind("- name:", 0) == 0) {
-        // new waypoint: if we have a previous one, push it
-        if (!current_name.empty()) {
-          response->pose_names.push_back(current_name);
-          response->poses.push_back(cur_pose_stamped);
-          response->scene_poses.push_back(cur_scene_pose);
-          // reset
-          cur_pose_stamped = geometry_msgs::msg::PoseStamped();
-          cur_scene_pose = geometry_msgs::msg::Pose();
-        }
-        // extract name
-        auto pos = s.find(":");
-        if (pos != std::string::npos) {
-          current_name = s.substr(pos+1);
-          trim(current_name);
-        } else {
-          current_name.clear();
-        }
-        // set default frame
-        cur_pose_stamped.header.frame_id = "map";
-        in_pose = in_position = in_orientation = in_scene = false;
-      } else if (s.rfind("pose:", 0) == 0) {
-        in_pose = true; in_position = in_orientation = false; in_scene = false;
-      } else if (s.rfind("position:", 0) == 0 && in_pose) {
-        in_position = true; in_orientation = false; in_scene = false;
-      } else if (s.rfind("orientation:", 0) == 0 && in_pose) {
-        in_orientation = true; in_position = false; in_scene = false;
-      } else if (s.rfind("scene_poses:", 0) == 0) {
-        in_scene = true; in_pose = in_position = in_orientation = false;
-      } else if (in_position && (s.rfind("x:", 0) == 0 || s.rfind("y:", 0) == 0 || s.rfind("z:", 0) == 0)) {
-        auto pos = s.find(":");
-        std::string key = s.substr(0, pos);
-        std::string val = (pos==std::string::npos)?"":s.substr(pos+1);
-        trim(key); trim(val);
-        try {
-          double v = std::stod(val);
-          if (key == "x") cur_pose_stamped.pose.position.x = v;
-          else if (key == "y") cur_pose_stamped.pose.position.y = v;
-          else if (key == "z") cur_pose_stamped.pose.position.z = v;
-        } catch(...) {}
-      } else if (in_orientation && (s.rfind("x:", 0) == 0 || s.rfind("y:", 0) == 0 || s.rfind("z:", 0) == 0 || s.rfind("w:", 0) == 0)) {
-        auto pos = s.find(":");
-        std::string key = s.substr(0, pos);
-        std::string val = (pos==std::string::npos)?"":s.substr(pos+1);
-        trim(key); trim(val);
-        try {
-          double v = std::stod(val);
-          if (key == "x") cur_pose_stamped.pose.orientation.x = v;
-          else if (key == "y") cur_pose_stamped.pose.orientation.y = v;
-          else if (key == "z") cur_pose_stamped.pose.orientation.z = v;
-          else if (key == "w") cur_pose_stamped.pose.orientation.w = v;
-        } catch(...) {}
-      } else if (in_scene && (s.rfind("x:", 0) == 0 || s.rfind("y:", 0) == 0 || s.rfind("phi:", 0) == 0)) {
-        auto pos = s.find(":");
-        std::string key = s.substr(0, pos);
-        std::string val = (pos==std::string::npos)?"":s.substr(pos+1);
-        trim(key); trim(val);
-        try {
-          double v = std::stod(val);
-          if (key == "x") cur_scene_pose.position.x = v;
-          else if (key == "y") cur_scene_pose.position.y = v;
-          else if (key == "phi") cur_scene_pose.orientation.w = v; // phi stored in orientation.w
-        } catch(...) {}
-      }
-    }
-
-    // push last one
-    if (!current_name.empty()) {
-      response->pose_names.push_back(current_name);
-      response->poses.push_back(cur_pose_stamped);
-      response->scene_poses.push_back(cur_scene_pose);
-    }
-
-    in.close();
-    response->status = 1;
-
-    if(debug_mode_)
-    {
-      RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"), "get_wp_list: parsed " << response->pose_names.size() << " waypoints");
-    }
-  }
-
-  else if(request_mode == "get_srv_list")
-  {
-    const std::string yaml_path = "/home/buc_robot/data/waypoints/service_mode.yaml";
-
-    // Prepare default failure response
-    response->status = -1;
-
-    if (!std::filesystem::exists(yaml_path)) {
-      RCLCPP_WARN(rclcpp::get_logger("xml constructor"), "get_srv_list: yaml file does not exist: %s", yaml_path.c_str());
-      return;
-    }
-
-    std::ifstream in(yaml_path);
-    if (!in.is_open()) {
-      RCLCPP_ERROR(rclcpp::get_logger("xml constructor"), "get_srv_list: failed to open yaml file: %s", yaml_path.c_str());
-      return;
-    }
-
-    auto ltrim = [](std::string &s) {
-      s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch){ return !std::isspace(ch); }));
-    };
-    auto rtrim = [](std::string &s) {
-      s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch){ return !std::isspace(ch); }).base(), s.end());
-    };
-    auto trim = [&](std::string &s){ ltrim(s); rtrim(s); };
-
-    std::string line;
-    std::string current_name;
-    geometry_msgs::msg::PoseStamped cur_pose_stamped;
-    geometry_msgs::msg::Pose cur_scene_pose;
-    bool in_pose = false;
-    bool in_position = false;
-    bool in_orientation = false;
-    bool in_scene = false;
-
-    // Read file line-by-line and perform a minimal parse for the expected format
-    while (std::getline(in, line)) {
-      std::string s = line;
-      trim(s);
-      if (s.rfind("- name:", 0) == 0) {
-        // new waypoint: if we have a previous one, push it
-        if (!current_name.empty()) {
-          response->pose_names.push_back(current_name);
-          response->poses.push_back(cur_pose_stamped);
-          response->scene_poses.push_back(cur_scene_pose);
-          // reset
-          cur_pose_stamped = geometry_msgs::msg::PoseStamped();
-          cur_scene_pose = geometry_msgs::msg::Pose();
-        }
-        // extract name
-        auto pos = s.find(":");
-        if (pos != std::string::npos) {
-          current_name = s.substr(pos+1);
-          trim(current_name);
-        } else {
-          current_name.clear();
-        }
-        // set default frame
-        cur_pose_stamped.header.frame_id = "map";
-        in_pose = in_position = in_orientation = in_scene = false;
-      } else if (s.rfind("pose:", 0) == 0) {
-        in_pose = true; in_position = in_orientation = false; in_scene = false;
-      } else if (s.rfind("position:", 0) == 0 && in_pose) {
-        in_position = true; in_orientation = false; in_scene = false;
-      } else if (s.rfind("orientation:", 0) == 0 && in_pose) {
-        in_orientation = true; in_position = false; in_scene = false;
-      } else if (s.rfind("scene_poses:", 0) == 0) {
-        in_scene = true; in_pose = in_position = in_orientation = false;
-      } else if (in_position && (s.rfind("x:", 0) == 0 || s.rfind("y:", 0) == 0 || s.rfind("z:", 0) == 0)) {
-        auto pos = s.find(":");
-        std::string key = s.substr(0, pos);
-        std::string val = (pos==std::string::npos)?"":s.substr(pos+1);
-        trim(key); trim(val);
-        try {
-          double v = std::stod(val);
-          if (key == "x") cur_pose_stamped.pose.position.x = v;
-          else if (key == "y") cur_pose_stamped.pose.position.y = v;
-          else if (key == "z") cur_pose_stamped.pose.position.z = v;
-        } catch(...) {}
-      } else if (in_orientation && (s.rfind("x:", 0) == 0 || s.rfind("y:", 0) == 0 || s.rfind("z:", 0) == 0 || s.rfind("w:", 0) == 0)) {
-        auto pos = s.find(":");
-        std::string key = s.substr(0, pos);
-        std::string val = (pos==std::string::npos)?"":s.substr(pos+1);
-        trim(key); trim(val);
-        try {
-          double v = std::stod(val);
-          if (key == "x") cur_pose_stamped.pose.orientation.x = v;
-          else if (key == "y") cur_pose_stamped.pose.orientation.y = v;
-          else if (key == "z") cur_pose_stamped.pose.orientation.z = v;
-          else if (key == "w") cur_pose_stamped.pose.orientation.w = v;
-        } catch(...) {}
-      } else if (in_scene && (s.rfind("x:", 0) == 0 || s.rfind("y:", 0) == 0 || s.rfind("phi:", 0) == 0)) {
-        auto pos = s.find(":");
-        std::string key = s.substr(0, pos);
-        std::string val = (pos==std::string::npos)?"":s.substr(pos+1);
-        trim(key); trim(val);
-        try {
-          double v = std::stod(val);
-          if (key == "x") cur_scene_pose.position.x = v;
-          else if (key == "y") cur_scene_pose.position.y = v;
-          else if (key == "phi") cur_scene_pose.orientation.w = v; // phi stored in orientation.w
-        } catch(...) {}
-      }
-    }
-
-    // push last one
-    if (!current_name.empty()) {
-      response->pose_names.push_back(current_name);
-      response->poses.push_back(cur_pose_stamped);
-      response->scene_poses.push_back(cur_scene_pose);
-    }
-
-    in.close();
-    response->status = 1;
-
-    if(debug_mode_)
-    {
-      RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"), "get_srv_list: parsed " << response->pose_names.size() << " waypoints");
-    }
-  }
-
-  else if(request_mode == "get_patrol_list")
-  {
-    const std::string yaml_path = "/home/buc_robot/data/waypoints/patrol_mode.yaml";
-
-    // Prepare default failure response
-    response->status = -1;
-
-    if (!std::filesystem::exists(yaml_path)) {
-      RCLCPP_WARN(rclcpp::get_logger("xml constructor"), "get_patrol_list: yaml file does not exist: %s", yaml_path.c_str());
-      return;
-    }
-
-    std::ifstream in(yaml_path);
-    if (!in.is_open()) {
-      RCLCPP_ERROR(rclcpp::get_logger("xml constructor"), "get_patrol_list: failed to open yaml file: %s", yaml_path.c_str());
-      return;
-    }
-
-    auto ltrim = [](std::string &s) {
-      s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch){ return !std::isspace(ch); }));
-    };
-    auto rtrim = [](std::string &s) {
-      s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch){ return !std::isspace(ch); }).base(), s.end());
-    };
-    auto trim = [&](std::string &s){ ltrim(s); rtrim(s); };
-
-    std::string line;
-    std::string current_name;
-    geometry_msgs::msg::PoseStamped cur_pose_stamped;
-    geometry_msgs::msg::Pose cur_scene_pose;
-    bool in_pose = false;
-    bool in_position = false;
-    bool in_orientation = false;
-    bool in_scene = false;
-
-    // Read file line-by-line and perform a minimal parse for the expected format
-    while (std::getline(in, line)) {
-      std::string s = line;
-      trim(s);
-      if (s.rfind("- name:", 0) == 0) {
-        // new waypoint: if we have a previous one, push it
-        if (!current_name.empty()) {
-          response->pose_names.push_back(current_name);
-          response->poses.push_back(cur_pose_stamped);
-          response->scene_poses.push_back(cur_scene_pose);
-          // reset
-          cur_pose_stamped = geometry_msgs::msg::PoseStamped();
-          cur_scene_pose = geometry_msgs::msg::Pose();
-        }
-        // extract name
-        auto pos = s.find(":");
-        if (pos != std::string::npos) {
-          current_name = s.substr(pos+1);
-          trim(current_name);
-        } else {
-          current_name.clear();
-        }
-        // set default frame
-        cur_pose_stamped.header.frame_id = "map";
-        in_pose = in_position = in_orientation = in_scene = false;
-      } else if (s.rfind("pose:", 0) == 0) {
-        in_pose = true; in_position = in_orientation = false; in_scene = false;
-      } else if (s.rfind("position:", 0) == 0 && in_pose) {
-        in_position = true; in_orientation = false; in_scene = false;
-      } else if (s.rfind("orientation:", 0) == 0 && in_pose) {
-        in_orientation = true; in_position = false; in_scene = false;
-      } else if (s.rfind("scene_poses:", 0) == 0) {
-        in_scene = true; in_pose = in_position = in_orientation = false;
-      } else if (in_position && (s.rfind("x:", 0) == 0 || s.rfind("y:", 0) == 0 || s.rfind("z:", 0) == 0)) {
-        auto pos = s.find(":");
-        std::string key = s.substr(0, pos);
-        std::string val = (pos==std::string::npos)?"":s.substr(pos+1);
-        trim(key); trim(val);
-        try {
-          double v = std::stod(val);
-          if (key == "x") cur_pose_stamped.pose.position.x = v;
-          else if (key == "y") cur_pose_stamped.pose.position.y = v;
-          else if (key == "z") cur_pose_stamped.pose.position.z = v;
-        } catch(...) {}
-      } else if (in_orientation && (s.rfind("x:", 0) == 0 || s.rfind("y:", 0) == 0 || s.rfind("z:", 0) == 0 || s.rfind("w:", 0) == 0)) {
-        auto pos = s.find(":");
-        std::string key = s.substr(0, pos);
-        std::string val = (pos==std::string::npos)?"":s.substr(pos+1);
-        trim(key); trim(val);
-        try {
-          double v = std::stod(val);
-          if (key == "x") cur_pose_stamped.pose.orientation.x = v;
-          else if (key == "y") cur_pose_stamped.pose.orientation.y = v;
-          else if (key == "z") cur_pose_stamped.pose.orientation.z = v;
-          else if (key == "w") cur_pose_stamped.pose.orientation.w = v;
-        } catch(...) {}
-      } else if (in_scene && (s.rfind("x:", 0) == 0 || s.rfind("y:", 0) == 0 || s.rfind("phi:", 0) == 0)) {
-        auto pos = s.find(":");
-        std::string key = s.substr(0, pos);
-        std::string val = (pos==std::string::npos)?"":s.substr(pos+1);
-        trim(key); trim(val);
-        try {
-          double v = std::stod(val);
-          if (key == "x") cur_scene_pose.position.x = v;
-          else if (key == "y") cur_scene_pose.position.y = v;
-          else if (key == "phi") cur_scene_pose.orientation.w = v; // phi stored in orientation.w
-        } catch(...) {}
-      }
-    }
-
-    // push last one
-    if (!current_name.empty()) {
-      response->pose_names.push_back(current_name);
-      response->poses.push_back(cur_pose_stamped);
-      response->scene_poses.push_back(cur_scene_pose);
-    }
-
-    in.close();
-    response->status = 1;
-
-    if(debug_mode_)
-    {
-      RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"), "get_patrol_list: parsed " << response->pose_names.size() << " waypoints");
-    }
-  }
-  
-  else if(request_mode == "get_path_list")
-  {
-    const std::string yaml_path = "/home/buc_robot/data/waypoints/path_mode.yaml";
-
-    // Prepare default failure response
-    response->status = -1;
-
-    if (!std::filesystem::exists(yaml_path)) {
-      RCLCPP_WARN(rclcpp::get_logger("xml constructor"), "get_path_list: yaml file does not exist: %s", yaml_path.c_str());
-      return;
-    }
-
-    std::ifstream in(yaml_path);
-    if (!in.is_open()) {
-      RCLCPP_ERROR(rclcpp::get_logger("xml constructor"), "get_path_list: failed to open yaml file: %s", yaml_path.c_str());
-      return;
-    }
-
-    auto ltrim = [](std::string &s) {
-      s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch){ return !std::isspace(ch); }));
-    };
-    auto rtrim = [](std::string &s) {
-      s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch){ return !std::isspace(ch); }).base(), s.end());
-    };
-    auto trim = [&](std::string &s){ ltrim(s); rtrim(s); };
-
-    std::string line;
-    std::string current_name;
-    geometry_msgs::msg::PoseStamped cur_pose_stamped;
-    geometry_msgs::msg::Pose cur_scene_pose;
-    bool in_pose = false;
-    bool in_position = false;
-    bool in_orientation = false;
-    bool in_scene = false;
-
-    // Read file line-by-line and perform a minimal parse for the expected format
-    while (std::getline(in, line)) {
-      std::string s = line;
-      trim(s);
-      if (s.rfind("- name:", 0) == 0) {
-        // new waypoint: if we have a previous one, push it
-        if (!current_name.empty()) {
-          response->pose_names.push_back(current_name);
-          response->poses.push_back(cur_pose_stamped);
-          response->scene_poses.push_back(cur_scene_pose);
-          // reset
-          cur_pose_stamped = geometry_msgs::msg::PoseStamped();
-          cur_scene_pose = geometry_msgs::msg::Pose();
-        }
-        // extract name
-        auto pos = s.find(":");
-        if (pos != std::string::npos) {
-          current_name = s.substr(pos+1);
-          trim(current_name);
-        } else {
-          current_name.clear();
-        }
-        // set default frame
-        cur_pose_stamped.header.frame_id = "map";
-        in_pose = in_position = in_orientation = in_scene = false;
-      } else if (s.rfind("pose:", 0) == 0) {
-        in_pose = true; in_position = in_orientation = false; in_scene = false;
-      } else if (s.rfind("position:", 0) == 0 && in_pose) {
-        in_position = true; in_orientation = false; in_scene = false;
-      } else if (s.rfind("orientation:", 0) == 0 && in_pose) {
-        in_orientation = true; in_position = false; in_scene = false;
-      } else if (s.rfind("scene_poses:", 0) == 0) {
-        in_scene = true; in_pose = in_position = in_orientation = false;
-      } else if (in_position && (s.rfind("x:", 0) == 0 || s.rfind("y:", 0) == 0 || s.rfind("z:", 0) == 0)) {
-        auto pos = s.find(":");
-        std::string key = s.substr(0, pos);
-        std::string val = (pos==std::string::npos)?"":s.substr(pos+1);
-        trim(key); trim(val);
-        try {
-          double v = std::stod(val);
-          if (key == "x") cur_pose_stamped.pose.position.x = v;
-          else if (key == "y") cur_pose_stamped.pose.position.y = v;
-          else if (key == "z") cur_pose_stamped.pose.position.z = v;
-        } catch(...) {}
-      } else if (in_orientation && (s.rfind("x:", 0) == 0 || s.rfind("y:", 0) == 0 || s.rfind("z:", 0) == 0 || s.rfind("w:", 0) == 0)) {
-        auto pos = s.find(":");
-        std::string key = s.substr(0, pos);
-        std::string val = (pos==std::string::npos)?"":s.substr(pos+1);
-        trim(key); trim(val);
-        try {
-          double v = std::stod(val);
-          if (key == "x") cur_pose_stamped.pose.orientation.x = v;
-          else if (key == "y") cur_pose_stamped.pose.orientation.y = v;
-          else if (key == "z") cur_pose_stamped.pose.orientation.z = v;
-          else if (key == "w") cur_pose_stamped.pose.orientation.w = v;
-        } catch(...) {}
-      } else if (in_scene && (s.rfind("x:", 0) == 0 || s.rfind("y:", 0) == 0 || s.rfind("phi:", 0) == 0)) {
-        auto pos = s.find(":");
-        std::string key = s.substr(0, pos);
-        std::string val = (pos==std::string::npos)?"":s.substr(pos+1);
-        trim(key); trim(val);
-        try {
-          double v = std::stod(val);
-          if (key == "x") cur_scene_pose.position.x = v;
-          else if (key == "y") cur_scene_pose.position.y = v;
-          else if (key == "phi") cur_scene_pose.orientation.w = v; // phi stored in orientation.w
-        } catch(...) {}
-      }
-    }
-
-    // push last one
-    if (!current_name.empty()) {
-      response->pose_names.push_back(current_name);
-      response->poses.push_back(cur_pose_stamped);
-      response->scene_poses.push_back(cur_scene_pose);
-    }
-
-    in.close();
-    response->status = 1;
-
-    if(debug_mode_)
-    {
-      RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"), "get_path_list: parsed " << response->pose_names.size() << " waypoints");
-    }
-  }
-  
-  else
-  {
-    if(debug_mode_)
-    {
-      RCLCPP_INFO(rclcpp::get_logger("construct_xml"), "Invalid mode");
-    }
-    return;
+  if (rclcpp::spin_until_future_complete(bt_stop_node, future) ==
+      rclcpp::FutureReturnCode::SUCCESS) {
+    RCLCPP_INFO(rclcpp::get_logger("bt stop node "),
+                "Received response: success");
+    return true;
+  } else {
+    RCLCPP_ERROR(rclcpp::get_logger("bt stop node "),
+                 "Failed to receive response.");
+    return false;
   }
 }
 
+// tree_nodes_models.xml source file ကို xml ဖိုင်ထဲသို့ ထည့်သွင်းခြင်း
+bool append_tree_models(std::ofstream &xml_file) {
+  std::ifstream src(paths::TREE_MODELS_SOURCE, std::ios::in);
+  if (!src.is_open()) {
+    if (debug_mode_) {
+      RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"),
+                         "tree_nodes_models.xml source file error!!");
+    }
+    return false;
+  }
+  xml_file << src.rdbuf();
+  src.close();
+  return true;
+}
 
-int main(int argc, char **argv)
-{
+// ============================================================================
+// Helper Functions: YAML I/O
+// ============================================================================
+
+// Waypoints များကို YAML file အဖြစ် သိမ်းဆည်းခြင်း
+bool write_waypoints_yaml(
+    const std::string &yaml_path, const std::vector<std::string> &pose_names,
+    const std::vector<geometry_msgs::msg::PoseStamped> &poses,
+    const std::vector<geometry_msgs::msg::Pose> &scene_poses,
+    const std::string &mode_name) {
+  if (!std::filesystem::exists(yaml_path)) {
+    if (debug_mode_) {
+      RCLCPP_INFO_STREAM(
+          rclcpp::get_logger("xml constructor ( yaml construct )"),
+          mode_name << ".yaml file doesn't exists: ");
+    }
+    return false;
+  }
+
+  std::ofstream yaml_file(yaml_path, std::ios::trunc);
+  if (!yaml_file.is_open()) {
+    if (debug_mode_) {
+      RCLCPP_ERROR(rclcpp::get_logger("xml constructor ( yaml construct )"),
+                   "%s.yaml file open error!!", mode_name.c_str());
+    }
+    return false;
+  }
+
+  yaml_file << "waypoints:\n";
+  for (int i = static_cast<int>(pose_names.size()) - 1; i >= 0; --i) {
+    yaml_file << "  - name: " << pose_names[i] << "\n";
+    yaml_file << "    frame_id: " << "map\n";
+    yaml_file << "    pose:\n";
+    yaml_file << "      position:\n";
+    yaml_file << "        x: " << poses[i].pose.position.x << "\n";
+    yaml_file << "        y: " << poses[i].pose.position.y << "\n";
+    yaml_file << "        z: " << poses[i].pose.position.z << "\n";
+    yaml_file << "      orientation:\n";
+    yaml_file << "        x: " << poses[i].pose.orientation.x << "\n";
+    yaml_file << "        y: " << poses[i].pose.orientation.y << "\n";
+    yaml_file << "        z: " << poses[i].pose.orientation.z << "\n";
+    yaml_file << "        w: " << poses[i].pose.orientation.w << "\n";
+    yaml_file << "    scene_poses:\n";
+    yaml_file << "      x: " << scene_poses[i].position.x << "\n";
+    yaml_file << "      y: " << scene_poses[i].position.y << "\n";
+    yaml_file << "      phi: " << scene_poses[i].orientation.w << "\n";
+
+    if (debug_mode_) {
+      RCLCPP_INFO(rclcpp::get_logger("xml constructor ( yaml construct )"),
+                  "%s", pose_names[i].c_str());
+    }
+  }
+
+  yaml_file.flush();
+  yaml_file.close();
+
+  if (debug_mode_) {
+    RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor ( yaml construct )"),
+                       mode_name << ".yaml created successfully!");
+  }
+  return true;
+}
+
+// YAML file မှ waypoints list ကို parse ပြုလုပ်ခြင်း
+bool parse_waypoints_yaml(
+    const std::string &yaml_path, const std::string &tag_name,
+    std::shared_ptr<rom_interfaces::srv::ConstructYaml::Response> response) {
+  response->status = -1;
+
+  if (!std::filesystem::exists(yaml_path)) {
+    RCLCPP_WARN(rclcpp::get_logger("xml constructor"),
+                "%s: yaml file does not exist: %s", tag_name.c_str(),
+                yaml_path.c_str());
+    return false;
+  }
+
+  std::ifstream in(yaml_path);
+  if (!in.is_open()) {
+    RCLCPP_ERROR(rclcpp::get_logger("xml constructor"),
+                 "%s: failed to open yaml file: %s", tag_name.c_str(),
+                 yaml_path.c_str());
+    return false;
+  }
+
+  auto trim = [](std::string &s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
+              return !std::isspace(ch);
+            }));
+    s.erase(std::find_if(s.rbegin(), s.rend(),
+                         [](unsigned char ch) { return !std::isspace(ch); })
+                .base(),
+            s.end());
+  };
+
+  std::string line;
+  std::string current_name;
+  geometry_msgs::msg::PoseStamped cur_pose_stamped;
+  geometry_msgs::msg::Pose cur_scene_pose;
+  bool in_pose = false;
+  bool in_position = false;
+  bool in_orientation = false;
+  bool in_scene = false;
+
+  while (std::getline(in, line)) {
+    std::string s = line;
+    trim(s);
+
+    if (s.rfind("- name:", 0) == 0) {
+      if (!current_name.empty()) {
+        response->pose_names.push_back(current_name);
+        response->poses.push_back(cur_pose_stamped);
+        response->scene_poses.push_back(cur_scene_pose);
+        cur_pose_stamped = geometry_msgs::msg::PoseStamped();
+        cur_scene_pose = geometry_msgs::msg::Pose();
+      }
+      auto pos = s.find(":");
+      if (pos != std::string::npos) {
+        current_name = s.substr(pos + 1);
+        trim(current_name);
+      } else {
+        current_name.clear();
+      }
+      cur_pose_stamped.header.frame_id = "map";
+      in_pose = in_position = in_orientation = in_scene = false;
+    } else if (s.rfind("pose:", 0) == 0) {
+      in_pose = true;
+      in_position = in_orientation = false;
+      in_scene = false;
+    } else if (s.rfind("position:", 0) == 0 && in_pose) {
+      in_position = true;
+      in_orientation = false;
+      in_scene = false;
+    } else if (s.rfind("orientation:", 0) == 0 && in_pose) {
+      in_orientation = true;
+      in_position = false;
+      in_scene = false;
+    } else if (s.rfind("scene_poses:", 0) == 0) {
+      in_scene = true;
+      in_pose = in_position = in_orientation = false;
+    } else if (in_position && (s.rfind("x:", 0) == 0 || s.rfind("y:", 0) == 0 ||
+                               s.rfind("z:", 0) == 0)) {
+      auto pos = s.find(":");
+      std::string key = s.substr(0, pos);
+      std::string val = (pos == std::string::npos) ? "" : s.substr(pos + 1);
+      trim(key);
+      trim(val);
+      try {
+        double v = std::stod(val);
+        if (key == "x")
+          cur_pose_stamped.pose.position.x = v;
+        else if (key == "y")
+          cur_pose_stamped.pose.position.y = v;
+        else if (key == "z")
+          cur_pose_stamped.pose.position.z = v;
+      } catch (...) {
+      }
+    } else if (in_orientation &&
+               (s.rfind("x:", 0) == 0 || s.rfind("y:", 0) == 0 ||
+                s.rfind("z:", 0) == 0 || s.rfind("w:", 0) == 0)) {
+      auto pos = s.find(":");
+      std::string key = s.substr(0, pos);
+      std::string val = (pos == std::string::npos) ? "" : s.substr(pos + 1);
+      trim(key);
+      trim(val);
+      try {
+        double v = std::stod(val);
+        if (key == "x")
+          cur_pose_stamped.pose.orientation.x = v;
+        else if (key == "y")
+          cur_pose_stamped.pose.orientation.y = v;
+        else if (key == "z")
+          cur_pose_stamped.pose.orientation.z = v;
+        else if (key == "w")
+          cur_pose_stamped.pose.orientation.w = v;
+      } catch (...) {
+      }
+    } else if (in_scene && (s.rfind("x:", 0) == 0 || s.rfind("y:", 0) == 0 ||
+                            s.rfind("phi:", 0) == 0)) {
+      auto pos = s.find(":");
+      std::string key = s.substr(0, pos);
+      std::string val = (pos == std::string::npos) ? "" : s.substr(pos + 1);
+      trim(key);
+      trim(val);
+      try {
+        double v = std::stod(val);
+        if (key == "x")
+          cur_scene_pose.position.x = v;
+        else if (key == "y")
+          cur_scene_pose.position.y = v;
+        else if (key == "phi")
+          cur_scene_pose.orientation.w = v;
+      } catch (...) {
+      }
+    }
+  }
+
+  if (!current_name.empty()) {
+    response->pose_names.push_back(current_name);
+    response->poses.push_back(cur_pose_stamped);
+    response->scene_poses.push_back(cur_scene_pose);
+  }
+
+  in.close();
+  response->status = 1;
+
+  if (debug_mode_) {
+    RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"),
+                       tag_name << ": parsed " << response->pose_names.size()
+                                << " waypoints");
+  }
+  return true;
+}
+
+// ============================================================================
+// Helper Functions: XML Snippets (7-Stage Intelligent Recovery)
+// ============================================================================
+
+// Waypoints mode အတွက် direct tag format (7-Stage Recovery)
+void write_recovery_subtree_waypoints(std::ofstream &xml_file,
+                                      const std::string &pose_name) {
+  xml_file << "      <RecoveryNode name=\"NavigateRecovery\"\n";
+  xml_file << "                    number_of_retries=\"-1\">\n";
+  xml_file << "        <PipelineSequence name=\"NavigateWithReplanning\">\n";
+  xml_file << "          <RateController hz=\"1.0\">\n";
+  xml_file << "            <RecoveryNode name=\"ComputePathToPose\"\n";
+  xml_file << "                          number_of_retries=\"1\">\n";
+  xml_file << "              <ComputePathToPose goal=\"{" << pose_name
+           << "}\"\n";
+  xml_file << "                                 start=\"\"\n";
+  xml_file << "                                 planner_id=\"GridBased\"\n";
+  xml_file << "                                 "
+              "server_name=\"compute_path_to_pose\"\n";
+  xml_file << "                                 server_timeout=\"10.0\"\n";
+  xml_file << "                                 path=\"{path}\"/>\n";
+  xml_file << "              <ClearEntireCostmap "
+              "name=\"ClearGlobalCostmap-Context\"\n";
+  xml_file << "                                  "
+              "service_name=\"global_costmap/clear_entirely_global_costmap\"\n";
+  xml_file << "                                  server_timeout=\"10.0\"/>\n";
+  xml_file << "            </RecoveryNode>\n";
+  xml_file << "          </RateController>\n";
+  xml_file << "          <RecoveryNode name=\"FollowPath\"\n";
+  xml_file << "                        number_of_retries=\"1\">\n";
+  xml_file << "            <FollowPath controller_id=\"FollowPath\"\n";
+  xml_file << "                        path=\"{path}\"\n";
+  xml_file << "                        goal_checker_id=\"\"\n";
+  xml_file << "                        server_name=\"follow_path\"\n";
+  xml_file << "                        server_timeout=\"10.0\"/>\n";
+  xml_file
+      << "            <ClearEntireCostmap name=\"ClearLocalCostmap-Context\"\n";
+  xml_file << "                                "
+              "service_name=\"local_costmap/clear_entirely_local_costmap\"\n";
+  xml_file << "                                server_timeout=\"10.0\"/>\n";
+  xml_file << "          </RecoveryNode>\n";
+  xml_file << "        </PipelineSequence>\n";
+  // 7-Stage Intelligent Recovery — No BackUp (front LiDAR only)
+  xml_file << "        <ReactiveFallback name=\"RecoveryFallback\">\n";
+  xml_file << "          <GoalUpdated/>\n";
+  xml_file << "          <RoundRobin name=\"RecoveryActions\">\n";
+  // Stage 1: Clear local costmap only
+  xml_file
+      << "            <ClearEntireCostmap name=\"ClearLocalCostmap-Subtree\"\n";
+  xml_file << "                                "
+              "service_name=\"local_costmap/clear_entirely_local_costmap\"\n";
+  xml_file << "                                server_timeout=\"10.0\"/>\n";
+  // Stage 2: Small spin 45deg + clear local
+  xml_file << "            <Sequence name=\"SpinSmallAndClear\">\n";
+  xml_file << "              <Spin spin_dist=\"0.785\"\n";
+  xml_file << "                    time_allowance=\"6.0\"\n";
+  xml_file << "                    server_name=\"spin\"\n";
+  xml_file << "                    server_timeout=\"10.0\"/>\n";
+  xml_file << "              <ClearEntireCostmap "
+              "name=\"ClearLocalCostmap-AfterSpin45\"\n";
+  xml_file << "                                  "
+              "service_name=\"local_costmap/clear_entirely_local_costmap\"\n";
+  xml_file << "                                  server_timeout=\"10.0\"/>\n";
+  xml_file << "            </Sequence>\n";
+  // Stage 3: Wait 3s
+  xml_file << "            <Wait wait_duration=\"3\"\n";
+  xml_file << "                  server_name=\"wait\"\n";
+  xml_file << "                  server_timeout=\"10.0\"/>\n";
+  // Stage 4: Spin right 90deg + clear all
+  xml_file << "            <Sequence name=\"SpinRightAndClearAll\">\n";
+  xml_file << "              <Spin spin_dist=\"1.57\"\n";
+  xml_file << "                    time_allowance=\"10.0\"\n";
+  xml_file << "                    server_name=\"spin\"\n";
+  xml_file << "                    server_timeout=\"15.0\"/>\n";
+  xml_file << "              <ClearEntireCostmap "
+              "name=\"ClearLocalCostmap-AfterSpin90R\"\n";
+  xml_file << "                                  "
+              "service_name=\"local_costmap/clear_entirely_local_costmap\"\n";
+  xml_file << "                                  server_timeout=\"10.0\"/>\n";
+  xml_file << "              <ClearEntireCostmap "
+              "name=\"ClearGlobalCostmap-AfterSpin90R\"\n";
+  xml_file << "                                  "
+              "service_name=\"global_costmap/clear_entirely_global_costmap\"\n";
+  xml_file << "                                  server_timeout=\"10.0\"/>\n";
+  xml_file << "            </Sequence>\n";
+  // Stage 5: Spin left 90deg + clear all
+  xml_file << "            <Sequence name=\"SpinLeftAndClearAll\">\n";
+  xml_file << "              <Spin spin_dist=\"-1.57\"\n";
+  xml_file << "                    time_allowance=\"10.0\"\n";
+  xml_file << "                    server_name=\"spin\"\n";
+  xml_file << "                    server_timeout=\"15.0\"/>\n";
+  xml_file << "              <ClearEntireCostmap "
+              "name=\"ClearLocalCostmap-AfterSpin90L\"\n";
+  xml_file << "                                  "
+              "service_name=\"local_costmap/clear_entirely_local_costmap\"\n";
+  xml_file << "                                  server_timeout=\"10.0\"/>\n";
+  xml_file << "              <ClearEntireCostmap "
+              "name=\"ClearGlobalCostmap-AfterSpin90L\"\n";
+  xml_file << "                                  "
+              "service_name=\"global_costmap/clear_entirely_global_costmap\"\n";
+  xml_file << "                                  server_timeout=\"10.0\"/>\n";
+  xml_file << "            </Sequence>\n";
+  // Stage 6: Wait 5s + full clear
+  xml_file << "            <Sequence name=\"WaitAndFullClear\">\n";
+  xml_file << "              <Wait wait_duration=\"5\"\n";
+  xml_file << "                    server_name=\"wait\"\n";
+  xml_file << "                    server_timeout=\"15.0\"/>\n";
+  xml_file << "              <ClearEntireCostmap "
+              "name=\"ClearLocalCostmap-AfterWait\"\n";
+  xml_file << "                                  "
+              "service_name=\"local_costmap/clear_entirely_local_costmap\"\n";
+  xml_file << "                                  server_timeout=\"10.0\"/>\n";
+  xml_file << "              <ClearEntireCostmap "
+              "name=\"ClearGlobalCostmap-AfterWait\"\n";
+  xml_file << "                                  "
+              "service_name=\"global_costmap/clear_entirely_global_costmap\"\n";
+  xml_file << "                                  server_timeout=\"10.0\"/>\n";
+  xml_file << "            </Sequence>\n";
+  // Stage 7: Spin 180deg + clear all
+  xml_file << "            <Sequence name=\"LastResortFullReset\">\n";
+  xml_file << "              <Spin spin_dist=\"3.14\"\n";
+  xml_file << "                    time_allowance=\"15.0\"\n";
+  xml_file << "                    server_name=\"spin\"\n";
+  xml_file << "                    server_timeout=\"20.0\"/>\n";
+  xml_file << "              <ClearEntireCostmap "
+              "name=\"ClearLocalCostmap-LastResort\"\n";
+  xml_file << "                                  "
+              "service_name=\"local_costmap/clear_entirely_local_costmap\"\n";
+  xml_file << "                                  server_timeout=\"10.0\"/>\n";
+  xml_file << "              <ClearEntireCostmap "
+              "name=\"ClearGlobalCostmap-LastResort\"\n";
+  xml_file << "                                  "
+              "service_name=\"global_costmap/clear_entirely_global_costmap\"\n";
+  xml_file << "                                  server_timeout=\"10.0\"/>\n";
+  xml_file << "            </Sequence>\n";
+  xml_file << "          </RoundRobin>\n";
+  xml_file << "        </ReactiveFallback>\n";
+  xml_file << "      </RecoveryNode>\n";
+}
+
+// Service / Patrol mode အတွက် Control/Action tag format (7-Stage Recovery)
+void write_recovery_subtree_action_format(std::ofstream &xml_file,
+                                          const std::string &pose_name) {
+  xml_file << "                <Control ID=\"RecoveryNode\" "
+              "name=\"NavigateRecovery\" number_of_retries=\"-1\">\n";
+  xml_file << "                    <Control ID=\"PipelineSequence\" "
+              "name=\"NavigateWithReplanning\">\n";
+  xml_file << "                        <Decorator ID=\"RateController\" "
+              "hz=\"1.0\">\n";
+  xml_file << "                            <Control ID=\"RecoveryNode\" "
+              "name=\"ComputePathToPose\" number_of_retries=\"1\">\n";
+  xml_file
+      << "                                <Action ID=\"ComputePathToPose\" "
+         "goal=\"{"
+      << pose_name
+      << "}\" start=\"\" path=\"{path}\" planner_id=\"GridBased\" "
+         "server_name=\"compute_path_to_pose\" server_timeout=\"10.0\"/>\n";
+  xml_file
+      << "                                <Action ID=\"ClearEntireCostmap\" "
+         "name=\"ClearGlobalCostmap-Context\" "
+         "server_timeout=\"10.0\" "
+         "service_name=\"global_costmap/clear_entirely_global_costmap\"/>\n";
+  xml_file << "                            </Control>\n";
+  xml_file << "                        </Decorator>\n";
+  xml_file << "                        <Control ID=\"RecoveryNode\" "
+              "name=\"FollowPath\" number_of_retries=\"1\">\n";
+  xml_file << "                            <Action ID=\"FollowPath\" "
+              "controller_id=\"FollowPath\" goal_checker_id=\"\" "
+              "path=\"{path}\" server_name=\"follow_path\" "
+              "server_timeout=\"10.0\"/>\n";
+  xml_file << "                            <Action ID=\"ClearEntireCostmap\" "
+              "name=\"ClearLocalCostmap-Context\" "
+              "server_timeout=\"10.0\" "
+              "service_name=\"local_costmap/clear_entirely_local_costmap\"/>\n";
+  xml_file << "                        </Control>\n";
+  xml_file << "                    </Control>\n";
+  // 7-Stage Intelligent Recovery — No BackUp (front LiDAR only)
+  xml_file
+      << "                    <ReactiveFallback name=\"RecoveryFallback\">\n";
+  xml_file << "                        <Condition ID=\"GoalUpdated\"/>\n";
+  xml_file << "                        <Control ID=\"RoundRobin\" "
+              "name=\"RecoveryActions\">\n";
+  // Stage 1: Clear local costmap only
+  xml_file << "                            <Action ID=\"ClearEntireCostmap\" "
+              "name=\"ClearLocalCostmap-Subtree\" "
+              "server_timeout=\"10.0\" "
+              "service_name=\"local_costmap/clear_entirely_local_costmap\"/>\n";
+  // Stage 2: Small spin 45deg + clear local
+  xml_file
+      << "                            <Sequence name=\"SpinSmallAndClear\">\n";
+  xml_file << "                                <Action ID=\"Spin\" "
+              "server_name=\"spin\" server_timeout=\"10.0\" "
+              "spin_dist=\"0.785\" time_allowance=\"6.0\"/>\n";
+  xml_file
+      << "                                <Action ID=\"ClearEntireCostmap\" "
+         "name=\"ClearLocalCostmap-AfterSpin45\" "
+         "server_timeout=\"10.0\" "
+         "service_name=\"local_costmap/clear_entirely_local_costmap\"/>\n";
+  xml_file << "                            </Sequence>\n";
+  // Stage 3: Wait 3s
+  xml_file
+      << "                            <Action ID=\"Wait\" server_name=\"wait\" "
+         "server_timeout=\"10.0\" wait_duration=\"3\"/>\n";
+  // Stage 4: Spin right 90deg + clear local + global
+  xml_file << "                            <Sequence "
+              "name=\"SpinRightAndClearAll\">\n";
+  xml_file << "                                <Action ID=\"Spin\" "
+              "server_name=\"spin\" server_timeout=\"15.0\" "
+              "spin_dist=\"1.57\" time_allowance=\"10.0\"/>\n";
+  xml_file
+      << "                                <Action ID=\"ClearEntireCostmap\" "
+         "name=\"ClearLocalCostmap-AfterSpin90R\" "
+         "server_timeout=\"10.0\" "
+         "service_name=\"local_costmap/clear_entirely_local_costmap\"/>\n";
+  xml_file
+      << "                                <Action ID=\"ClearEntireCostmap\" "
+         "name=\"ClearGlobalCostmap-AfterSpin90R\" "
+         "server_timeout=\"10.0\" "
+         "service_name=\"global_costmap/clear_entirely_global_costmap\"/>\n";
+  xml_file << "                            </Sequence>\n";
+  // Stage 5: Spin left 90deg + clear all
+  xml_file << "                            <Sequence "
+              "name=\"SpinLeftAndClearAll\">\n";
+  xml_file << "                                <Action ID=\"Spin\" "
+              "server_name=\"spin\" server_timeout=\"15.0\" "
+              "spin_dist=\"-1.57\" time_allowance=\"10.0\"/>\n";
+  xml_file
+      << "                                <Action ID=\"ClearEntireCostmap\" "
+         "name=\"ClearLocalCostmap-AfterSpin90L\" "
+         "server_timeout=\"10.0\" "
+         "service_name=\"local_costmap/clear_entirely_local_costmap\"/>\n";
+  xml_file
+      << "                                <Action ID=\"ClearEntireCostmap\" "
+         "name=\"ClearGlobalCostmap-AfterSpin90L\" "
+         "server_timeout=\"10.0\" "
+         "service_name=\"global_costmap/clear_entirely_global_costmap\"/>\n";
+  xml_file << "                            </Sequence>\n";
+  // Stage 6: Wait 5s + full clear
+  xml_file
+      << "                            <Sequence name=\"WaitAndFullClear\">\n";
+  xml_file
+      << "                                <Action ID=\"Wait\" "
+         "server_name=\"wait\" server_timeout=\"15.0\" wait_duration=\"5\"/>\n";
+  xml_file << "                                <Action "
+              "ID=\"ClearEntireCostmap\" name=\"ClearLocalCostmap-AfterWait\" "
+              "server_timeout=\"10.0\" "
+              "service_name=\"local_costmap/clear_entirely_local_costmap\"/>\n";
+  xml_file
+      << "                                <Action ID=\"ClearEntireCostmap\" "
+         "name=\"ClearGlobalCostmap-AfterWait\" "
+         "server_timeout=\"10.0\" "
+         "service_name=\"global_costmap/clear_entirely_global_costmap\"/>\n";
+  xml_file << "                            </Sequence>\n";
+  // Stage 7: Spin 180deg + clear all
+  xml_file << "                            <Sequence "
+              "name=\"LastResortFullReset\">\n";
+  xml_file << "                                <Action ID=\"Spin\" "
+              "server_name=\"spin\" server_timeout=\"20.0\" "
+              "spin_dist=\"3.14\" time_allowance=\"15.0\"/>\n";
+  xml_file << "                                <Action "
+              "ID=\"ClearEntireCostmap\" name=\"ClearLocalCostmap-LastResort\" "
+              "server_timeout=\"10.0\" "
+              "service_name=\"local_costmap/clear_entirely_local_costmap\"/>\n";
+  xml_file
+      << "                                <Action ID=\"ClearEntireCostmap\" "
+         "name=\"ClearGlobalCostmap-LastResort\" "
+         "server_timeout=\"10.0\" "
+         "service_name=\"global_costmap/clear_entirely_global_costmap\"/>\n";
+  xml_file << "                            </Sequence>\n";
+  xml_file << "                        </Control>\n";
+  xml_file << "                    </ReactiveFallback>\n";
+  xml_file << "                </Control>\n";
+}
+
+// ============================================================================
+// Mode Handlers
+// ============================================================================
+
+void handle_waypoints_mode(
+    const std::shared_ptr<rom_interfaces::srv::ConstructYaml::Request> request,
+    std::shared_ptr<rom_interfaces::srv::ConstructYaml::Response> response) {
+  response->status = -1;
+
+  stop_behavior_tree();
+
+  if (debug_mode_) {
+    RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"),
+                       "Mode: " << request->mode);
+  }
+
+  const std::string &xml_path = paths::WAYPOINTS_XML;
+  const std::string &yaml_path = paths::WAYPOINTS_YAML;
+  rom_interfaces::msg::ConstructYaml message;
+
+  if (!std::filesystem::exists(xml_path)) {
+    if (debug_mode_) {
+      RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"),
+                         "waypoints_mode.xml doesn't exists: cancelling ...");
+    }
+    return;
+  }
+
+  std::ofstream xml_file(xml_path, std::ios::trunc);
+  if (!xml_file.is_open()) {
+    if (debug_mode_) {
+      RCLCPP_ERROR(rclcpp::get_logger("xml constructor"),
+                   "waypoints_mode.xml file open error!! cancelling ...");
+    }
+    return;
+  }
+
+  xml_file << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+  xml_file << "<root BTCPP_format=\"3\">\n";
+  xml_file << "  <BehaviorTree ID=\"MainTree\">\n";
+  xml_file << "    <Sequence name=\"NavigationSequence\">\n";
+  xml_file << "      \n";
+
+  for (int i = static_cast<int>(request->scene_poses.size()) - 1; i >= 0; --i) {
+    message.pose_names.push_back(request->pose_names[i]);
+    message.poses.push_back(request->scene_poses[i]);
+    write_recovery_subtree_waypoints(xml_file, request->pose_names[i]);
+  }
+
+  xml_file << "    </Sequence>\n";
+  xml_file << "  </BehaviorTree>\n";
+
+  if (!append_tree_models(xml_file)) {
+    return;
+  }
+
+  xml_file << "</root>\n";
+  xml_file.flush();
+  xml_file.close();
+
+  if (debug_mode_) {
+    RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"),
+                       "waypoints_mode.xml created successfully!");
+  }
+
+  publisher_->publish(message);
+
+  if (write_waypoints_yaml(yaml_path, request->pose_names, request->poses,
+                           request->scene_poses, "waypoints_mode")) {
+    response->status = 1;
+  }
+}
+
+void handle_service_mode(
+    const std::shared_ptr<rom_interfaces::srv::ConstructYaml::Request> request,
+    std::shared_ptr<rom_interfaces::srv::ConstructYaml::Response> response) {
+  ROM_DYNAMICS_UNUSED(response);
+
+  stop_behavior_tree();
+
+  if (debug_mode_) {
+    RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"),
+                       "Mode: " << request->mode);
+  }
+
+  const std::string &xml_path = paths::SERVICE_XML;
+  const std::string &yaml_path = paths::SERVICE_YAML;
+  rom_interfaces::msg::ConstructYaml message;
+
+  if (!std::filesystem::exists(xml_path)) {
+    if (debug_mode_) {
+      RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"),
+                         "service_mode.xml doesn't exists: creating ...");
+    }
+    return;
+  }
+
+  std::ofstream xml_file(xml_path, std::ios::trunc);
+  if (!xml_file.is_open()) {
+    if (debug_mode_) {
+      RCLCPP_ERROR(rclcpp::get_logger("xml constructor"),
+                   "service_mode.xml file open error!!");
+    }
+    return;
+  }
+
+  xml_file << "<?xml version=\"1.0\"?>\n";
+  xml_file << "<root main_tree_to_execute=\"MainTree\">\n";
+  xml_file << "    <BehaviorTree ID=\"MainTree\">\n";
+  xml_file << "        <Sequence name=\"NavigationSequence\">\n";
+
+  bool first_time_loop = true;
+  for (int i = static_cast<int>(request->scene_poses.size()) - 1; i >= 0; --i) {
+    message.pose_names.push_back(request->pose_names[i]);
+    message.poses.push_back(request->scene_poses[i]);
+
+    if (!first_time_loop) {
+      xml_file << "            <Delay delay_msec=\"15000\">\n";
+    }
+
+    write_recovery_subtree_action_format(xml_file, request->pose_names[i]);
+
+    if (!first_time_loop) {
+      xml_file << "            </Delay>\n";
+    }
+    first_time_loop = false;
+  }
+
+  xml_file << "            </Sequence>\n";
+  xml_file << "    </BehaviorTree>\n";
+
+  if (!append_tree_models(xml_file)) {
+    return;
+  }
+
+  xml_file << "</root>\n";
+  xml_file.flush();
+  xml_file.close();
+
+  if (debug_mode_) {
+    RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"),
+                       "service_mode.xml created successfully!");
+  }
+
+  write_waypoints_yaml(yaml_path, request->pose_names, request->poses,
+                       request->scene_poses, "service_mode");
+}
+
+void handle_patrol_mode(
+    const std::shared_ptr<rom_interfaces::srv::ConstructYaml::Request> request,
+    std::shared_ptr<rom_interfaces::srv::ConstructYaml::Response> response) {
+  ROM_DYNAMICS_UNUSED(response);
+
+  stop_behavior_tree();
+
+  if (debug_mode_) {
+    RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"),
+                       "Mode: " << request->mode);
+  }
+
+  const std::string &xml_path = paths::PATROL_XML;
+  const std::string &yaml_path = paths::PATROL_YAML;
+  rom_interfaces::msg::ConstructYaml message;
+
+  if (!std::filesystem::exists(xml_path)) {
+    if (debug_mode_) {
+      RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"),
+                         "patrol_mode.xml doesn't exists: creating ...");
+    }
+    return;
+  }
+
+  std::ofstream xml_file(xml_path, std::ios::trunc);
+  if (!xml_file.is_open()) {
+    if (debug_mode_) {
+      RCLCPP_ERROR(rclcpp::get_logger("xml constructor"),
+                   "patrol_mode.xml file open error!!");
+    }
+    return;
+  }
+
+  xml_file << "<?xml version=\"1.0\"?>\n";
+  xml_file << "<root main_tree_to_execute=\"MainTree\">\n";
+  xml_file << "    <BehaviorTree ID=\"MainTree\">\n";
+  xml_file << "        <Repeat num_cycles=\"100\">\n";
+  xml_file << "            <Sequence name=\"NavigationSequence\">\n";
+
+  for (int i = static_cast<int>(request->scene_poses.size()) - 1; i >= 0; --i) {
+    message.pose_names.push_back(request->pose_names[i]);
+    message.poses.push_back(request->scene_poses[i]);
+    write_recovery_subtree_action_format(xml_file, request->pose_names[i]);
+  }
+
+  xml_file << "            </Sequence>\n";
+  xml_file << "        </Repeat>\n";
+  xml_file << "    </BehaviorTree>\n";
+
+  if (!append_tree_models(xml_file)) {
+    return;
+  }
+
+  xml_file << "</root>\n";
+  xml_file.flush();
+  xml_file.close();
+
+  if (debug_mode_) {
+    RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"),
+                       "patrol_mode.xml created successfully!");
+  }
+
+  write_waypoints_yaml(yaml_path, request->pose_names, request->poses,
+                       request->scene_poses, "patrol_mode");
+}
+
+void handle_goal_mode(
+    const std::shared_ptr<rom_interfaces::srv::ConstructYaml::Request>
+        request) {
+  stop_behavior_tree();
+
+  std::string cmd2 = request->command;
+  std::thread([cmd2]() {
+    int ret = system(cmd2.c_str());
+    if (ret == -1) {
+      if (debug_mode_) {
+        RCLCPP_ERROR(rclcpp::get_logger("construct_xml"),
+                     "Failed to bt tree: %s", cmd2.c_str());
+      }
+    } else {
+      if (debug_mode_) {
+        RCLCPP_INFO(rclcpp::get_logger("construct_xml"),
+                    "Run BT tree successfully and Done %s", cmd2.c_str());
+      }
+    }
+  }).detach();
+}
+
+void handle_eraser_mode(
+    const std::shared_ptr<rom_interfaces::srv::ConstructYaml::Request>
+        request) {
+  if (debug_mode_) {
+    RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"),
+                       "Mode: " << request->mode);
+  }
+
+  const std::vector<std::pair<std::string, std::string>> files_to_erase = {
+      {paths::WAYPOINTS_XML, "waypoints_mode.xml"},
+      {paths::WAYPOINTS_YAML, "waypoints_mode.yaml"},
+      {paths::SERVICE_XML, "services_mode.xml"},
+      {paths::SERVICE_YAML, "services_mode.yaml"},
+      {paths::PATROL_XML, "patrols_mode.xml"},
+      {paths::PATROL_YAML, "patrols_mode.yaml"}};
+
+  for (const auto &item : files_to_erase) {
+    std::ofstream ofs(item.first, std::ios::trunc);
+    if (!ofs.is_open()) {
+      if (debug_mode_) {
+        RCLCPP_ERROR(rclcpp::get_logger("xml constructor"),
+                     "%s file delete error!!", item.second.c_str());
+      }
+      return;
+    }
+    ofs << "hello";
+    ofs.flush();
+    ofs.close();
+  }
+}
+
+void handle_path_mode(
+    const std::shared_ptr<rom_interfaces::srv::ConstructYaml::Request> request,
+    std::shared_ptr<rom_interfaces::srv::ConstructYaml::Response> response) {
+  response->status = -1;
+
+  if (debug_mode_) {
+    RCLCPP_INFO_STREAM(rclcpp::get_logger("xml constructor"),
+                       "Mode: " << request->mode);
+  }
+
+  if (write_waypoints_yaml(paths::PATH_YAML, request->pose_names,
+                           request->poses, request->scene_poses, "path_mode")) {
+    response->status = 1;
+  }
+}
+
+// ============================================================================
+// Service Callback Dispatcher
+// ============================================================================
+void construct_xml_file(
+    const std::shared_ptr<rom_interfaces::srv::ConstructYaml::Request> request,
+    std::shared_ptr<rom_interfaces::srv::ConstructYaml::Response> response) {
+  const std::string &request_mode = request->mode;
+
+  if (request_mode == "waypoints_mode") {
+    handle_waypoints_mode(request, response);
+  } else if (request_mode == "service_mode") {
+    handle_service_mode(request, response);
+  } else if (request_mode == "patrol_mode") {
+    handle_patrol_mode(request, response);
+  } else if (request_mode == "goal_mode") {
+    handle_goal_mode(request);
+  } else if (request_mode == "eraser_mode") {
+    handle_eraser_mode(request);
+  } else if (request_mode == "path_mode") {
+    handle_path_mode(request, response);
+  } else if (request_mode == "get_wp_list") {
+    parse_waypoints_yaml(paths::WAYPOINTS_YAML, "get_wp_list", response);
+  } else if (request_mode == "get_srv_list") {
+    parse_waypoints_yaml(paths::SERVICE_YAML, "get_srv_list", response);
+  } else if (request_mode == "get_patrol_list") {
+    parse_waypoints_yaml(paths::PATROL_YAML, "get_patrol_list", response);
+  } else if (request_mode == "get_path_list") {
+    parse_waypoints_yaml(paths::PATH_YAML, "get_path_list", response);
+  } else {
+    if (debug_mode_) {
+      RCLCPP_INFO(rclcpp::get_logger("construct_xml"), "Invalid mode");
+    }
+  }
+}
+
+// ============================================================================
+// Main
+// ============================================================================
+int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
-  
-  // std::shared_ptr<rclcpp::Node> node = rclcpp::Node::make_shared("construct_bt_xml_server", rom_robot_namespace);
-  // bt_stop_node = rclcpp::Node::make_shared("bt_stop_client_node", rom_robot_namespace);
 
-  // Check debug mode environment variable
-  const char* debug_env = std::getenv("ROM_DYNAMICS_DEBUG");
+  const char *debug_env = std::getenv("ROM_DYNAMICS_DEBUG");
   debug_mode_ = (debug_env != nullptr && std::string(debug_env) == "true");
-  RCLCPP_INFO(rclcpp::get_logger("which_name_server"), "debug_mode_: %s", debug_mode_ ? "true" : "false");
-  
-  // === ပြင်ဆင်ချက်- CLI မှ use_sim_time ကော၊ Launch parameters တွေကိုပါ ဖတ်နိုင်ရန် NodeOptions ဆောက်ခြင်း ===
+  RCLCPP_INFO(rclcpp::get_logger("which_name_server"), "debug_mode_: %s",
+              debug_mode_ ? "true" : "false");
+
+  // NodeOptions ဆောက်ခြင်း (CLI use_sim_time / launch parameters များအတွက်)
   auto node_options = rclcpp::NodeOptions();
 
-  // Node Options ကို Node နှစ်ခုလုံးရဲ့ Constructor ထဲသို့ ထည့်သွင်းပေးလိုက်ပါတယ်
-  std::shared_ptr<rclcpp::Node> node = rclcpp::Node::make_shared("construct_bt_xml_server", rom_robot_namespace, node_options);
-  bt_stop_node = rclcpp::Node::make_shared("bt_stop_client_node", rom_robot_namespace, node_options);
-  
-  auto qos = rclcpp::QoS(1); 
-  qos.transient_local(); 
+  std::shared_ptr<rclcpp::Node> node = rclcpp::Node::make_shared(
+      "construct_bt_xml_server", rom_robot_namespace, node_options);
+  bt_stop_node = rclcpp::Node::make_shared("bt_stop_client_node",
+                                           rom_robot_namespace, node_options);
 
-  //အခြား qt app များမှ waypoints များကို ရယူရန် အတွက် publisher တည်ဆောက်ခြင်းဖြစ်သည်။
-  publisher_ = node->create_publisher<rom_interfaces::msg::ConstructYaml>("waypoints_list", qos);
+  auto qos = rclcpp::QoS(1);
+  qos.transient_local();
 
-  //qt မှ wp များကို behavior tree တည်ဆောက်ပေးရန် အတွက် service တည်ဆောက်ခြင်းဖြစ်သည်။
-  rclcpp::Service<rom_interfaces::srv::ConstructYaml>::SharedPtr service = node->create_service<rom_interfaces::srv::ConstructYaml>("construct_yaml_and_bt", &construct_xml_file);
+  // အခြား qt app များမှ waypoints များကို ရယူရန် အတွက် publisher တည်ဆောက်ခြင်း
+  publisher_ = node->create_publisher<rom_interfaces::msg::ConstructYaml>(
+      "waypoints_list", qos);
+
+  // qt မှ wp များကို behavior tree တည်ဆောက်ပေးရန် အတွက် service တည်ဆောက်ခြင်း
+  rclcpp::Service<rom_interfaces::srv::ConstructYaml>::SharedPtr service =
+      node->create_service<rom_interfaces::srv::ConstructYaml>(
+          "construct_yaml_and_bt", &construct_xml_file);
 
   bt_client = bt_stop_node->create_client<std_srvs::srv::SetBool>("bt_stop");
 
-  if(debug_mode_)
-  {
-    RCLCPP_INFO(rclcpp::get_logger("construct_xml"), "Ready to construct behavior tree and yaml for waypoints, service and patrol mode");
+  if (debug_mode_) {
+    RCLCPP_INFO(rclcpp::get_logger("construct_xml"),
+                "Ready to construct behavior tree and yaml for waypoints, "
+                "service and patrol mode");
   }
 
   rclcpp::spin(node);
   rclcpp::shutdown();
+  return 0;
 }

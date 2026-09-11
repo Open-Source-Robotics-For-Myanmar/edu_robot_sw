@@ -93,7 +93,7 @@ int main(int argc, char **argv)
     rclcpp::executors::MultiThreadedExecutor executor;
 
     auto stop_service_ = stop_service_node->create_service<std_srvs::srv::SetBool>(
-        "/bt_stop", stopServiceCallback);
+        "/edu_robot/bt_stop", stopServiceCallback);
     executor.add_node(stop_service_node);
     executor.add_node(node);
     
@@ -191,5 +191,5 @@ int main(int argc, char **argv)
 }
 
 /* if you want to cancel bt
-ros2 service call /bt_stop std_srvs/srv/SetBool "{data: true}"
+ros2 service call /edu_robot/bt_stop std_srvs/srv/SetBool "{data: true}"
 */
