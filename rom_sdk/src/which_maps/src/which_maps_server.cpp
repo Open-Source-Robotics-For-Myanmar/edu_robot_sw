@@ -34,7 +34,7 @@ const std::string carto_localization_launch = "cartographer_localization.launch.
 const std::string remapping_launch = "remapping.launch.py";
 
 
-std::string package_directory = "/home/mr_robot/data/maps/";
+std::string package_directory = "/home/buc_robot/data/maps/";
 bool debug_mode_ = false; // Global variable to control debug logging
 
 // switch_mode functions
@@ -172,8 +172,8 @@ void which_map_answer(const std::shared_ptr<rom_interfaces::srv::WhichMaps::Requ
                                "-pbstream_filename " + package_directory + map_name + ".pbstream "
                                "-map_filename " + package_directory + map_name + ".pgm "
                                "-yaml_filename " + package_directory + map_name + ".yaml && "
-                               "mv /home/mr_robot/rom_nav2_ws/map.pgm " + package_directory + map_name + ".pgm 2>/dev/null || true && "
-                               "mv /home/mr_robot/rom_nav2_ws/map.yaml " + package_directory + map_name + ".yaml 2>/dev/null || true";
+                               "mv /home/buc_robot/rom_nav2_ws/map.pgm " + package_directory + map_name + ".pgm 2>/dev/null || true && "
+                               "mv /home/buc_robot/rom_nav2_ws/map.yaml " + package_directory + map_name + ".yaml 2>/dev/null || true";
             
             int ret_code2 = std::system(cmd2.c_str());
             if (ret_code2 == 0)
