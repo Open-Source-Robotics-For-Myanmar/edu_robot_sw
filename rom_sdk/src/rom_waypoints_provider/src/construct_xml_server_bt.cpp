@@ -54,7 +54,7 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
 
     if (bt_client->wait_for_service(std::chrono::seconds(3))) 
     {
-      RCLCPP_INFO(rclcpp::get_logger("bt stop node "), "Service /bt_stop is available!");
+      RCLCPP_INFO(rclcpp::get_logger("bt stop node "), "Service bt_stop is available!");
 
       // stop bt tree 
       std_srvs::srv::SetBool::Request::SharedPtr bt_stop_request = std::make_shared<std_srvs::srv::SetBool::Request>();
@@ -73,7 +73,7 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
     } 
     else 
     {
-        RCLCPP_WARN(rclcpp::get_logger("bt stop node "), "Service /bt_stop is not available after waiting for 3 seconds.");
+        RCLCPP_WARN(rclcpp::get_logger("bt stop node "), "Service bt_stop is not available after waiting for 3 seconds.");
     }
     // --------------------------------------------- for ros2 behavior tree to stop
     
@@ -290,7 +290,7 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
 
     if (bt_client->wait_for_service(std::chrono::seconds(3))) 
     {
-      RCLCPP_INFO(rclcpp::get_logger("bt stop node "), "Service /bt_stop is available!");
+      RCLCPP_INFO(rclcpp::get_logger("bt stop node "), "Service bt_stop is available!");
 
       // stop bt tree 
       std_srvs::srv::SetBool::Request::SharedPtr bt_stop_request = std::make_shared<std_srvs::srv::SetBool::Request>();
@@ -309,7 +309,7 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
     } 
     else 
     {
-        RCLCPP_WARN(rclcpp::get_logger("bt stop node "), "Service /bt_stop is not available after waiting for 3 seconds.");
+        RCLCPP_WARN(rclcpp::get_logger("bt stop node "), "Service bt_stop is not available after waiting for 3 seconds.");
     }
     // --------------------------------------------- for ros2 behavior tree to stop
 
@@ -509,7 +509,7 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
 
     if (bt_client->wait_for_service(std::chrono::seconds(3))) 
     {
-      RCLCPP_INFO(rclcpp::get_logger("bt stop node "), "Service /bt_stop is available!");
+      RCLCPP_INFO(rclcpp::get_logger("bt stop node "), "Service bt_stop is available!");
 
       // stop bt tree 
       std_srvs::srv::SetBool::Request::SharedPtr bt_stop_request = std::make_shared<std_srvs::srv::SetBool::Request>();
@@ -528,7 +528,7 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
     } 
     else 
     {
-        RCLCPP_WARN(rclcpp::get_logger("bt stop node "), "Service /bt_stop is not available after waiting for 3 seconds.");
+        RCLCPP_WARN(rclcpp::get_logger("bt stop node "), "Service bt_stop is not available after waiting for 3 seconds.");
     }
     // --------------------------------------------- for ros2 behavior tree to stop
 
@@ -728,7 +728,7 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
 
     if (bt_client->wait_for_service(std::chrono::seconds(3))) 
     {
-      RCLCPP_INFO(rclcpp::get_logger("bt stop node "), "Service /bt_stop is available!");
+      RCLCPP_INFO(rclcpp::get_logger("bt stop node "), "Service bt_stop is available!");
 
       // stop bt tree 
       std_srvs::srv::SetBool::Request::SharedPtr bt_stop_request = std::make_shared<std_srvs::srv::SetBool::Request>();
@@ -747,7 +747,7 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
     } 
     else 
     {
-        RCLCPP_WARN(rclcpp::get_logger("bt stop node "), "Service /bt_stop is not available after waiting for 3 seconds.");
+        RCLCPP_WARN(rclcpp::get_logger("bt stop node "), "Service bt_stop is not available after waiting for 3 seconds.");
     }
     // --------------------------------------------- for ros2 behavior tree to stop
 
