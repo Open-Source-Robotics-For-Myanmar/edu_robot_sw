@@ -133,8 +133,8 @@ void which_map_answer(const std::shared_ptr<rom_interfaces::srv::WhichMaps::Requ
                                "-pbstream_filename " + package_directory + map_name + ".pbstream "
                                "-map_filename " + package_directory + map_name + ".pgm "
                                "-yaml_filename " + package_directory + map_name + ".yaml && "
-                               "mv /home/buc_robot/rom_nav2_ws/map.pgm " + package_directory + map_name + ".pgm 2>/dev/null || true && "
-                               "mv /home/buc_robot/rom_nav2_ws/map.yaml " + package_directory + map_name + ".yaml 2>/dev/null || true";
+                               "mv /home/buc_robot/software_ws/map.pgm " + package_directory + map_name + ".pgm 2>/dev/null || true && "
+                               "mv /home/buc_robot/software_ws/map.yaml " + package_directory + map_name + ".yaml 2>/dev/null || true";
             
             int ret_code2 = std::system(cmd2.c_str());
             if (ret_code2 == 0)
