@@ -41,6 +41,7 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
 {
   ROM_DYNAMICS_UNUSED(response);
   std::string request_mode = request->mode;
+  const std::string ns_prefix = "/" + rom_robot_namespace + "/";
 
   if(request_mode == "waypoints_mode")
   {
@@ -53,7 +54,7 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
 
     if (bt_client->wait_for_service(std::chrono::seconds(3))) 
     {
-      RCLCPP_INFO(rclcpp::get_logger("bt stop node "), "Service /bt_stop is available!");
+      RCLCPP_INFO(rclcpp::get_logger("bt stop node "), "Service bt_stop is available!");
 
       // stop bt tree 
       std_srvs::srv::SetBool::Request::SharedPtr bt_stop_request = std::make_shared<std_srvs::srv::SetBool::Request>();
@@ -72,7 +73,7 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
     } 
     else 
     {
-        RCLCPP_WARN(rclcpp::get_logger("bt stop node "), "Service /bt_stop is not available after waiting for 3 seconds.");
+        RCLCPP_WARN(rclcpp::get_logger("bt stop node "), "Service bt_stop is not available after waiting for 3 seconds.");
     }
     // --------------------------------------------- for ros2 behavior tree to stop
     
@@ -140,11 +141,11 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
           xml_file << request->pose_names[i] << "}\"\n";
           xml_file << "                                 start=\"\"\n";
           xml_file << "                                 planner_id=\"GridBased\"\n";
-          xml_file << "                                 server_name=\"compute_path_to_pose\"\n";
+          xml_file << "                                 server_name=\"" << ns_prefix << "compute_path_to_pose\"\n";
           xml_file << "                                 server_timeout=\"10.0\"\n";
           xml_file << "                                 path=\"{path}\"/>\n";
           xml_file << "              <ClearEntireCostmap name=\"ClearGlobalCostmap-Context\"\n";
-          xml_file << "                                  service_name=\"global_costmap/clear_entirely_global_costmap\"\n";
+          xml_file << "                                  service_name=\"" << ns_prefix << "global_costmap/clear_entirely_global_costmap\"\n";
           xml_file << "                                  server_timeout=\"10.0\"/>\n";
           xml_file << "            </RecoveryNode>\n";
           xml_file << "          </RateController>\n";
@@ -153,10 +154,10 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
           xml_file << "            <FollowPath controller_id=\"FollowPath\"\n";
           xml_file << "                        path=\"{path}\"\n";
           xml_file << "                        goal_checker_id=\"\"\n";
-          xml_file << "                        server_name=\"follow_path\"\n";
+          xml_file << "                        server_name=\"" << ns_prefix << "follow_path\"\n";
           xml_file << "                        server_timeout=\"10.0\"/>\n";
           xml_file << "            <ClearEntireCostmap name=\"ClearLocalCostmap-Context\"\n";
-          xml_file << "                                service_name=\"local_costmap/clear_entirely_local_costmap\"\n";
+          xml_file << "                                service_name=\"" << ns_prefix << "local_costmap/clear_entirely_local_costmap\"\n";
           xml_file << "                                server_timeout=\"10.0\"/>\n";
           xml_file << "          </RecoveryNode>\n";
           xml_file << "        </PipelineSequence>\n";
@@ -165,23 +166,23 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
           xml_file << "          <RoundRobin name=\"RecoveryActions\">\n";
           xml_file << "            <Sequence name=\"ClearingActions\">\n";
           xml_file << "              <ClearEntireCostmap name=\"ClearLocalCostmap-Subtree\"\n";
-          xml_file << "                                  service_name=\"local_costmap/clear_entirely_local_costmap\"\n";
+          xml_file << "                                  service_name=\"" << ns_prefix << "local_costmap/clear_entirely_local_costmap\"\n";
           xml_file << "                                  server_timeout=\"10.0\"/>\n";
           xml_file << "              <ClearEntireCostmap name=\"ClearGlobalCostmap-Subtree\"\n";
-          xml_file << "                                  service_name=\"global_costmap/clear_entirely_global_costmap\"\n";
+          xml_file << "                                  service_name=\"" << ns_prefix << "global_costmap/clear_entirely_global_costmap\"\n";
           xml_file << "                                  server_timeout=\"10.0\"/>\n";
           xml_file << "            </Sequence>\n";
           xml_file << "            <Spin spin_dist=\"1.57\"\n";
           xml_file << "                  time_allowance=\"-1.0\"\n";
-          xml_file << "                  server_name=\"spin\"\n";
+          xml_file << "                  server_name=\"" << ns_prefix << "spin\"\n";
           xml_file << "                  server_timeout=\"10.0\"/>\n";
           xml_file << "            <Wait wait_duration=\"5\"\n";
-          xml_file << "                  server_name=\"wait\"\n";
+          xml_file << "                  server_name=\"" << ns_prefix << "wait\"\n";
           xml_file << "                  server_timeout=\"10.0\"/>\n";
           xml_file << "            <BackUp backup_dist=\"0.30\"\n";
           xml_file << "                    backup_speed=\"0.05\"\n";
           xml_file << "                    time_allowance=\"-1.0\"\n";
-          xml_file << "                    server_name=\"backup\"\n";
+          xml_file << "                    server_name=\"" << ns_prefix << "backup\"\n";
           xml_file << "                    server_timeout=\"10.0\"/>\n";
           xml_file << "          </RoundRobin>\n";
           xml_file << "        </ReactiveFallback>\n";
@@ -289,7 +290,7 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
 
     if (bt_client->wait_for_service(std::chrono::seconds(3))) 
     {
-      RCLCPP_INFO(rclcpp::get_logger("bt stop node "), "Service /bt_stop is available!");
+      RCLCPP_INFO(rclcpp::get_logger("bt stop node "), "Service bt_stop is available!");
 
       // stop bt tree 
       std_srvs::srv::SetBool::Request::SharedPtr bt_stop_request = std::make_shared<std_srvs::srv::SetBool::Request>();
@@ -308,7 +309,7 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
     } 
     else 
     {
-        RCLCPP_WARN(rclcpp::get_logger("bt stop node "), "Service /bt_stop is not available after waiting for 3 seconds.");
+        RCLCPP_WARN(rclcpp::get_logger("bt stop node "), "Service bt_stop is not available after waiting for 3 seconds.");
     }
     // --------------------------------------------- for ros2 behavior tree to stop
 
@@ -379,25 +380,25 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
           xml_file << "                            <Control ID=\"RecoveryNode\" name=\"ComputePathToPose\" number_of_retries=\"1\">\n";
           
           xml_file << "                                <Action ID=\"ComputePathToPose\" goal=\"{";
-          xml_file << request->pose_names[i] << "}\" start=\"\" path=\"{path}\" planner_id=\"GridBased\" server_name=\"compute_path_to_pose\" server_timeout=\"10.0\"/>\n";
+          xml_file << request->pose_names[i] << "}\" start=\"\" path=\"{path}\" planner_id=\"GridBased\" server_name=\"" << ns_prefix << "compute_path_to_pose\" server_timeout=\"10.0\"/>\n";
 
-          xml_file << "                                <Action ID=\"ClearEntireCostmap\" name=\"ClearGlobalCostmap-Context\" server_timeout=\"10.0\" service_name=\"global_costmap/clear_entirely_global_costmap\"/>\n";
+          xml_file << "                                <Action ID=\"ClearEntireCostmap\" name=\"ClearGlobalCostmap-Context\" server_timeout=\"10.0\" service_name=\"" << ns_prefix << "global_costmap/clear_entirely_global_costmap\"/>\n";
           xml_file << "                            </Control>\n";
           xml_file << "                        </Decorator>\n";
           xml_file << "                        <Control ID=\"RecoveryNode\" name=\"FollowPath\" number_of_retries=\"1\">\n";
-          xml_file << "                            <Action ID=\"FollowPath\" controller_id=\"FollowPath\" goal_checker_id=\"\" path=\"{path}\" server_name=\"follow_path\" server_timeout=\"10.0\"/>\n";
-          xml_file << "                            <Action ID=\"ClearEntireCostmap\" name=\"ClearLocalCostmap-Context\" server_timeout=\"10.0\" service_name=\"local_costmap/clear_entirely_local_costmap\"/>\n";
+          xml_file << "                            <Action ID=\"FollowPath\" controller_id=\"FollowPath\" goal_checker_id=\"\" path=\"{path}\" server_name=\"" << ns_prefix << "follow_path\" server_timeout=\"10.0\"/>\n";
+          xml_file << "                            <Action ID=\"ClearEntireCostmap\" name=\"ClearLocalCostmap-Context\" server_timeout=\"10.0\" service_name=\"" << ns_prefix << "local_costmap/clear_entirely_local_costmap\"/>\n";
           xml_file << "                        </Control>\n";
           xml_file << "                    </Control>\n";
           xml_file << "                    <ReactiveFallback name=\"RecoveryFallback\">\n";
           xml_file << "                        <Condition ID=\"GoalUpdated\"/>\n";
           xml_file << "                        <Control ID=\"RoundRobin\" name=\"RecoveryActions\">\n";
           xml_file << "                            <Sequence name=\"ClearingActions\">\n";
-          xml_file << "                                <Action ID=\"ClearEntireCostmap\" name=\"ClearLocalCostmap-Subtree\" server_timeout=\"10.0\" service_name=\"local_costmap/clear_entirely_local_costmap\"/>\n";
-          xml_file << "                                <Action ID=\"ClearEntireCostmap\" name=\"ClearGlobalCostmap-Subtree\" server_timeout=\"10.0\" service_name=\"global_costmap/clear_entirely_global_costmap\"/>\n";
+          xml_file << "                                <Action ID=\"ClearEntireCostmap\" name=\"ClearLocalCostmap-Subtree\" server_timeout=\"10.0\" service_name=\"" << ns_prefix << "local_costmap/clear_entirely_local_costmap\"/>\n";
+          xml_file << "                                <Action ID=\"ClearEntireCostmap\" name=\"ClearGlobalCostmap-Subtree\" server_timeout=\"10.0\" service_name=\"" << ns_prefix << "global_costmap/clear_entirely_global_costmap\"/>\n";
           xml_file << "                            </Sequence>\n";
-          xml_file << "                            <Action ID=\"Spin\" server_name=\"spin\" server_timeout=\"10.0\" spin_dist=\"1.57\" time_allowance=\"-1.0\"/>\n";
-          xml_file << "                            <Action ID=\"Wait\" server_name=\"wait\" server_timeout=\"10.0\" wait_duration=\"3\"/>\n";
+          xml_file << "                            <Action ID=\"Spin\" server_name=\"" << ns_prefix << "spin\" server_timeout=\"10.0\" spin_dist=\"1.57\" time_allowance=\"-1.0\"/>\n";
+          xml_file << "                            <Action ID=\"Wait\" server_name=\"" << ns_prefix << "wait\" server_timeout=\"10.0\" wait_duration=\"3\"/>\n";
           xml_file << "                        </Control>\n";
           xml_file << "                    </ReactiveFallback>\n";
           xml_file << "                </Control>\n";
@@ -508,7 +509,7 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
 
     if (bt_client->wait_for_service(std::chrono::seconds(3))) 
     {
-      RCLCPP_INFO(rclcpp::get_logger("bt stop node "), "Service /bt_stop is available!");
+      RCLCPP_INFO(rclcpp::get_logger("bt stop node "), "Service bt_stop is available!");
 
       // stop bt tree 
       std_srvs::srv::SetBool::Request::SharedPtr bt_stop_request = std::make_shared<std_srvs::srv::SetBool::Request>();
@@ -527,7 +528,7 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
     } 
     else 
     {
-        RCLCPP_WARN(rclcpp::get_logger("bt stop node "), "Service /bt_stop is not available after waiting for 3 seconds.");
+        RCLCPP_WARN(rclcpp::get_logger("bt stop node "), "Service bt_stop is not available after waiting for 3 seconds.");
     }
     // --------------------------------------------- for ros2 behavior tree to stop
 
@@ -593,14 +594,14 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
           xml_file << "                            <Control ID=\"RecoveryNode\" name=\"ComputePathToPose\" number_of_retries=\"1\">\n";
 
           xml_file << "                                <Action ID=\"ComputePathToPose\" goal=\"{";
-          xml_file << request->pose_names[i] << "}\" start=\"\" path=\"{path}\" planner_id=\"GridBased\" server_name=\"compute_path_to_pose\" server_timeout=\"10.0\"/>\n";
+          xml_file << request->pose_names[i] << "}\" start=\"\" path=\"{path}\" planner_id=\"GridBased\" server_name=\"" << ns_prefix << "compute_path_to_pose\" server_timeout=\"10.0\"/>\n";
 
-          xml_file << "                                <Action ID=\"ClearEntireCostmap\" name=\"ClearGlobalCostmap-Context\" server_timeout=\"10.0\" service_name=\"global_costmap/clear_entirely_global_costmap\"/>\n";
+          xml_file << "                                <Action ID=\"ClearEntireCostmap\" name=\"ClearGlobalCostmap-Context\" server_timeout=\"10.0\" service_name=\"" << ns_prefix << "global_costmap/clear_entirely_global_costmap\"/>\n";
           xml_file << "                            </Control>\n";
           xml_file << "                        </Decorator>\n";
           xml_file << "                        <Control ID=\"RecoveryNode\" name=\"FollowPath\" number_of_retries=\"1\">\n";
-          xml_file << "                            <Action ID=\"FollowPath\" controller_id=\"FollowPath\" goal_checker_id=\"\" path=\"{path}\" server_name=\"follow_path\" server_timeout=\"10.0\"/>\n";
-          xml_file << "                            <Action ID=\"ClearEntireCostmap\" name=\"ClearLocalCostmap-Context\" server_timeout=\"10.0\" service_name=\"local_costmap/clear_entirely_local_costmap\"/>\n";
+          xml_file << "                            <Action ID=\"FollowPath\" controller_id=\"FollowPath\" goal_checker_id=\"\" path=\"{path}\" server_name=\"" << ns_prefix << "follow_path\" server_timeout=\"10.0\"/>\n";
+          xml_file << "                            <Action ID=\"ClearEntireCostmap\" name=\"ClearLocalCostmap-Context\" server_timeout=\"10.0\" service_name=\"" << ns_prefix << "local_costmap/clear_entirely_local_costmap\"/>\n";
           xml_file << "                        </Control>\n";
        	  xml_file << "                    </Control>\n";
        
@@ -609,18 +610,18 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
           xml_file << "                        <Control ID=\"RoundRobin\" name=\"RecoveryActions\">\n";
           // Round 1: costmap ရှင်းပြီး အနည်းငယ် စောင့် (dynamic obstacle ရွေ့ဖို့)
           xml_file << "                            <Sequence name=\"ClearAndWait\">\n";
-          xml_file << "                                <Action ID=\"ClearEntireCostmap\" name=\"ClearLocalCostmap-Subtree\" server_timeout=\"10.0\" service_name=\"local_costmap/clear_entirely_local_costmap\"/>\n";
-          xml_file << "                                <Action ID=\"ClearEntireCostmap\" name=\"ClearGlobalCostmap-Subtree\" server_timeout=\"10.0\" service_name=\"global_costmap/clear_entirely_global_costmap\"/>\n";
-          xml_file << "                                <Action ID=\"Wait\" server_name=\"wait\" server_timeout=\"10.0\" wait_duration=\"2\"/>\n";
+          xml_file << "                                <Action ID=\"ClearEntireCostmap\" name=\"ClearLocalCostmap-Subtree\" server_timeout=\"10.0\" service_name=\"" << ns_prefix << "local_costmap/clear_entirely_local_costmap\"/>\n";
+          xml_file << "                                <Action ID=\"ClearEntireCostmap\" name=\"ClearGlobalCostmap-Subtree\" server_timeout=\"10.0\" service_name=\"" << ns_prefix << "global_costmap/clear_entirely_global_costmap\"/>\n";
+          xml_file << "                                <Action ID=\"Wait\" server_name=\"" << ns_prefix << "wait\" server_timeout=\"10.0\" wait_duration=\"2\"/>\n";
           xml_file << "                            </Sequence>\n";
           // Round 2: ညာဘက် 90° လှည့်၍ laser ဖြင့် rescan
-          xml_file << "                            <Action ID=\"Spin\" server_name=\"spin\" server_timeout=\"15.0\" spin_dist=\"1.57\" time_allowance=\"10.0\"/>\n";
+          xml_file << "                            <Action ID=\"Spin\" server_name=\"" << ns_prefix << "spin\" server_timeout=\"15.0\" spin_dist=\"1.57\" time_allowance=\"10.0\"/>\n";
           // Round 3: ဘယ်ဘက် 90° လှည့်၍ laser ဖြင့် rescan
-          xml_file << "                            <Action ID=\"Spin\" server_name=\"spin\" server_timeout=\"15.0\" spin_dist=\"-1.57\" time_allowance=\"10.0\"/>\n";
+          xml_file << "                            <Action ID=\"Spin\" server_name=\"" << ns_prefix << "spin\" server_timeout=\"15.0\" spin_dist=\"-1.57\" time_allowance=\"10.0\"/>\n";
           // Round 4: 180° full scan + ကြာကြာ စောင့် (last resort)
           xml_file << "                            <Sequence name=\"FullScanAndWait\">\n";
-          xml_file << "                                <Action ID=\"Spin\" server_name=\"spin\" server_timeout=\"20.0\" spin_dist=\"3.14\" time_allowance=\"15.0\"/>\n";
-          xml_file << "                                <Action ID=\"Wait\" server_name=\"wait\" server_timeout=\"10.0\" wait_duration=\"5\"/>\n";
+          xml_file << "                                <Action ID=\"Spin\" server_name=\"" << ns_prefix << "spin\" server_timeout=\"20.0\" spin_dist=\"3.14\" time_allowance=\"15.0\"/>\n";
+          xml_file << "                                <Action ID=\"Wait\" server_name=\"" << ns_prefix << "wait\" server_timeout=\"10.0\" wait_duration=\"5\"/>\n";
           xml_file << "                            </Sequence>\n";
           xml_file << "                        </Control>\n";
           xml_file << "                    </ReactiveFallback>\n";
@@ -727,7 +728,7 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
 
     if (bt_client->wait_for_service(std::chrono::seconds(3))) 
     {
-      RCLCPP_INFO(rclcpp::get_logger("bt stop node "), "Service /bt_stop is available!");
+      RCLCPP_INFO(rclcpp::get_logger("bt stop node "), "Service bt_stop is available!");
 
       // stop bt tree 
       std_srvs::srv::SetBool::Request::SharedPtr bt_stop_request = std::make_shared<std_srvs::srv::SetBool::Request>();
@@ -746,7 +747,7 @@ void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml
     } 
     else 
     {
-        RCLCPP_WARN(rclcpp::get_logger("bt stop node "), "Service /bt_stop is not available after waiting for 3 seconds.");
+        RCLCPP_WARN(rclcpp::get_logger("bt stop node "), "Service bt_stop is not available after waiting for 3 seconds.");
     }
     // --------------------------------------------- for ros2 behavior tree to stop
 
