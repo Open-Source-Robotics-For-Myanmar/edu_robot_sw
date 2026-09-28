@@ -162,7 +162,7 @@ int main(int argc, char **argv)
     blackboard->set("node", node);
     blackboard->set("bt_loop_duration", std::chrono::milliseconds(100));
     blackboard->set("server_timeout", std::chrono::milliseconds(2000));
-    blackboard->set("wait_for_service_timeout", std::chrono::milliseconds(1000));
+    blackboard->set("wait_for_service_timeout", std::chrono::milliseconds(3000));
     
     load_yaml_file(waypoints_yaml_file, blackboard);
 
