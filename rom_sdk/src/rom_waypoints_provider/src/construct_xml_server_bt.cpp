@@ -36,6 +36,39 @@ std::shared_ptr<rclcpp::Node> bt_stop_node;
 
 bool debug_mode_ = false; // Global variable to control debug logging
 
+void stop_robot_callback(
+  const std::shared_ptr<std_srvs::srv::SetBool::Request> request,
+  std::shared_ptr<std_srvs::srv::SetBool::Response> response)
+{
+  if (!request->data) {
+    response->success = false;
+    response->message = "Set data to true to stop the robot.";
+    return;
+  }
+
+  if (!bt_client->wait_for_service(std::chrono::seconds(3))) {
+    response->success = false;
+    response->message = "Behavior tree stop service is unavailable.";
+    return;
+  }
+
+  auto bt_stop_request = std::make_shared<std_srvs::srv::SetBool::Request>();
+  bt_stop_request->data = true;
+  auto future = bt_client->async_send_request(bt_stop_request);
+
+  if (rclcpp::spin_until_future_complete(bt_stop_node, future, std::chrono::seconds(5)) !=
+    rclcpp::FutureReturnCode::SUCCESS)
+  {
+    response->success = false;
+    response->message = "Timed out while stopping the behavior tree.";
+    return;
+  }
+
+  const auto bt_stop_response = future.get();
+  response->success = bt_stop_response->success;
+  response->message = bt_stop_response->message;
+}
+
 void construct_xml_file(const std::shared_ptr<rom_interfaces::srv::ConstructYaml::Request> request,
           std::shared_ptr<rom_interfaces::srv::ConstructYaml::Response>      response)
 {
@@ -1502,6 +1535,9 @@ int main(int argc, char **argv)
   rclcpp::Service<rom_interfaces::srv::ConstructYaml>::SharedPtr service = node->create_service<rom_interfaces::srv::ConstructYaml>("construct_yaml_and_bt", &construct_xml_file);
 
   bt_client = bt_stop_node->create_client<std_srvs::srv::SetBool>("bt_stop");
+
+  rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr stop_robot_service =
+    node->create_service<std_srvs::srv::SetBool>("stop_robot", &stop_robot_callback);
 
   if(debug_mode_)
   {
