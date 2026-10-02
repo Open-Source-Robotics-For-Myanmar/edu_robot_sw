@@ -34,10 +34,10 @@ endif()
 
 
 add_executable(which_maps_server src/which_maps_server.cpp)
-ament_target_dependencies(which_maps_server rclcpp rom_interfaces)
+ament_target_dependencies(which_maps_server rclcpp rom_interfaces ament_index_cpp)
 
 add_executable(which_name_server src/which_name_server.cpp)
-ament_target_dependencies(which_name_server rclcpp rom_interfaces)
+ament_target_dependencies(which_name_server rclcpp rom_interfaces ament_index_cpp)
 
 add_executable(which_vel_server src/which_vel_server.cpp)
 ament_target_dependencies(which_vel_server rclcpp rom_interfaces)
@@ -55,7 +55,7 @@ add_executable(map_base_footprint_pub src/map_base_footprint_pub.cpp)
 ament_target_dependencies(map_base_footprint_pub tf2 tf2_ros geometry_msgs rclcpp rom_interfaces)
 
 add_executable(relocate_server src/relocate_server.cpp)
-ament_target_dependencies(relocate_server rclcpp geometry_msgs cartographer_ros_msgs ament_index_cpp)
+ament_target_dependencies(relocate_server rclcpp geometry_msgs cartographer_ros_msgs ament_index_cpp tf2 tf2_geometry_msgs)
 
 install(
   DIRECTORY maps       # Source directory

@@ -52,10 +52,25 @@ def generate_launch_description():
             output='screen',
             parameters=[{'use_sim_time': use_sim_time}],
             # remappings=[('/odom', '/diff_controller/odom')],
-            arguments=['-configuration_directory', '/home/buc_robot/software_ws/install/edu_robot_carto/share/edu_robot_carto/config/',
+            arguments=['-configuration_directory', cartographer_config_dir,
                        '-configuration_basename', configuration_basename,
                        '-load_state_filename', load_state_filename],
             ),
+
+        Node(
+            package='which_maps',
+            executable='relocate_server',
+            name='relocate_server',
+            namespace=robot_namespace,
+            output='screen',
+            parameters=[{'use_sim_time': use_sim_time}],
+            additional_env={
+                'ROM_ROBOT_NAMESPACE': robot_namespace,
+                'ROM_ROBOT_MODEL': 'edu_robot',
+                'CARTO_CONFIG_DIR': cartographer_config_dir,
+                'CARTO_CONFIG_BASENAME': configuration_basename,
+            },
+        ),
 
         DeclareLaunchArgument(
             'resolution',

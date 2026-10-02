@@ -34,12 +34,16 @@
 #include "cartographer_ros_msgs/srv/finish_trajectory.hpp"
 #include "cartographer_ros_msgs/srv/get_trajectory_states.hpp"
 #include "cartographer_ros_msgs/srv/start_trajectory.hpp"
+#include "cartographer_ros_msgs/srv/trajectory_query.hpp"
+#include "tf2/LinearMath/Transform.hpp"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 #include "geometry_msgs/msg/pose_with_covariance_stamped.hpp"
 #include "rclcpp/rclcpp.hpp"
 
 // ── Type aliases ────────────────────────────────────────────────────────────
 using FinishTraj = cartographer_ros_msgs::srv::FinishTrajectory;
 using GetStates = cartographer_ros_msgs::srv::GetTrajectoryStates;
+using QueryTraj = cartographer_ros_msgs::srv::TrajectoryQuery;
 using StartTraj = cartographer_ros_msgs::srv::StartTrajectory;
 using TrajectoryStates = cartographer_ros_msgs::msg::TrajectoryStates;
 using PoseWCS = geometry_msgs::msg::PoseWithCovarianceStamped;
@@ -113,6 +117,9 @@ public:
     start_client_ = create_client<StartTraj>(
         start_srv, rmw_qos_profile_services_default, svc_cb_group_);
 
+    query_client_ = create_client<QueryTraj>(
+        ns_prefix + "/trajectory_query", rmw_qos_profile_services_default, svc_cb_group_);
+
     // ── Subscriber ───────────────────────────────────────────────────────
     rclcpp::SubscriptionOptions sub_opts;
     sub_opts.callback_group = sub_cb_group_;
@@ -131,6 +138,16 @@ private:
   // ── Subscriber callback ─────────────────────────────────────────────────
   // Returns immediately; the blocking reset work is done in a worker thread.
   void onRelocate(const PoseWCS::SharedPtr msg) {
+    const auto &pose = msg->pose.pose;
+    const auto &q = pose.orientation;
+    const double norm = q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w;
+    if (msg->header.frame_id != "map" ||
+        !std::isfinite(pose.position.x) || !std::isfinite(pose.position.y) ||
+        !std::isfinite(pose.position.z) || !std::isfinite(norm) ||
+        std::abs(norm - 1.) > 1e-3) {
+      RCLCPP_ERROR(get_logger(), "Relocation requires a finite map-frame pose and normalized quaternion.");
+      return;
+    }
     bool expected = false;
     if (!is_relocating_.compare_exchange_strong(expected, true)) {
       RCLCPP_WARN(
@@ -150,7 +167,8 @@ private:
 
     // ── Step 1: identify the currently ACTIVE trajectory ────────────────
     int32_t active_id = -1;
-    if (!getActiveTrajectoryId(active_id)) {
+    int32_t map_id = -1;
+    if (!getTrajectoryIds(active_id, map_id)) {
       RCLCPP_ERROR(
           get_logger(),
           "[RelocateServer] Cannot determine active trajectory. Aborting.");
@@ -159,6 +177,12 @@ private:
     }
     RCLCPP_INFO(get_logger(), "[RelocateServer] Active trajectory ID = %d",
                 active_id);
+
+    geometry_msgs::msg::Pose relative_pose;
+    if (!getRelativePose(map_id, msg->pose.pose, relative_pose)) {
+      is_relocating_ = false;
+      return;
+    }
 
     // ── Step 2: finish that trajectory ──────────────────────────────────
     if (!callFinishTrajectory(active_id)) {
@@ -170,7 +194,7 @@ private:
     }
 
     // ── Step 3: start a new trajectory from the requested pose ──────────
-    if (!callStartTrajectory(msg->pose.pose, active_id)) {
+    if (!callStartTrajectory(relative_pose, map_id)) {
       RCLCPP_ERROR(
           get_logger(),
           "[RelocateServer] start_trajectory failed. Robot localization lost!");
@@ -183,7 +207,7 @@ private:
   }
 
   // ── Helper: GetTrajectoryStates → first ACTIVE id ───────────────────────
-  bool getActiveTrajectoryId(int32_t &out_id) {
+  bool getTrajectoryIds(int32_t &out_id, int32_t &map_id) {
     if (!states_client_->wait_for_service(SVC_WAIT_TIMEOUT)) {
       RCLCPP_ERROR(
           get_logger(),
@@ -211,18 +235,57 @@ private:
     }
 
     const auto &ts = resp->trajectory_states;
+    int active_count = 0;
+    int frozen_count = 0;
     for (size_t i = 0; i < ts.trajectory_id.size(); ++i) {
       if (ts.trajectory_state[i] == TrajectoryStates::ACTIVE) {
         out_id = ts.trajectory_id[i];
-        return true;
+        ++active_count;
+      } else if (ts.trajectory_state[i] == TrajectoryStates::FROZEN) {
+        map_id = ts.trajectory_id[i];
+        ++frozen_count;
       }
     }
+    if (active_count != 1 || frozen_count != 1) {
+      RCLCPP_ERROR(get_logger(),
+                   "Expected one ACTIVE and one FROZEN map trajectory; found %d and %d. Aborting.",
+                   active_count, frozen_count);
+      return false;
+    }
+    return true;
+  }
 
-    RCLCPP_ERROR(
-        get_logger(),
-        "[RelocateServer] No ACTIVE trajectory found among %zu trajectories.",
-        ts.trajectory_id.size());
-    return false;
+  bool getRelativePose(int32_t map_id, const geometry_msgs::msg::Pose &map_pose,
+                       geometry_msgs::msg::Pose &relative_pose) {
+    if (!query_client_->wait_for_service(SVC_WAIT_TIMEOUT)) {
+      RCLCPP_ERROR(get_logger(), "trajectory_query service unavailable; relocation aborted.");
+      return false;
+    }
+    auto req = std::make_shared<QueryTraj::Request>();
+    req->trajectory_id = map_id;
+    auto future = query_client_->async_send_request(req);
+    if (future.wait_for(SVC_CALL_TIMEOUT) != std::future_status::ready) {
+      RCLCPP_ERROR(get_logger(), "trajectory_query timed out; relocation aborted.");
+      return false;
+    }
+    const auto resp = future.get();
+    if (resp->status.code != 0 || resp->trajectory.empty()) {
+      RCLCPP_ERROR(get_logger(), "Cannot query frozen map trajectory: %s",
+                   resp->status.message.c_str());
+      return false;
+    }
+    // StartTrajectory uses time zero, clamped to the reference's first node.
+    // T_reference_target = inverse(T_map_reference) * T_map_target.
+    const auto &first = resp->trajectory.front();
+    if (first.header.frame_id != "map") {
+      RCLCPP_ERROR(get_logger(), "Frozen trajectory query is not in map frame.");
+      return false;
+    }
+    tf2::Transform reference, target;
+    tf2::fromMsg(first.pose, reference);
+    tf2::fromMsg(map_pose, target);
+    tf2::toMsg(reference.inverse() * target, relative_pose);
+    return true;
   }
 
   // ── Helper: FinishTrajectory ─────────────────────────────────────────────
@@ -306,6 +369,7 @@ private:
   rclcpp::Client<GetStates>::SharedPtr states_client_;
   rclcpp::Client<FinishTraj>::SharedPtr finish_client_;
   rclcpp::Client<StartTraj>::SharedPtr start_client_;
+  rclcpp::Client<QueryTraj>::SharedPtr query_client_;
   rclcpp::CallbackGroup::SharedPtr sub_cb_group_;
   rclcpp::CallbackGroup::SharedPtr svc_cb_group_;
 
