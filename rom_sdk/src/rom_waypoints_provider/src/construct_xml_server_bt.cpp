@@ -258,9 +258,6 @@ void write_modern_navigation_node(std::ofstream &xml_file, const std::string &go
   xml_file << "                  time_allowance=\"10.0\"\n";
   xml_file << "                  server_name=\"" << ns_prefix << "spin\"\n";
   xml_file << "                  server_timeout=\"10.0\"/>\n";
-  xml_file << "            <Wait wait_duration=\"2\"\n";
-  xml_file << "                  server_name=\"" << ns_prefix << "wait\"\n";
-  xml_file << "                  server_timeout=\"10.0\"/>\n";
   xml_file << "          </RoundRobin>\n";
   xml_file << "        </ReactiveFallback>\n";
   xml_file << "      </RecoveryNode>\n";
@@ -365,10 +362,6 @@ void write_legacy_recovery(std::ofstream &xml_file, const std::string &prefix)
   xml_file << actions << "        server_timeout=\"10.0\"\n";
   xml_file << actions << "        spin_dist=\"0.35\"\n";
   xml_file << actions << "        time_allowance=\"10.0\"/>\n";
-  xml_file << actions << "<Action ID=\"Wait\"\n";
-  xml_file << actions << "        server_name=\"" << nav2_name("wait") << "\"\n";
-  xml_file << actions << "        server_timeout=\"10.0\"\n";
-  xml_file << actions << "        wait_duration=\"2\"/>\n";
   xml_file << recovery << "</Control>\n";
   xml_file << prefix << "</ReactiveFallback>\n";
 }
