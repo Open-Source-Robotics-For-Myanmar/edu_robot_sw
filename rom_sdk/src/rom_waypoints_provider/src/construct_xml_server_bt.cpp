@@ -246,10 +246,7 @@ void write_modern_navigation_node(std::ofstream &xml_file, const std::string &go
   xml_file << "        <ReactiveFallback name=\"RecoveryFallback\">\n";
   xml_file << "          <GoalUpdated/>\n";
   xml_file << "          <RoundRobin name=\"RecoveryActions\">\n";
-  xml_file << "            <Sequence name=\"WaitClearAndReplan\">\n";
-  xml_file << "              <Wait wait_duration=\"5\"\n";
-  xml_file << "                    server_name=\"" << ns_prefix << "wait\"\n";
-  xml_file << "                    server_timeout=\"10.0\"/>\n";
+  xml_file << "            <Sequence name=\"ClearAndReplan\">\n";
   xml_file << "              <ClearEntireCostmap name=\"ClearLocalCostmap-Subtree\"\n";
   xml_file << "                                  service_name=\"" << ns_prefix << "local_costmap/clear_entirely_local_costmap\"\n";
   xml_file << "                                  server_timeout=\"1000.0\"/>\n";
@@ -260,6 +257,9 @@ void write_modern_navigation_node(std::ofstream &xml_file, const std::string &go
   xml_file << "            <Spin spin_dist=\"0.35\"\n";
   xml_file << "                  time_allowance=\"10.0\"\n";
   xml_file << "                  server_name=\"" << ns_prefix << "spin\"\n";
+  xml_file << "                  server_timeout=\"10.0\"/>\n";
+  xml_file << "            <Wait wait_duration=\"2\"\n";
+  xml_file << "                  server_name=\"" << ns_prefix << "wait\"\n";
   xml_file << "                  server_timeout=\"10.0\"/>\n";
   xml_file << "          </RoundRobin>\n";
   xml_file << "        </ReactiveFallback>\n";
@@ -348,11 +348,7 @@ void write_legacy_recovery(std::ofstream &xml_file, const std::string &prefix)
   xml_file << recovery << "<Condition ID=\"GoalUpdated\"/>\n";
   xml_file << recovery << "<Control ID=\"RoundRobin\"\n";
   xml_file << recovery << "                      name=\"RecoveryActions\">\n";
-  xml_file << actions << "<Sequence name=\"WaitClearAndReplan\">\n";
-  xml_file << action << "<Action ID=\"Wait\"\n";
-  xml_file << action << "        server_name=\"" << nav2_name("wait") << "\"\n";
-  xml_file << action << "        server_timeout=\"10.0\"\n";
-  xml_file << action << "        wait_duration=\"5\"/>\n";
+  xml_file << actions << "<Sequence name=\"ClearAndReplan\">\n";
   xml_file << action << "<Action ID=\"ClearEntireCostmap\"\n";
   xml_file << action << "        name=\"ClearLocalCostmap-Subtree\"\n";
   xml_file << action << "        service_name=\""
@@ -369,6 +365,10 @@ void write_legacy_recovery(std::ofstream &xml_file, const std::string &prefix)
   xml_file << actions << "        server_timeout=\"10.0\"\n";
   xml_file << actions << "        spin_dist=\"0.35\"\n";
   xml_file << actions << "        time_allowance=\"10.0\"/>\n";
+  xml_file << actions << "<Action ID=\"Wait\"\n";
+  xml_file << actions << "        server_name=\"" << nav2_name("wait") << "\"\n";
+  xml_file << actions << "        server_timeout=\"10.0\"\n";
+  xml_file << actions << "        wait_duration=\"2\"/>\n";
   xml_file << recovery << "</Control>\n";
   xml_file << prefix << "</ReactiveFallback>\n";
 }
