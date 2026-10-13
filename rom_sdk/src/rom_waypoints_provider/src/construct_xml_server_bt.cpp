@@ -254,10 +254,6 @@ void write_modern_navigation_node(std::ofstream &xml_file, const std::string &go
   xml_file << "                                  service_name=\"" << ns_prefix << "global_costmap/clear_entirely_global_costmap\"\n";
   xml_file << "                                  server_timeout=\"1000.0\"/>\n";
   xml_file << "            </Sequence>\n";
-  xml_file << "            <Spin spin_dist=\"0.35\"\n";
-  xml_file << "                  time_allowance=\"10.0\"\n";
-  xml_file << "                  server_name=\"" << ns_prefix << "spin\"\n";
-  xml_file << "                  server_timeout=\"10.0\"/>\n";
   xml_file << "          </RoundRobin>\n";
   xml_file << "        </ReactiveFallback>\n";
   xml_file << "      </RecoveryNode>\n";
@@ -357,11 +353,6 @@ void write_legacy_recovery(std::ofstream &xml_file, const std::string &prefix)
            << nav2_name("global_costmap/clear_entirely_global_costmap") << "\"\n";
   xml_file << action << "        server_timeout=\"1000.0\"/>\n";
   xml_file << actions << "</Sequence>\n";
-  xml_file << actions << "<Action ID=\"Spin\"\n";
-  xml_file << actions << "        server_name=\"" << nav2_name("spin") << "\"\n";
-  xml_file << actions << "        server_timeout=\"10.0\"\n";
-  xml_file << actions << "        spin_dist=\"0.35\"\n";
-  xml_file << actions << "        time_allowance=\"10.0\"/>\n";
   xml_file << recovery << "</Control>\n";
   xml_file << prefix << "</ReactiveFallback>\n";
 }

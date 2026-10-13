@@ -43,10 +43,6 @@
                                   service_name="global_costmap/clear_entirely_global_costmap"
                                   server_timeout="2.0"/>
             </Sequence>
-            <Spin spin_dist="1.57"
-                  time_allowance=""
-                  server_name="/spin"
-                  server_timeout="2.0"/>
             <Wait wait_duration="5"
                   server_name="/wait"
                   server_timeout="2.0"/>
