@@ -210,7 +210,7 @@ void write_modern_navigation_node(std::ofstream &xml_file, const std::string &go
   xml_file << "                                 start=\"\"\n";
   xml_file << "                                 planner_id=\"GridBased\"\n";
   xml_file << "                                 server_name=\"" << ns_prefix << "compute_path_to_pose\"\n";
-  xml_file << "                                 server_timeout=\"1000.0\"\n";
+  xml_file << "                                 server_timeout=\"2000\"\n";
   xml_file << "                                 path=\"{path}\"/>\n";
   xml_file << "            </RetryUntilSuccessful>\n";
   xml_file << "          </RateController>\n";
@@ -219,7 +219,7 @@ void write_modern_navigation_node(std::ofstream &xml_file, const std::string &go
   xml_file << "                        path=\"{path}\"\n";
   xml_file << "                        goal_checker_id=\"\"\n";
   xml_file << "                        server_name=\"" << ns_prefix << "follow_path\"\n";
-  xml_file << "                        server_timeout=\"10.0\"/>\n";
+  xml_file << "                        server_timeout=\"2000\"/>\n";
   xml_file << "          </RetryUntilSuccessful>\n";
   xml_file << "        </PipelineSequence>\n";
   xml_file << "        <Fallback name=\"ClearCostmapsAfterGoal\">\n";
@@ -271,7 +271,7 @@ void write_legacy_compute_path(std::ofstream &xml_file, const std::string &prefi
   xml_file << prefix << "                                  planner_id=\"GridBased\"\n";
   xml_file << prefix << "                                  server_name=\""
            << nav2_name("compute_path_to_pose") << "\"\n";
-  xml_file << prefix << "                                  server_timeout=\"10.0\"/>\n";
+  xml_file << prefix << "                                  server_timeout=\"2000\"/>\n";
   xml_file << prefix << "    </Decorator>\n";
   xml_file << prefix << "</Decorator>\n";
 }
@@ -283,7 +283,7 @@ void write_legacy_follow_path(std::ofstream &xml_file, const std::string &prefix
   xml_file << prefix << "            controller_id=\"FollowPath\"\n";
   xml_file << prefix << "            path=\"{path}\"\n";
   xml_file << prefix << "            server_name=\"" << nav2_name("follow_path") << "\"\n";
-  xml_file << prefix << "            server_timeout=\"10.0\"/>\n";
+  xml_file << prefix << "            server_timeout=\"2000\"/>\n";
   xml_file << prefix << "</Decorator>\n";
 }
 
