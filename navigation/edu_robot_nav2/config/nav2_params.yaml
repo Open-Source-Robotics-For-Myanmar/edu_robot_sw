@@ -108,7 +108,7 @@ controller_server:
       # ဤအပိုင်းသည် Waypoint အား Parking ကွေးမဝင်စေဘဲ Position အရင်သွားပြီးမှ Heading လှည့်ရန် ဖြစ်သည်
       use_rotate_to_heading: true
       allow_reversing: false
-      rotate_to_heading_min_angle: 0.785  # ၄၅ ဒီဂရီထက် လမ်းကြောင်းလွဲနေပါက ရှေ့မတိုးဘဲ အရင်လှည့်မည်
+      rotate_to_heading_min_angle: 0.785  # 45 degree heading error trigger for path alignment
       max_angular_accel: 2.0              # Angular acceleration limit (rad/s^2)
 
 bt_navigator:
@@ -204,7 +204,7 @@ behavior_server:
     transform_tolerance: 0.1
     use_sim_time: false
     simulate_ahead_time: 2.0
-    max_rotational_vel: 0.8
+    max_rotational_vel: 1.5
     min_rotational_vel: 0.4
     rotational_acc_lim: 3.3
 
