@@ -4,9 +4,9 @@
     <Sequence name="NavigationSequence">
       
       <RecoveryNode name="NavigateRecovery"
-                    number_of_retries="2">
+                    number_of_retries="-1">
         <PipelineSequence name="NavigateWithReplanning">
-          <RateController hz="1.0">
+          <RateController hz="0.333333">
             <RecoveryNode name="ComputePathToPose"
                           number_of_retries="1">
               <ComputePathToPose goal="{wp1}"
@@ -43,14 +43,6 @@
                                   service_name="global_costmap/clear_entirely_global_costmap"
                                   server_timeout="2.0"/>
             </Sequence>
-            <Wait wait_duration="5"
-                  server_name="/wait"
-                  server_timeout="2.0"/>
-            <BackUp backup_dist="0.30"
-                    backup_speed="0.05"
-                    time_allowance=""
-                    server_name="/backup"
-                    server_timeout="2.0"/>
           </RoundRobin>
         </ReactiveFallback>
       </RecoveryNode>

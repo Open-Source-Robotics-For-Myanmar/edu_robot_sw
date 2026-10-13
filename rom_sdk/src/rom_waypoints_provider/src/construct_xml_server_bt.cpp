@@ -216,7 +216,7 @@ void write_modern_navigation_node(std::ofstream &xml_file, const std::string &go
   xml_file << "      <RecoveryNode name=\"NavigateRecovery\"\n";
   xml_file << "                    number_of_retries=\"-1\">\n";
   xml_file << "        <PipelineSequence name=\"NavigateWithReplanning\">\n";
-  xml_file << "          <RateController hz=\"1.0\">\n";
+  xml_file << "          <RateController hz=\"0.333333\">\n";
   xml_file << "            <RecoveryNode name=\"ComputePathToPose\"\n";
   xml_file << "                          number_of_retries=\"1\">\n";
   xml_file << "              <ComputePathToPose goal=\"{";
@@ -293,7 +293,7 @@ bool write_waypoints_xml(const std::string &path, const ConstructYaml::Request &
 void write_legacy_compute_path(std::ofstream &xml_file, const std::string &prefix,
   const std::string &goal)
 {
-  xml_file << prefix << "<Decorator ID=\"RateController\" hz=\"1.0\">\n";
+  xml_file << prefix << "<Decorator ID=\"RateController\" hz=\"0.333333\">\n";
   xml_file << prefix << "    <Control ID=\"RecoveryNode\"\n";
   xml_file << prefix << "                          name=\"ComputePathToPose\"\n";
   xml_file << prefix << "                          number_of_retries=\"1\">\n";
