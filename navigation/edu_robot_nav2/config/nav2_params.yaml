@@ -83,7 +83,7 @@ controller_server:
       min_lookahead_dist: 0.3
       max_lookahead_dist: 0.9
       lookahead_time: 1.5
-      rotate_to_heading_angular_vel: 0.6 # နေရာမှာတင် ဗဟိုပြုလှည့်မယ့် အမြင့်ဆုံး အမြန်နှုန်း (rad/s)
+      rotate_to_heading_angular_vel: 1.5 # နေရာမှာတင် ဗဟိုပြုလှည့်မယ့် အမြင့်ဆုံး အမြန်နှုန်း (rad/s)
       transform_tolerance: 0.1
       use_velocity_scaled_lookahead_dist: false
       min_approach_linear_velocity: 0.05
