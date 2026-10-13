@@ -24,7 +24,6 @@ using Pose = geometry_msgs::msg::Pose;
 using PoseStamped = geometry_msgs::msg::PoseStamped;
 
 constexpr char kDataRoot[] = "/home/buc_robot/data";
-constexpr char kTreeModelPath[] = "/home/buc_robot/data/trees/tree_nodes_models.xml";
 constexpr char kMapFrame[] = "map";
 
 rclcpp::Publisher<ConstructYamlMessage>::SharedPtr waypoint_publisher;
@@ -98,17 +97,6 @@ bool open_for_rewrite(const std::string &path, std::ofstream &file)
     return false;
   }
   return true;
-}
-
-bool append_tree_model(std::ofstream &xml)
-{
-  std::ifstream model(kTreeModelPath);
-  if (!model.is_open()) {
-    RCLCPP_ERROR(logger(), "Cannot open tree model: %s", kTreeModelPath);
-    return false;
-  }
-  xml << model.rdbuf();
-  return static_cast<bool>(xml);
 }
 
 void write_pose_yaml(YAML::Emitter &out, const PoseStamped &pose, const Pose &scene_pose,
@@ -213,12 +201,10 @@ void write_modern_navigation_node(std::ofstream &xml_file, const std::string &go
 {
   const std::string ns_prefix = "/" + robot_namespace() + "/";
 
-  xml_file << "      <RecoveryNode name=\"NavigateRecovery\"\n";
-  xml_file << "                    number_of_retries=\"-1\">\n";
+  xml_file << "      <Sequence name=\"Navigate\">\n";
   xml_file << "        <PipelineSequence name=\"NavigateWithReplanning\">\n";
   xml_file << "          <RateController hz=\"1.0\">\n";
-  xml_file << "            <RecoveryNode name=\"ComputePathToPose\"\n";
-  xml_file << "                          number_of_retries=\"1\">\n";
+  xml_file << "            <RetryUntilSuccessful num_attempts=\"-1\">\n";
   xml_file << "              <ComputePathToPose goal=\"{";
   xml_file << goal << "}\"\n";
   xml_file << "                                 start=\"\"\n";
@@ -226,41 +212,24 @@ void write_modern_navigation_node(std::ofstream &xml_file, const std::string &go
   xml_file << "                                 server_name=\"" << ns_prefix << "compute_path_to_pose\"\n";
   xml_file << "                                 server_timeout=\"1000.0\"\n";
   xml_file << "                                 path=\"{path}\"/>\n";
-  xml_file << "              <ClearEntireCostmap name=\"ClearGlobalCostmap-Context\"\n";
-  xml_file << "                                  service_name=\"" << ns_prefix << "global_costmap/clear_entirely_global_costmap\"\n";
-  xml_file << "                                  server_timeout=\"1000.0\"/>\n";
-  xml_file << "            </RecoveryNode>\n";
+  xml_file << "            </RetryUntilSuccessful>\n";
   xml_file << "          </RateController>\n";
-  xml_file << "          <RecoveryNode name=\"FollowPath\"\n";
-  xml_file << "                        number_of_retries=\"1\">\n";
+  xml_file << "          <RetryUntilSuccessful num_attempts=\"-1\">\n";
   xml_file << "            <FollowPath controller_id=\"FollowPath\"\n";
   xml_file << "                        path=\"{path}\"\n";
   xml_file << "                        goal_checker_id=\"\"\n";
   xml_file << "                        server_name=\"" << ns_prefix << "follow_path\"\n";
   xml_file << "                        server_timeout=\"10.0\"/>\n";
-  xml_file << "            <ClearEntireCostmap name=\"ClearLocalCostmap-Context\"\n";
-  xml_file << "                                service_name=\"" << ns_prefix << "local_costmap/clear_entirely_local_costmap\"\n";
-  xml_file << "                                server_timeout=\"1000.0\"/>\n";
-  xml_file << "          </RecoveryNode>\n";
+  xml_file << "          </RetryUntilSuccessful>\n";
   xml_file << "        </PipelineSequence>\n";
-  xml_file << "        <ReactiveFallback name=\"RecoveryFallback\">\n";
-  xml_file << "          <GoalUpdated/>\n";
-  xml_file << "          <RoundRobin name=\"RecoveryActions\">\n";
-  xml_file << "            <Sequence name=\"ClearAndReplan\">\n";
-  xml_file << "              <ClearEntireCostmap name=\"ClearLocalCostmap-Subtree\"\n";
-  xml_file << "                                  service_name=\"" << ns_prefix << "local_costmap/clear_entirely_local_costmap\"\n";
-  xml_file << "                                  server_timeout=\"1000.0\"/>\n";
-  xml_file << "              <ClearEntireCostmap name=\"ClearGlobalCostmap-Subtree\"\n";
-  xml_file << "                                  service_name=\"" << ns_prefix << "global_costmap/clear_entirely_global_costmap\"\n";
-  xml_file << "                                  server_timeout=\"1000.0\"/>\n";
-  xml_file << "            </Sequence>\n";
-  xml_file << "            <Spin spin_dist=\"0.35\"\n";
-  xml_file << "                  time_allowance=\"10.0\"\n";
-  xml_file << "                  server_name=\"" << ns_prefix << "spin\"\n";
-  xml_file << "                  server_timeout=\"10.0\"/>\n";
-  xml_file << "          </RoundRobin>\n";
-  xml_file << "        </ReactiveFallback>\n";
-  xml_file << "      </RecoveryNode>\n";
+  xml_file << "        <Fallback name=\"ClearCostmapsAfterGoal\">\n";
+  xml_file << "          <Sequence>\n";
+  xml_file << "            <ClearEntireCostmap service_name=\"" << ns_prefix << "local_costmap/clear_entirely_local_costmap\" server_timeout=\"1000.0\"/>\n";
+  xml_file << "            <ClearEntireCostmap service_name=\"" << ns_prefix << "global_costmap/clear_entirely_global_costmap\" server_timeout=\"1000.0\"/>\n";
+  xml_file << "          </Sequence>\n";
+  xml_file << "          <AlwaysSuccess/>\n";
+  xml_file << "        </Fallback>\n";
+  xml_file << "      </Sequence>\n";
 }
 
 bool write_waypoints_xml(const std::string &path, const ConstructYaml::Request &request,
@@ -282,9 +251,6 @@ bool write_waypoints_xml(const std::string &path, const ConstructYaml::Request &
   }
   xml_file << "    </Sequence>\n";
   xml_file << "  </BehaviorTree>\n";
-  if (!append_tree_model(xml_file)) {
-    return false;
-  }
   xml_file << "</root>\n";
   append_waypoint_message(request, message);
   const bool success = static_cast<bool>(xml_file);
@@ -298,9 +264,7 @@ void write_legacy_compute_path(std::ofstream &xml_file, const std::string &prefi
   const std::string &goal)
 {
   xml_file << prefix << "<Decorator ID=\"RateController\" hz=\"1.0\">\n";
-  xml_file << prefix << "    <Control ID=\"RecoveryNode\"\n";
-  xml_file << prefix << "                          name=\"ComputePathToPose\"\n";
-  xml_file << prefix << "                          number_of_retries=\"1\">\n";
+  xml_file << prefix << "    <Decorator ID=\"RetryUntilSuccessful\" num_attempts=\"-1\">\n";
   xml_file << prefix << "        <Action ID=\"ComputePathToPose\" goal=\"{";
   xml_file << goal << "}\"\n";
   xml_file << prefix << "                                  path=\"{path}\"\n";
@@ -308,86 +272,41 @@ void write_legacy_compute_path(std::ofstream &xml_file, const std::string &prefi
   xml_file << prefix << "                                  server_name=\""
            << nav2_name("compute_path_to_pose") << "\"\n";
   xml_file << prefix << "                                  server_timeout=\"10.0\"/>\n";
-  xml_file << prefix << "        <Action ID=\"ClearEntireCostmap\"\n";
-  xml_file << prefix << "                name=\"ClearGlobalCostmap-Context\"\n";
-  xml_file << prefix << "                service_name=\""
-           << nav2_name("global_costmap/clear_entirely_global_costmap") << "\"\n";
-  xml_file << prefix << "                server_timeout=\"1000.0\"/>\n";
-  xml_file << prefix << "    </Control>\n";
+  xml_file << prefix << "    </Decorator>\n";
   xml_file << prefix << "</Decorator>\n";
 }
 
 void write_legacy_follow_path(std::ofstream &xml_file, const std::string &prefix)
 {
-  xml_file << prefix << "<Control ID=\"RecoveryNode\"\n";
-  xml_file << prefix << "                       name=\"FollowPath\"\n";
-  xml_file << prefix << "                       number_of_retries=\"1\">\n";
+  xml_file << prefix << "<Decorator ID=\"RetryUntilSuccessful\" num_attempts=\"-1\">\n";
   xml_file << prefix << "    <Action ID=\"FollowPath\"\n";
   xml_file << prefix << "            controller_id=\"FollowPath\"\n";
   xml_file << prefix << "            path=\"{path}\"\n";
   xml_file << prefix << "            server_name=\"" << nav2_name("follow_path") << "\"\n";
   xml_file << prefix << "            server_timeout=\"10.0\"/>\n";
-  xml_file << prefix << "    <Action ID=\"ClearEntireCostmap\"\n";
-  xml_file << prefix << "            name=\"ClearLocalCostmap-Context\"\n";
-  xml_file << prefix << "            service_name=\""
-           << nav2_name("local_costmap/clear_entirely_local_costmap") << "\"\n";
-  xml_file << prefix << "            server_timeout=\"1000.0\"/>\n";
-  xml_file << prefix << "</Control>\n";
-}
-
-void write_legacy_recovery(std::ofstream &xml_file, const std::string &prefix)
-{
-  const std::string recovery = prefix + "    ";
-  const std::string actions = recovery + "    ";
-  const std::string action = actions + "    ";
-
-  xml_file << prefix << "<ReactiveFallback name=\"RecoveryFallback\">\n";
-  xml_file << recovery << "<Condition ID=\"GoalUpdated\"/>\n";
-  xml_file << recovery << "<Control ID=\"RoundRobin\"\n";
-  xml_file << recovery << "                      name=\"RecoveryActions\">\n";
-  xml_file << actions << "<Sequence name=\"ClearAndReplan\">\n";
-  xml_file << action << "<Action ID=\"ClearEntireCostmap\"\n";
-  xml_file << action << "        name=\"ClearLocalCostmap-Subtree\"\n";
-  xml_file << action << "        service_name=\""
-           << nav2_name("local_costmap/clear_entirely_local_costmap") << "\"\n";
-  xml_file << action << "        server_timeout=\"1000.0\"/>\n";
-  xml_file << action << "<Action ID=\"ClearEntireCostmap\"\n";
-  xml_file << action << "        name=\"ClearGlobalCostmap-Subtree\"\n";
-  xml_file << action << "        service_name=\""
-           << nav2_name("global_costmap/clear_entirely_global_costmap") << "\"\n";
-  xml_file << action << "        server_timeout=\"1000.0\"/>\n";
-  xml_file << actions << "</Sequence>\n";
-  xml_file << actions << "<Action ID=\"Spin\"\n";
-  xml_file << actions << "        server_name=\"" << nav2_name("spin") << "\"\n";
-  xml_file << actions << "        server_timeout=\"10.0\"\n";
-  xml_file << actions << "        spin_dist=\"0.35\"\n";
-  xml_file << actions << "        time_allowance=\"10.0\"/>\n";
-  xml_file << recovery << "</Control>\n";
-  xml_file << prefix << "</ReactiveFallback>\n";
+  xml_file << prefix << "</Decorator>\n";
 }
 
 void write_legacy_navigation_node(std::ofstream &xml_file, const std::string &goal,
-  bool add_delay, bool patrol)
+  bool patrol)
 {
   const std::string indent = patrol ? "                " : "            ";
-  if (add_delay) {
-    xml_file << "            <Delay delay_msec=\"15000\">\n";
-  }
-
-  xml_file << indent << "<Control ID=\"RecoveryNode\"\n";
-  xml_file << indent << "                       name=\"NavigateRecovery\"\n";
-  xml_file << indent << "                       number_of_retries=\"-1\">\n";
+  xml_file << indent << "<Sequence name=\"Navigate\">\n";
   xml_file << indent << "    <Control ID=\"PipelineSequence\"\n";
   xml_file << indent << "                            name=\"NavigateWithReplanning\">\n";
   write_legacy_compute_path(xml_file, indent + "        ", goal);
   write_legacy_follow_path(xml_file, indent + "        ");
   xml_file << indent << "    </Control>\n";
-  write_legacy_recovery(xml_file, indent + "    ");
-  xml_file << indent << "</Control>\n";
-
-  if (add_delay) {
-    xml_file << "            </Delay>\n";
-  }
+  xml_file << indent << "    <Fallback name=\"ClearCostmapsAfterGoal\">\n";
+  xml_file << indent << "      <Sequence>\n";
+  xml_file << indent << "        <Action ID=\"ClearEntireCostmap\" service_name=\""
+           << nav2_name("local_costmap/clear_entirely_local_costmap") << "\" server_timeout=\"1000.0\"/>\n";
+  xml_file << indent << "        <Action ID=\"ClearEntireCostmap\" service_name=\""
+           << nav2_name("global_costmap/clear_entirely_global_costmap") << "\" server_timeout=\"1000.0\"/>\n";
+  xml_file << indent << "      </Sequence>\n";
+  xml_file << indent << "      <Action ID=\"AlwaysSuccess\"/>\n";
+  xml_file << indent << "    </Fallback>\n";
+  xml_file << indent << "</Sequence>\n";
 }
 
 bool write_service_or_patrol_xml(const std::string &path, const ConstructYaml::Request &request,
@@ -410,7 +329,7 @@ bool write_service_or_patrol_xml(const std::string &path, const ConstructYaml::R
   const size_t count = std::min(request.pose_names.size(), request.poses.size());
   for (size_t offset = 0; offset < count; ++offset) {
     const size_t index = count - offset - 1;
-    write_legacy_navigation_node(xml_file, request.pose_names[index], !patrol && offset > 0, patrol);
+    write_legacy_navigation_node(xml_file, request.pose_names[index], patrol);
     message.pose_names.push_back(request.pose_names[index]);
     message.poses.push_back(request.scene_poses[index]);
   }
@@ -421,9 +340,6 @@ bool write_service_or_patrol_xml(const std::string &path, const ConstructYaml::R
     xml_file << "    </Sequence>\n";
   }
   xml_file << "  </BehaviorTree>\n";
-  if (!append_tree_model(xml_file)) {
-    return false;
-  }
   xml_file << "</root>\n";
   const bool success = static_cast<bool>(xml_file);
   if (success) {
