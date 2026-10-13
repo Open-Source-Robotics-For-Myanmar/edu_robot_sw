@@ -237,7 +237,7 @@ void write_modern_navigation_node(std::ofstream &xml_file, const std::string &go
   xml_file << "                        path=\"{path}\"\n";
   xml_file << "                        goal_checker_id=\"\"\n";
   xml_file << "                        server_name=\"" << ns_prefix << "follow_path\"\n";
-  xml_file << "                        server_timeout=\"10.0\"/>\n";
+  xml_file << "                        server_timeout=\"10000.0\"/>\n";
   xml_file << "            <ClearEntireCostmap name=\"ClearLocalCostmap-Context\"\n";
   xml_file << "                                service_name=\"" << ns_prefix << "local_costmap/clear_entirely_local_costmap\"\n";
   xml_file << "                                server_timeout=\"1000.0\"/>\n";
@@ -303,7 +303,7 @@ void write_legacy_compute_path(std::ofstream &xml_file, const std::string &prefi
   xml_file << prefix << "                                  planner_id=\"GridBased\"\n";
   xml_file << prefix << "                                  server_name=\""
            << nav2_name("compute_path_to_pose") << "\"\n";
-  xml_file << prefix << "                                  server_timeout=\"10.0\"/>\n";
+  xml_file << prefix << "                                  server_timeout=\"10000.0\"/>\n";
   xml_file << prefix << "        <Action ID=\"ClearEntireCostmap\"\n";
   xml_file << prefix << "                name=\"ClearGlobalCostmap-Context\"\n";
   xml_file << prefix << "                service_name=\""
@@ -322,7 +322,7 @@ void write_legacy_follow_path(std::ofstream &xml_file, const std::string &prefix
   xml_file << prefix << "            controller_id=\"FollowPath\"\n";
   xml_file << prefix << "            path=\"{path}\"\n";
   xml_file << prefix << "            server_name=\"" << nav2_name("follow_path") << "\"\n";
-  xml_file << prefix << "            server_timeout=\"10.0\"/>\n";
+  xml_file << prefix << "            server_timeout=\"10000.0\"/>\n";
   xml_file << prefix << "    <Action ID=\"ClearEntireCostmap\"\n";
   xml_file << prefix << "            name=\"ClearLocalCostmap-Context\"\n";
   xml_file << prefix << "            service_name=\""

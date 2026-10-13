@@ -12,11 +12,11 @@
                                  start=""
                                  planner_id="GridBased"
                                  server_name="compute_path_to_pose"
-                                 server_timeout="2.0"
+                                 server_timeout="10000.0"
                                  path="{path}"/>
               <ClearEntireCostmap name="ClearGlobalCostmap-Context"
                                   service_name="global_costmap/clear_entirely_global_costmap"
-                                  server_timeout="2.0"/>
+                                  server_timeout="10000.0"/>
             </RecoveryNode>
           </RateController>
           <RecoveryNode name="FollowPath"
@@ -25,10 +25,10 @@
                         path="{path}"
                         goal_checker_id=""
                         server_name="/follow_path"
-                        server_timeout="2.0"/>
+                        server_timeout="10000.0"/>
             <ClearEntireCostmap name="ClearLocalCostmap-Context"
                                 service_name="local_costmap/clear_entirely_local_costmap"
-                                server_timeout="2.0"/>
+                                server_timeout="10000.0"/>
           </RecoveryNode>
         </PipelineSequence>
         <ReactiveFallback name="RecoveryFallback">
@@ -37,10 +37,10 @@
             <Sequence name="ClearingActions">
               <ClearEntireCostmap name="ClearLocalCostmap-Subtree"
                                   service_name="local_costmap/clear_entirely_local_costmap"
-                                  server_timeout="2.0"/>
+                                  server_timeout="10000.0"/>
               <ClearEntireCostmap name="ClearGlobalCostmap-Subtree"
                                   service_name="global_costmap/clear_entirely_global_costmap"
-                                  server_timeout="2.0"/>
+                                  server_timeout="10000.0"/>
             </Sequence>
           </RoundRobin>
         </ReactiveFallback>
@@ -55,11 +55,11 @@
                                  start=""
                                  planner_id="GridBased"
                                  server_name="compute_path_to_pose"
-                                 server_timeout="2.0"
+                                 server_timeout="10000.0"
                                  path="{path}"/>
               <ClearEntireCostmap name="ClearGlobalCostmap-Context"
                                   service_name="global_costmap/clear_entirely_global_costmap"
-                                  server_timeout="2.0"/>
+                                  server_timeout="10000.0"/>
             </RecoveryNode>
           </RateController>
           <RecoveryNode name="FollowPath"
@@ -68,10 +68,10 @@
                         path="{path}"
                         goal_checker_id=""
                         server_name="/follow_path"
-                        server_timeout="2.0"/>
+                        server_timeout="10000.0"/>
             <ClearEntireCostmap name="ClearLocalCostmap-Context"
                                 service_name="local_costmap/clear_entirely_local_costmap"
-                                server_timeout="2.0"/>
+                                server_timeout="10000.0"/>
           </RecoveryNode>
         </PipelineSequence>
         <ReactiveFallback name="RecoveryFallback">
@@ -80,10 +80,10 @@
             <Sequence name="ClearingActions">
               <ClearEntireCostmap name="ClearLocalCostmap-Subtree"
                                   service_name="local_costmap/clear_entirely_local_costmap"
-                                  server_timeout="2.0"/>
+                                  server_timeout="10000.0"/>
               <ClearEntireCostmap name="ClearGlobalCostmap-Subtree"
                                   service_name="global_costmap/clear_entirely_global_costmap"
-                                  server_timeout="2.0"/>
+                                  server_timeout="10000.0"/>
             </Sequence>
           </RoundRobin>
         </ReactiveFallback>
@@ -98,11 +98,11 @@
                                  start=""
                                  planner_id="GridBased"
                                  server_name="compute_path_to_pose"
-                                 server_timeout="2.0"
+                                 server_timeout="10000.0"
                                  path="{path}"/>
               <ClearEntireCostmap name="ClearGlobalCostmap-Context"
                                   service_name="global_costmap/clear_entirely_global_costmap"
-                                  server_timeout="2.0"/>
+                                  server_timeout="10000.0"/>
             </RecoveryNode>
           </RateController>
           <RecoveryNode name="FollowPath"
@@ -111,10 +111,10 @@
                         path="{path}"
                         goal_checker_id=""
                         server_name="/follow_path"
-                        server_timeout="2.0"/>
+                        server_timeout="10000.0"/>
             <ClearEntireCostmap name="ClearLocalCostmap-Context"
                                 service_name="local_costmap/clear_entirely_local_costmap"
-                                server_timeout="2.0"/>
+                                server_timeout="10000.0"/>
           </RecoveryNode>
         </PipelineSequence>
         <ReactiveFallback name="RecoveryFallback">
@@ -123,10 +123,10 @@
             <Sequence name="ClearingActions">
               <ClearEntireCostmap name="ClearLocalCostmap-Subtree"
                                   service_name="local_costmap/clear_entirely_local_costmap"
-                                  server_timeout="2.0"/>
+                                  server_timeout="10000.0"/>
               <ClearEntireCostmap name="ClearGlobalCostmap-Subtree"
                                   service_name="global_costmap/clear_entirely_global_costmap"
-                                  server_timeout="2.0"/>
+                                  server_timeout="10000.0"/>
             </Sequence>
           </RoundRobin>
         </ReactiveFallback>
@@ -141,11 +141,11 @@
                                  start=""
                                  planner_id="GridBased"
                                  server_name="compute_path_to_pose"
-                                 server_timeout="2.0"
+                                 server_timeout="10000.0"
                                  path="{path}"/>
               <ClearEntireCostmap name="ClearGlobalCostmap-Context"
                                   service_name="global_costmap/clear_entirely_global_costmap"
-                                  server_timeout="2.0"/>
+                                  server_timeout="10000.0"/>
             </RecoveryNode>
           </RateController>
           <RecoveryNode name="FollowPath"
@@ -154,10 +154,10 @@
                         path="{path}"
                         goal_checker_id=""
                         server_name="/follow_path"
-                        server_timeout="2.0"/>
+                        server_timeout="10000.0"/>
             <ClearEntireCostmap name="ClearLocalCostmap-Context"
                                 service_name="local_costmap/clear_entirely_local_costmap"
-                                server_timeout="2.0"/>
+                                server_timeout="10000.0"/>
           </RecoveryNode>
         </PipelineSequence>
         <ReactiveFallback name="RecoveryFallback">
@@ -166,10 +166,10 @@
             <Sequence name="ClearingActions">
               <ClearEntireCostmap name="ClearLocalCostmap-Subtree"
                                   service_name="local_costmap/clear_entirely_local_costmap"
-                                  server_timeout="2.0"/>
+                                  server_timeout="10000.0"/>
               <ClearEntireCostmap name="ClearGlobalCostmap-Subtree"
                                   service_name="global_costmap/clear_entirely_global_costmap"
-                                  server_timeout="2.0"/>
+                                  server_timeout="10000.0"/>
             </Sequence>
           </RoundRobin>
         </ReactiveFallback>

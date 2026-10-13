@@ -177,7 +177,7 @@ int main(int argc, char **argv)
         return stop_requested_; // Stop BT if service was called
     };
     
-    nav2_behavior_tree::BtStatus status = engine.run(&tree, onLoop, cancelRequested, std::chrono::milliseconds(10));
+    nav2_behavior_tree::BtStatus status = engine.run(&tree, onLoop, cancelRequested, std::chrono::milliseconds(100));
 
     if (status == nav2_behavior_tree::BtStatus::SUCCEEDED) {
         RCLCPP_INFO(rclcpp::get_logger("Main"), "Behavior Tree succeeded.");
