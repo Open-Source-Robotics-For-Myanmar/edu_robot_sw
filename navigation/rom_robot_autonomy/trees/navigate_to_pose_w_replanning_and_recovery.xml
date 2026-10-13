@@ -6,43 +6,30 @@
 -->
 <root main_tree_to_execute="MainTree">
   <BehaviorTree ID="MainTree">
-    <RecoveryNode number_of_retries="6" name="NavigateRecovery">
+    <Sequence name="NavigateAndClearCostmaps">
       <PipelineSequence name="NavigateWithReplanning">
         <RateController hz="1.0">
-          <RecoveryNode number_of_retries="1" name="ComputePathToPose">
+          <RetryUntilSuccessful num_attempts="-1">
             <ComputePathToPose goal="{my_goal_pose}" path="{path}" planner_id="GridBased"/>
-            <ClearEntireCostmap name="ClearGlobalCostmap-Context" service_name="global_costmap/clear_entirely_global_costmap"/>
-          </RecoveryNode>
+          </RetryUntilSuccessful>
         </RateController>
-        <RecoveryNode number_of_retries="1" name="FollowPath">
+        <RetryUntilSuccessful num_attempts="-1">
           <FollowPath path="{path}" controller_id="FollowPath"/>
-          <ClearEntireCostmap name="ClearLocalCostmap-Context" service_name="local_costmap/clear_entirely_local_costmap"/>
-        </RecoveryNode>
+        </RetryUntilSuccessful>
       </PipelineSequence>
-      <ReactiveFallback name="RecoveryFallback">
-        <GoalUpdated/>
-        <RoundRobin name="RecoveryActions">
-          <Sequence name="ClearingActions">
-            <ClearEntireCostmap name="ClearLocalCostmap-Subtree" service_name="local_costmap/clear_entirely_local_costmap"/>
-            <ClearEntireCostmap name="ClearGlobalCostmap-Subtree" service_name="global_costmap/clear_entirely_global_costmap"/>
-          </Sequence>
-          <Spin spin_dist="1.57"/>
-          <Wait wait_duration="5"/>
-          <BackUp backup_dist="0.30" backup_speed="0.05"/>
-        </RoundRobin>
-      </ReactiveFallback>
-    </RecoveryNode>
+      <Fallback name="ClearLocalCostmapAfterGoal">
+        <ClearEntireCostmap service_name="local_costmap/clear_entirely_local_costmap"/>
+        <AlwaysSuccess/>
+      </Fallback>
+      <Fallback name="ClearGlobalCostmapAfterGoal">
+        <ClearEntireCostmap service_name="global_costmap/clear_entirely_global_costmap"/>
+        <AlwaysSuccess/>
+      </Fallback>
+    </Sequence>
   </BehaviorTree>
 
   <!-- Description of Node Models (used by Groot) -->
   <TreeNodesModel>
-    <Action ID="BackUp">
-      <input_port name="backup_dist">Distance to backup</input_port>
-      <input_port name="backup_speed">Speed at which to backup</input_port>
-      <input_port name="time_allowance">Allowed time for reversing</input_port>
-      <input_port name="server_name">Server name</input_port>
-      <input_port name="server_timeout">Server timeout</input_port>
-    </Action>
     <Action ID="ClearEntireCostmap">
       <input_port name="service_name">Service name</input_port>
       <input_port name="server_timeout">Server timeout</input_port>
@@ -68,26 +55,12 @@
     <Decorator ID="RateController">
       <input_port name="hz">Rate</input_port>
     </Decorator>
-    <Control ID="RecoveryNode">
-      <input_port name="number_of_retries">Number of retries</input_port>
-    </Control>
     <Control ID="RoundRobin"/>
     <Action ID="SendNavGoal"
             editable="true">
       <input_port name="x"/>
       <input_port name="y"/>
       <input_port name="theta"/>
-    </Action>
-    <Action ID="Spin">
-      <input_port name="spin_dist">Spin distance</input_port>
-      <input_port name="time_allowance">Allowed time for spinning</input_port>
-      <input_port name="server_name">Server name</input_port>
-      <input_port name="server_timeout">Server timeout</input_port>
-    </Action>
-    <Action ID="Wait">
-      <input_port name="wait_duration">Wait time</input_port>
-      <input_port name="server_name">Server name</input_port>
-      <input_port name="server_timeout">Server timeout</input_port>
     </Action>
   </TreeNodesModel>
 </root>

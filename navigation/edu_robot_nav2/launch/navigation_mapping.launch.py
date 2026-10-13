@@ -56,9 +56,13 @@ def generate_launch_description():
     remapping = []
 
     # Create our own temporary YAML files that include substitutions
+    bt_tree_dir = os.path.join(get_package_share_directory('edu_robot_bt'), 'trees', 'behavior_trees')
+
     param_substitutions = {
         'use_sim_time': use_sim_time,
-        'autostart': autostart}
+        'autostart': autostart,
+        'default_nav_to_pose_bt_xml': os.path.join(bt_tree_dir, 'navigate_to_pose_w_replanning_and_recovery.xml'),
+        'default_nav_through_poses_bt_xml': os.path.join(bt_tree_dir, 'navigate_through_poses_w_replanning_and_recovery.xml')}
 
     configured_params = RewrittenYaml(
         source_file=params_file,

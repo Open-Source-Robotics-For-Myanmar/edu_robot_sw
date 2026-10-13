@@ -39,7 +39,7 @@ map_server:
 planner_server:
   ros__parameters:
     use_sim_time: false
-    expected_planner_frequency: 40.0
+    expected_planner_frequency: 1.0
     planner_plugins: ["GridBased"]
     GridBased:
       plugin: "nav2_navfn_planner/NavfnPlanner"
@@ -54,7 +54,7 @@ controller_server:
     min_x_velocity_threshold: 0.001
     min_y_velocity_threshold: 0.5
     min_theta_velocity_threshold: 0.001
-    failure_tolerance: 0.3
+    failure_tolerance: -1.0
     controller_patience: 3600.0
     
     # Plugins သတ်မှတ်ခြင်း (Humble Standard)
@@ -77,13 +77,19 @@ controller_server:
 
     # Regulated Pure Pursuit Controller Configuration
     FollowPath:
-      plugin: "nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController"
+      plugin: "nav2_rotation_shim_controller::RotationShimController"
+      primary_controller: "nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController"
+      angular_dist_threshold: 0.785
+      forward_sampling_distance: 0.5
+      angular_disengage_threshold: 0.65
+      rotate_to_goal_heading: true
+      simulate_ahead_time: 1.0
       desired_linear_vel: 0.5        # ရိုဘော့မောင်းမယ့် အမြင့်ဆုံး linear velocity (m/s)
       lookahead_dist: 0.6            # ရှေ့ကြည့်မည့် အကွာအဝေး (0.5m မှ 0.9m ကြားသည် Differential အတွက် အကောင်းဆုံးဖြစ်)
       min_lookahead_dist: 0.3
       max_lookahead_dist: 0.9
       lookahead_time: 1.5
-      rotate_to_heading_angular_vel: 1.5 # နေရာမှာတင် ဗဟိုပြုလှည့်မယ့် အမြင့်ဆုံး အမြန်နှုန်း (rad/s)
+      rotate_to_heading_angular_vel: 2.0 # နေရာမှာတင် ဗဟိုပြုလှည့်မယ့် အမြင့်ဆုံး အမြန်နှုန်း (rad/s)
       transform_tolerance: 0.1
       use_velocity_scaled_lookahead_dist: false
       min_approach_linear_velocity: 0.05
@@ -134,10 +140,7 @@ bt_navigator:
     - nav2_compute_path_through_poses_action_bt_node
     - nav2_smooth_path_action_bt_node
     - nav2_follow_path_action_bt_node
-    - nav2_spin_action_bt_node
-    - nav2_wait_action_bt_node
     - nav2_assisted_teleop_action_bt_node
-    - nav2_back_up_action_bt_node
     - nav2_drive_on_heading_bt_node
     - nav2_clear_costmap_service_bt_node
     - nav2_is_stuck_condition_bt_node
@@ -153,9 +156,7 @@ bt_navigator:
     - nav2_truncate_path_action_bt_node
     - nav2_truncate_path_local_action_bt_node
     - nav2_goal_updater_node_bt_node
-    - nav2_recovery_node_bt_node
     - nav2_pipeline_sequence_bt_node
-    - nav2_round_robin_node_bt_node
     - nav2_transform_available_condition_bt_node
     - nav2_time_expired_condition_bt_node
     - nav2_path_expiring_timer_condition
@@ -171,9 +172,6 @@ bt_navigator:
     - nav2_goal_checker_selector_bt_node
     - nav2_controller_cancel_bt_node
     - nav2_path_longer_on_approach_bt_node
-    - nav2_wait_cancel_bt_node
-    - nav2_spin_cancel_bt_node
-    - nav2_back_up_cancel_bt_node
     - nav2_assisted_teleop_cancel_bt_node
     - nav2_drive_on_heading_cancel_bt_node
 
@@ -188,15 +186,9 @@ bt_navigator_navigate_to_pose_rclcpp_node:
 behavior_server:
   ros__parameters:
     cycle_frequency: 10.0
-    behavior_plugins: ["spin", "backup", "drive_on_heading", "assisted_teleop", "wait"]
-    spin:
-      plugin: "nav2_behaviors/Spin"
-    backup:
-      plugin: "nav2_behaviors/BackUp"
+    behavior_plugins: ["drive_on_heading", "assisted_teleop"]
     drive_on_heading:
       plugin: "nav2_behaviors/DriveOnHeading"
-    wait:
-      plugin: "nav2_behaviors/Wait"
     assisted_teleop:
       plugin: "nav2_behaviors/AssistedTeleop"
     global_frame: odom
@@ -302,8 +294,8 @@ velocity_smoother:
     smoothing_frequency: 20.0
     feedback: "OPEN_LOOP"
     scale_velocities: false
-    max_velocity: [0.4, 0.0, 1.5]
-    min_velocity: [-0.4, 0.0, -1.5]
+    max_velocity: [0.4, 0.0, 2.0]
+    min_velocity: [-0.4, 0.0, -2.0]
     max_accel: [1.0, 0.0, 3.0]
     max_decel: [-1.0, 0.0, -3.0]
     odom_topic: "/edu_robot/odom"

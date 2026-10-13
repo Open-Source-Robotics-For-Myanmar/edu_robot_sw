@@ -7,13 +7,6 @@
 <root>
   <TreeNodesModel>
     <!-- ############################### ACTION NODES ################################# -->
-    <Action ID="BackUp">
-      <input_port name="backup_dist">Distance to backup</input_port>
-      <input_port name="backup_speed">Speed at which to backup</input_port>
-      <input_port name="time_allowance">Allowed time for reversing</input_port>
-      <input_port name="server_name">Server name</input_port>
-      <input_port name="server_timeout">Server timeout</input_port>
-    </Action>
 
     <Action ID="DriveOnHeading">
       <input_port name="dist_to_travel">Distance to travel</input_port>
@@ -174,19 +167,6 @@
         <output_port name="selected_goal_checker">Name of the selected goal checker received from the topic subcription</output_port>
     </Action>
 
-    <Action ID="Spin">
-      <input_port name="spin_dist">Spin distance</input_port>
-      <input_port name="time_allowance">Allowed time for spinning</input_port>
-      <input_port name="server_name">Server name</input_port>
-      <input_port name="server_timeout">Server timeout</input_port>
-    </Action>
-
-    <Action ID="Wait">
-      <input_port name="wait_duration">Wait time</input_port>
-      <input_port name="server_name">Server name</input_port>
-      <input_port name="server_timeout">Server timeout</input_port>
-    </Action>
-
     <Action ID="AssistedTeleop">
       <input_port name="time_allowance">Allowed time for spinning</input_port>
       <input_port name="is_recovery">If true recovery count will be incremented</input_port>
@@ -249,11 +229,6 @@
     <!-- ############################### CONTROL NODES ################################ -->
     <Control ID="PipelineSequence"/>
 
-    <Control ID="RecoveryNode">
-      <input_port name="number_of_retries">Number of retries</input_port>
-    </Control>
-
-    <Control ID="RoundRobin"/>
 
     <!-- ############################### DECORATOR NODES ############################## -->
     <Decorator ID="RateController">

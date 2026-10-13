@@ -101,8 +101,6 @@ int main(int argc, char **argv)
     {
         "nav2_assisted_teleop_action_bt_node",
         "nav2_assisted_teleop_cancel_bt_node",
-        "nav2_back_up_action_bt_node",
-        "nav2_back_up_cancel_bt_node",
         "nav2_clear_costmap_service_bt_node",
         "nav2_compute_path_through_poses_action_bt_node",
         "nav2_compute_path_to_pose_action_bt_node",
@@ -133,22 +131,16 @@ int main(int argc, char **argv)
         "nav2_planner_selector_bt_node",
         "nav2_progress_checker_selector_bt_node",
         "nav2_rate_controller_bt_node",
-        "nav2_recovery_node_bt_node",
-        "nav2_reinitialize_global_localization_service_bt_node",
+          "nav2_reinitialize_global_localization_service_bt_node",
         "nav2_remove_passed_goals_action_bt_node",
-        "nav2_round_robin_node_bt_node",
-        "nav2_single_trigger_bt_node",
+          "nav2_single_trigger_bt_node",
         "nav2_smoother_selector_bt_node",
         "nav2_smooth_path_action_bt_node",
         "nav2_speed_controller_bt_node",
-        "nav2_spin_action_bt_node",
-        "nav2_spin_cancel_bt_node",
         "nav2_time_expired_condition_bt_node",
         "nav2_transform_available_condition_bt_node",
         "nav2_truncate_path_action_bt_node",
         "nav2_truncate_path_local_action_bt_node",
-        "nav2_wait_action_bt_node",
-        "nav2_wait_cancel_bt_node",
     };
     
     //executor.spin(); 
